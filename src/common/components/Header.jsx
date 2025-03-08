@@ -23,7 +23,6 @@ const Dates = styled.div`
   font-weight: normal;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   text-align: right;
   height: 100%;
   font-size: 12px;

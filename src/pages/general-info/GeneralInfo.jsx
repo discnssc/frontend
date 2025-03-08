@@ -14,14 +14,6 @@ import { UserContext } from 'common/contexts/UserContext';
   process.env.SUPABASE_ANON_KEY
 ); */
 
-const Table = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: left;
-  font-size: 13px;
-`;
-
 const InfoPage = styled.div`
   flex: 1 0 0;
   flex-direction: column;
@@ -29,6 +21,40 @@ const InfoPage = styled.div`
   align-items: left;
   text-align: left;
   padding: 2rem;
+`;
+const Table = styled.div`
+  font-size: 14px;
+`;
+
+const TableHead = styled.div`
+  flex: 1 0 0;
+  flex-direction: column;
+  justify-content: left;
+  align-items: left;
+  text-align: left;
+  font-size: 17px;
+  font-weight: bold;
+  margin-bottom: 1rem;
+`;
+
+const TableRow = styled.tr`
+  font-size: 14px;
+  border: 5px;
+`;
+
+const TableLabel = styled.td`
+  padding: 8px;
+  text-align: left;
+  vertical-align: center;
+  background-color: #ffffff;
+  font-weight: bold;
+`;
+
+const TableCell = styled.td`
+  padding: 8px;
+  text-align: left;
+  vertical-align: center;
+  background-color: #ffffff;
 `;
 
 export default function GeneralInfo() {
@@ -55,25 +81,23 @@ export default function GeneralInfo() {
   return (
     <InfoPage>
       <Header />
-      <section>
-        Constituent Info:
-        <Table>
-          <p>Last Name: {user?.last_name}</p>
-          <p>First Name: {user?.first_name}</p>
-          <p>Middle Name: {user?.middle_name}</p>
-          <p>Nickname: {user?.nickname}</p>
-          <p>SSN: *********</p>
-          <p>Gender: {user?.gender}</p>
-          <p>Date of Birth: {user?.date_of_birth}</p>
-          <p>Suffix: {user?.suffix}</p>
-          <p>Maiden Name: {user?.maiden_name}</p>
-          <p>Suffix: {user?.suffix}</p>
-          <p>Contract Code: {user?.contract_code}</p>
-          <p>Caregiver/Recipient: {user?.care_giver}</p>
-          <p>Preferred Worker: {user?.preferred_worker}</p>
-          <p>Status: {user?.status}</p>
-        </Table>
-      </section>
+      <TableHead> Constituent Info </TableHead>
+      <Table border='1'>
+        <tbody>
+          <TableRow>
+            <TableLabel> Last Name: </TableLabel>
+            <TableCell> {user?.last_name} </TableCell>
+          </TableRow>
+          <TableRow>
+            <th> First Name: </th>
+            <td> {user?.first_name} </td>
+          </TableRow>
+          <TableRow>
+            <th> First Name: </th>
+            <td> {user?.first_name} </td>
+          </TableRow>
+        </tbody>
+      </Table>
     </InfoPage>
   );
 }
