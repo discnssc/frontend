@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import {
@@ -36,10 +37,13 @@ export default function App() {
               />
             </Route>
             <Route path='auth/callback' element={<AuthCallback />} />
+            <Route
+              path='participant-database'
+              element={<ParticipantDatabase />}
+            />
             <Route path='auth/reset-password' element={<ResetPassword />} />
             <Route path='*' element={<NotFound />} />
           </Route>
-          <Route path='/db' element={<ParticipantDatabase />} />
         </Routes>
       </BrowserRouter>
     </UserProvider>
