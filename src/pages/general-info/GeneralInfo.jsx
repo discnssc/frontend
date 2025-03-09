@@ -32,17 +32,16 @@ const TableHead = styled.div`
   justify-content: left;
   align-items: left;
   text-align: left;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: bold;
   margin-bottom: 1rem;
 `;
 
 const TableRow = styled.tr`
-  font-size: 14px;
-  border: 5px;
+  font-size: 12px;
 `;
 
-const TableLabel = styled.td`
+const TableLabel = styled.th`
   padding: 8px;
   text-align: left;
   vertical-align: center;
@@ -89,12 +88,48 @@ export default function GeneralInfo() {
             <TableCell> {user?.last_name} </TableCell>
           </TableRow>
           <TableRow>
-            <th> First Name: </th>
-            <td> {user?.first_name} </td>
+            <TableLabel> First Name: </TableLabel>
+            <TableCell> name{user?.first_name} </TableCell>
           </TableRow>
           <TableRow>
-            <th> First Name: </th>
-            <td> {user?.first_name} </td>
+            <TableLabel> Middle Name: </TableLabel>
+            <TableCell> {user?.middle_name} </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableLabel> Nickname: </TableLabel>
+            <TableCell> {user?.nickname} </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableLabel> Gender: </TableLabel>
+            <TableCell> {user?.gender} </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableLabel> Date of Birth: </TableLabel>
+            <TableCell> {user?.date_of_birth} </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableLabel> Maiden Name: </TableLabel>
+            <TableCell> {user?.maiden_name} </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableLabel> Suffix: </TableLabel>
+            <TableCell> {user?.suffix} </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableLabel> Contract Code: </TableLabel>
+            <TableCell> {user?.contract_code} </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableLabel> Caregiver/Recipient: </TableLabel>
+            <TableCell> {user?.care_giver} </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableLabel> Preferred Worker: </TableLabel>
+            <TableCell> {user?.preferred_worker} </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableLabel> Status: </TableLabel>
+            <TableCell> {user?.status} </TableCell>
           </TableRow>
         </tbody>
       </Table>
