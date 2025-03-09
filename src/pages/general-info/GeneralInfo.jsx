@@ -1,29 +1,42 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 
-// import { useEffect, useState } from 'react';
-
-/* import { createClient } from '@supabase/supabase-js';
-import { useParams } from 'react-router-dom'; */
+import { createClient } from '@supabase/supabase-js';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Header from 'common/components/Header';
-import { UserContext } from 'common/contexts/UserContext';
 
-/* const supabase = createClient(
+const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_ANON_KEY
-); */
+);
 
 const InfoPage = styled.div`
-  flex: 1 0 0;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: left;
   align-items: left;
   text-align: left;
   padding: 2rem;
 `;
+
+const TableContainer = styled.div`
+  font-size: 15px;
+  width: 45%;
+  display: table;
+  vertical-align: top;
+  float: left;
+  margin-right: 2rem;
+  align-items: flex-start;
+`;
+
 const Table = styled.div`
-  font-size: 14px;
+  font-size: 15px;
+  width: 45%;
+  display: table;
+  vertical-align: top;
+  float: left;
+  margin-right: 2rem;
+  align-items: flex-start;
 `;
 
 const TableHead = styled.div`
@@ -35,10 +48,11 @@ const TableHead = styled.div`
   font-size: 15px;
   font-weight: bold;
   margin-bottom: 1rem;
+  align-items: flex-start;
 `;
 
 const TableRow = styled.tr`
-  font-size: 12px;
+  font-size: 15px;
 `;
 
 const TableLabel = styled.th`
@@ -47,6 +61,7 @@ const TableLabel = styled.th`
   vertical-align: center;
   background-color: #ffffff;
   font-weight: bold;
+  border: 0.5px solid #aaaaaa;
 `;
 
 const TableCell = styled.td`
@@ -54,10 +69,13 @@ const TableCell = styled.td`
   text-align: left;
   vertical-align: center;
   background-color: #ffffff;
+  border: 0.5px solid #aaaaaa;
+  justify-content: center;
+  flex-shrink: 0;
 `;
 
 export default function GeneralInfo() {
-  /* const { id } = useParams(); // Get participant ID from URL
+  const { id } = useParams(); // Get participant ID from URL
   const [participant, setParticipant] = useState(null);
 
   useEffect(() => {
@@ -74,65 +92,105 @@ export default function GeneralInfo() {
       }
     };
     fetchParticipant();
-  }, []); */
-  const { user } = useContext(UserContext);
+  }, []);
 
   return (
     <InfoPage>
       <Header />
-      <TableHead> Constituent Info </TableHead>
-      <Table border='1'>
-        <tbody>
-          <TableRow>
-            <TableLabel> Last Name: </TableLabel>
-            <TableCell> {user?.last_name} </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableLabel> First Name: </TableLabel>
-            <TableCell> name{user?.first_name} </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableLabel> Middle Name: </TableLabel>
-            <TableCell> {user?.middle_name} </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableLabel> Nickname: </TableLabel>
-            <TableCell> {user?.nickname} </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableLabel> Gender: </TableLabel>
-            <TableCell> {user?.gender} </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableLabel> Date of Birth: </TableLabel>
-            <TableCell> {user?.date_of_birth} </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableLabel> Maiden Name: </TableLabel>
-            <TableCell> {user?.maiden_name} </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableLabel> Suffix: </TableLabel>
-            <TableCell> {user?.suffix} </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableLabel> Contract Code: </TableLabel>
-            <TableCell> {user?.contract_code} </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableLabel> Caregiver/Recipient: </TableLabel>
-            <TableCell> {user?.care_giver} </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableLabel> Preferred Worker: </TableLabel>
-            <TableCell> {user?.preferred_worker} </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableLabel> Status: </TableLabel>
-            <TableCell> {user?.status} </TableCell>
-          </TableRow>
-        </tbody>
-      </Table>
+      <TableContainer>
+        <TableHead> Participant Info </TableHead>
+        <Table>
+          <tbody>
+            <TableRow>
+              <TableLabel> Last Name: </TableLabel>
+              <TableCell> {participant.last_name} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> First Name: </TableLabel>
+              <TableCell> {participant.first_name} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> Middle Name: </TableLabel>
+              <TableCell> {participant.middle_name} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> Nickname: </TableLabel>
+              <TableCell> {participant.nickname} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> Gender: </TableLabel>
+              <TableCell> {participant.gender} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> Date of Birth: </TableLabel>
+              <TableCell> {participant.date_of_birth} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> Maiden Name: </TableLabel>
+              <TableCell> {participant.maiden_name} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> Suffix: </TableLabel>
+              <TableCell> {participant.suffix} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> Contract Code: </TableLabel>
+              <TableCell> {participant.contract_code} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> Caregiver/Recipient: </TableLabel>
+              <TableCell> {participant.care_giver} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> Preferred Worker: </TableLabel>
+              <TableCell> {participant.preferred_worker} </TableCell>
+            </TableRow>
+          </tbody>
+        </Table>
+      </TableContainer>
+      <TableContainer>
+        <TableHead> Address and Contact </TableHead>
+        <Table border='1'>
+          <tbody>
+            <TableRow>
+              <TableLabel> Address Line 1: </TableLabel>
+              <TableCell> {participant.address_line_1} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> Address Line 2: </TableLabel>
+              <TableCell> {participant.address_line_2} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> City: </TableLabel>
+              <TableCell> {participant.city} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> Township: </TableLabel>
+              <TableCell> {participant.township} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> State: </TableLabel>
+              <TableCell> {participant.state} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> Zip Code: </TableLabel>
+              <TableCell> {participant.zip_code} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> Email: </TableLabel>
+              <TableCell> {participant.email} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> Primary Phone Number: </TableLabel>
+              <TableCell> {participant.primary_phone_number} </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableLabel> Secondary Phone Number: </TableLabel>
+              <TableCell> {participant.secondary_phone_number} </TableCell>
+            </TableRow>
+          </tbody>
+        </Table>
+      </TableContainer>
     </InfoPage>
   );
 }
