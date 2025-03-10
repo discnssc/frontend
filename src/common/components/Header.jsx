@@ -37,22 +37,6 @@ const SmallText = styled.h1`
   margin: 5px 0;
 `;
 
-const StatusButton = styled.span.attrs((props) => ({
-  style: {
-    display: 'inline-block',
-    backgroundColor:
-      props.status?.toLowerCase() === 'inactive' ? '#f8d7da' : '#d4edda',
-    color: props.status?.toLowerCase() === 'inactive' ? '#721c24' : '#155724',
-  },
-}))`
-  padding: 5px 15px;
-  margin-left: 10px;
-  border-radius: 20px;
-  font-size: 14px;
-  width: 100px;
-  text-align: center;
-`;
-
 export default function Header({ participant }) {
   return (
     <HeaderContainer>
