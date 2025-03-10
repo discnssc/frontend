@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import {
@@ -20,9 +19,9 @@ import GeneralInfo from 'pages/general-info/GeneralInfo';
 import Home from 'pages/home/Home';
 import HowInfo from 'pages/HOW-info/HowInfo';
 import NotFound from 'pages/not-found/NotFound';
+import ParticipantDatabase from 'pages/participant_database/ParticipantDatabase';
 
 import './App.css';
-
 
 export default function App() {
   return (
@@ -30,33 +29,37 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<NavLayout />}>
-            <Route element={<PrivateRoute />}>
-              <Route index element={<Home />} />
-            </Route>
+            {/* Make ParticipantDatabase the home page */}
+            <Route index element={<ParticipantDatabase />} />
+
+            {/* Public routes */}
             <Route element={<PublicOnlyRoute />}>
               <Route path='login' element={<Login />} />
               <Route path='signup' element={<SignUp />} />
-              <Route
-                path='/participant/generalinfo/:id'
-                element={<GeneralInfo />}
-              />
-              <Route
-                path='/participant/demographics/:id'
-                element={<Demographics />}
-              />
-              <Route path='/participant/howinfo/:id' element={<HowInfo />} />
-              <Route path='/participant/cases/:id' element={<Cases />} />
-              <Route
-                path='/participant/activities/:id'
-                element={<ActivityLogs />}
-              />
-              <Route
-                path='forgot-password'
-                element={<RequestPasswordReset />}
-              />
+              <Route path='forgot-password' element={<RequestPasswordReset />} />
             </Route>
+
+            {/* Participant-specific routes */}
+            <Route
+              path='/participant/generalinfo/:id'
+              element={<GeneralInfo />}
+            />
+            <Route
+              path='/participant/demographics/:id'
+              element={<Demographics />}
+            />
+            <Route path='/participant/howinfo/:id' element={<HowInfo />} />
+            <Route path='/participant/cases/:id' element={<Cases />} />
+            <Route
+              path='/participant/activities/:id'
+              element={<ActivityLogs />}
+            />
+
+            {/* Auth-related routes */}
             <Route path='auth/callback' element={<AuthCallback />} />
             <Route path='auth/reset-password' element={<ResetPassword />} />
+
+            {/* Catch-all route for 404 */}
             <Route path='*' element={<NotFound />} />
           </Route>
         </Routes>

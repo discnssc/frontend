@@ -14,7 +14,6 @@ const Layout = styled.div`
 export default function NavLayout() {
   return (
     <Layout>
-      <NavBar />
       <Outlet />
     </Layout>
   );
