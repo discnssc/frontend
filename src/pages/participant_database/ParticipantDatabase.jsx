@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 import { Link } from 'react-router-dom';
 
 export default function ParticipantDatabase() {
@@ -267,7 +268,9 @@ export default function ParticipantDatabase() {
                   <td style={{ padding: '15px' }}>{participant.care_giver}</td>
                   <td style={{ padding: '15px' }}>
                     {participant.participant_updated_at
-                      ? new Date(participant.participant_updated_at).toLocaleString()
+                      ? new Date(
+                          participant.participant_updated_at
+                        ).toLocaleString()
                       : 'N/A'}
                   </td>
                   <td style={{ padding: '15px' }}>
