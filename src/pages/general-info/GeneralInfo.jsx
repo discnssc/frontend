@@ -83,6 +83,7 @@ export default function GeneralInfo() {
   const { id } = useParams();
   const [generalInfo, setGeneralInfo] = useState(null);
   const [contactInfo, setContactInfo] = useState(null);
+  const [participantInfo, setParticipantInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -95,6 +96,7 @@ export default function GeneralInfo() {
         const [
           { data: generalData, error: generalError },
           { data: contactData, error: contactError },
+          { data: participantData, error: participantError },
         ] = await Promise.all([
           supabase
             .from('participant_general_info')
@@ -106,16 +108,24 @@ export default function GeneralInfo() {
             .select('*')
             .eq('id', id)
             .single(),
+          supabase
+            .from('participants')
+            .select('id, participant_created_at, participant_updated_at')
+            .eq('id', id)
+            .single(),
         ]);
 
         if (generalError) throw new Error(generalError.message);
         if (contactError) throw new Error(contactError.message);
+        if (participantError) throw new Error(participantError.message);
 
         console.log('Fetched General Info:', generalData);
         console.log('Fetched Contact Info:', contactData);
+        console.log('Fetched Participant Info:', participantData);
 
         setGeneralInfo(generalData);
         setContactInfo(contactData);
+        setParticipantInfo(participantData);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -151,7 +161,7 @@ export default function GeneralInfo() {
 
   return (
     <InfoPage>
-      <Header />
+      <Header participant={{ ...generalInfo, ...participantInfo }} />
       <TableContainer>
         <TableHead>Participant Info</TableHead>
         <Table>
@@ -214,104 +224,3 @@ export default function GeneralInfo() {
     </InfoPage>
   );
 }
-/* return (
-    <InfoPage>
-      <Header />
-      <TableContainer>
-        <TableHead> Participant Info </TableHead>
-        <Table>
-          <tbody>
-            <TableRow>
-              <TableLabel> Last Name: </TableLabel>
-              <TableCell> {participant?.last_name} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> First Name: </TableLabel>
-              <TableCell> {participant?.first_name} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> Middle Name: </TableLabel>
-              <TableCell> {participant?.middle_name} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> Nickname: </TableLabel>
-              <TableCell> {participant?.nickname} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> Gender: </TableLabel>
-              <TableCell> {participant?.gender} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> Date of Birth: </TableLabel>
-              <TableCell> {participant?.date_of_birth} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> Maiden Name: </TableLabel>
-              <TableCell> {participant?.maiden_name} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> Suffix: </TableLabel>
-              <TableCell> {participant?.suffix} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> Contract Code: </TableLabel>
-              <TableCell> {participant?.contract_code} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> Caregiver/Recipient: </TableLabel>
-              <TableCell> {participant?.care_giver} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> Preferred Worker: </TableLabel>
-              <TableCell> {participant?.preferred_worker} </TableCell>
-            </TableRow>
-          </tbody>
-        </Table>
-      </TableContainer>
-      <TableContainer>
-        <TableHead> Address and Contact </TableHead>
-        <Table border='1'>
-          <tbody>
-            <TableRow>
-              <TableLabel> Address Line 1: </TableLabel>
-              <TableCell> {participant?.address_line_1} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> Address Line 2: </TableLabel>
-              <TableCell> {participant?.address_line_2} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> City: </TableLabel>
-              <TableCell> {participant?.city} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> Township: </TableLabel>
-              <TableCell> {participant?.township} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> State: </TableLabel>
-              <TableCell> {participant?.state} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> Zip Code: </TableLabel>
-              <TableCell> {participant?.zip_code} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> Email: </TableLabel>
-              <TableCell> {participant?.email} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> Primary Phone Number: </TableLabel>
-              <TableCell> {participant?.primary_phone_number} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableLabel> Secondary Phone Number: </TableLabel>
-              <TableCell> {participant?.secondary_phone_number} </TableCell>
-            </TableRow>
-          </tbody>
-        </Table>
-      </TableContainer>
-    </InfoPage>
-  );
-}
- */
