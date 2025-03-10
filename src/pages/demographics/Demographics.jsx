@@ -18,18 +18,16 @@ const InfoPage = styled.div`
   align-items: left;
   text-align: left;
   padding: 2rem;
-  margin-left: 50px;
 `;
 
 const TableContainer = styled.div`
   font-size: 15px;
-  width: 450px;
+  width: 45%;
   display: table;
   vertical-align: top;
   float: left;
   margin-right: 2rem;
   align-items: flex-start;
-  margin-left: 160px;
 `;
 
 const Table = styled.div`
@@ -82,10 +80,10 @@ const Loading = styled.div`
   color: #999;
 `;
 
-export default function GeneralInfo() {
+export default function Demographics() {
   const { id } = useParams();
   const [generalInfo, setGeneralInfo] = useState(null);
-  const [contactInfo, setContactInfo] = useState(null);
+  const [demographicInfo, setDemographicInfo] = useState(null);
   const [participantInfo, setParticipantInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -98,7 +96,7 @@ export default function GeneralInfo() {
       try {
         const [
           { data: generalData, error: generalError },
-          { data: contactData, error: contactError },
+          { data: demographicData, error: demographicError },
           { data: participantData, error: participantError },
         ] = await Promise.all([
           supabase
@@ -107,7 +105,7 @@ export default function GeneralInfo() {
             .eq('id', id)
             .single(),
           supabase
-            .from('participant_address_and_contact')
+            .from('participant_demographics')
             .select('*')
             .eq('id', id)
             .single(),
@@ -119,15 +117,15 @@ export default function GeneralInfo() {
         ]);
 
         if (generalError) throw new Error(generalError.message);
-        if (contactError) throw new Error(contactError.message);
+        if (demographicError) throw new Error(demographicError.message);
         if (participantError) throw new Error(participantError.message);
 
+        console.log('Fetched Demographic Info:', demographicData);
         console.log('Fetched General Info:', generalData);
-        console.log('Fetched Contact Info:', contactData);
         console.log('Fetched Participant Info:', participantData);
 
+        setDemographicInfo(demographicData);
         setGeneralInfo(generalData);
-        setContactInfo(contactData);
         setParticipantInfo(participantData);
       } catch (err) {
         setError(err.message);
@@ -142,8 +140,22 @@ export default function GeneralInfo() {
   if (loading) return <Loading>Loading...</Loading>;
   if (error) return <Loading>Error: {error}</Loading>;
 
+  // List of known boolean fields
+  const booleanFields = [
+    'hispanic_or_latino',
+    'living_alone',
+    'live_in_nursing_home',
+    'case_worker_risk',
+    'has_pet',
+    'homeless',
+    'female_headed_household',
+    'frail_disabled',
+    'limited_english',
+  ];
+
   const handleChange = async (e, field, table, setState) => {
-    const updatedValue = e.target.value;
+    const isCheckbox = booleanFields.includes(field);
+    const updatedValue = isCheckbox ? e.target.checked : e.target.value;
 
     setState((prev) => ({
       ...prev,
@@ -167,85 +179,69 @@ export default function GeneralInfo() {
       <Header participant={{ ...generalInfo, ...participantInfo }} />
       <ParticipantNavbar />
       <TableContainer>
-        <TableHead>Participant Info</TableHead>
+        <TableHead>Demographics</TableHead>
         <Table>
           <tbody>
-            {generalInfo &&
-              Object.keys(generalInfo)
+            {demographicInfo &&
+              Object.keys(demographicInfo)
                 .filter((key) => key !== 'id' && key !== 'status')
-                .map((key) => (
-                  <TableRow key={key}>
-                    <TableLabel>
-                      {key
-                        .replace(/_/g, ' ')
-                        .replace(/\b\w/g, (char) => char.toUpperCase())}
-                      :
-                    </TableLabel>
-                    <TableCell>
-                      <input
-                        type='text'
-                        value={generalInfo[key] || ''}
-                        onChange={(e) =>
-                          handleChange(
-                            e,
-                            key,
-                            'participant_general_info',
-                            setGeneralInfo
-                          )
-                        }
-                        style={{
-                          background: 'transparent', // Match table background
-                          border: 'none', // Remove border
-                          outline: 'none', // Remove focus outline
-                          fontSize: '15px', // Match table text
-                          padding: '5px', // Add some spacing
-                        }}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-          </tbody>
-        </Table>
-      </TableContainer>
+                .map((key) => {
+                  const isBoolean = booleanFields.includes(key);
+                  const value = demographicInfo[key] || false;
 
-      <TableContainer>
-        <TableHead>Address and Contact Info</TableHead>
-        <Table>
-          <tbody>
-            {contactInfo &&
-              Object.keys(contactInfo)
-                .filter((key) => key !== 'id')
-                .map((key) => (
-                  <TableRow key={key}>
-                    <TableLabel>
-                      {key
-                        .replace(/_/g, ' ')
-                        .replace(/\b\w/g, (char) => char.toUpperCase())}
-                      :
-                    </TableLabel>
-                    <TableCell>
-                      <input
-                        type='text'
-                        value={contactInfo[key] || ''}
-                        onChange={(e) =>
-                          handleChange(
-                            e,
-                            key,
-                            'participant_address_and_contact',
-                            setContactInfo
-                          )
-                        }
-                        style={{
-                          background: 'transparent', // Match table background
-                          border: 'none', // Remove border
-                          outline: 'none', // Remove focus outline
-                          fontSize: '15px', // Match table text
-                          padding: '5px', // Add some spacing
-                        }}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
+                  return (
+                    <TableRow key={key}>
+                      <TableLabel>
+                        {key
+                          .replace(/_/g, ' ')
+                          .replace(/\b\w/g, (char) => char.toUpperCase())}
+                        :
+                      </TableLabel>
+                      <TableCell>
+                        {isBoolean ? (
+                          <input
+                            type='checkbox'
+                            checked={!!value}
+                            onChange={(e) =>
+                              handleChange(
+                                e,
+                                key,
+                                'participant_demographics',
+                                setDemographicInfo
+                              )
+                            }
+                            style={{
+                              margin: '0',
+                              width: '15px',
+                              height: '15px',
+                              cursor: 'pointer',
+                            }}
+                          />
+                        ) : (
+                          <input
+                            type='text'
+                            value={value || ''}
+                            onChange={(e) =>
+                              handleChange(
+                                e,
+                                key,
+                                'participant_demographics',
+                                setDemographicInfo
+                              )
+                            }
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              outline: 'none',
+                              fontSize: '15px',
+                              padding: '5px',
+                            }}
+                          />
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
           </tbody>
         </Table>
       </TableContainer>

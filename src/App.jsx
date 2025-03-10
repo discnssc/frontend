@@ -13,6 +13,7 @@ import Login from 'pages/account/Login';
 import RequestPasswordReset from 'pages/account/RequestPasswordReset';
 import ResetPassword from 'pages/account/ResetPassword';
 import SignUp from 'pages/account/SignUp';
+import Demographics from 'pages/demographics/Demographics';
 import GeneralInfo from 'pages/general-info/GeneralInfo';
 import Home from 'pages/home/Home';
 import NotFound from 'pages/not-found/NotFound';
@@ -34,6 +35,10 @@ export default function App() {
               <Route
                 path='/participant/generalinfo/:id'
                 element={<GeneralInfo />}
+              />
+              <Route
+                path='/participant/demographics/:id'
+                element={<Demographics />}
               />
               <Route
                 path='forgot-password'
