@@ -13,6 +13,7 @@ import Login from 'pages/account/Login';
 import RequestPasswordReset from 'pages/account/RequestPasswordReset';
 import ResetPassword from 'pages/account/ResetPassword';
 import SignUp from 'pages/account/SignUp';
+import Demographics from 'pages/demographics/Demographics';
 import Home from 'pages/home/Home';
 import NotFound from 'pages/not-found/NotFound';
 
