@@ -7,8 +7,8 @@ import styled from 'styled-components';
 import Header from 'common/components/Header';
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_ANON_KEY
 );
 
 const InfoPage = styled.div`
@@ -74,27 +74,96 @@ const TableCell = styled.td`
   flex-shrink: 0;
 `;
 
+const Loading = styled.div`
+  font-size: 18px;
+  color: #999;
+`;
+
 export default function GeneralInfo() {
   const { id } = useParams(); // Get participant ID from URL
   const [participant, setParticipant] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchParticipant = async () => {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', id);
+      setLoading(true);
+      setError(null);
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', id)
+          .single();
 
-      if (error) {
-        console.error('Error fetching participants:', error);
-      } else {
+        if (error) {
+          throw new Error(error.message);
+        }
         setParticipant(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
     };
     fetchParticipant();
-  }, []);
+  }, [id]);
+
+  if (loading) {
+    return <Loading>Loading...</Loading>;
+  }
+
+  if (error) {
+    return <Loading>Error: {error}</Loading>;
+  }
+
+  const handleChange = async (e, field) => {
+    const updatedValue = e.target.value;
+    setParticipant((prevParticipant) => ({
+      ...prevParticipant,
+      [field]: updatedValue,
+    }));
+
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ [field]: updatedValue })
+        .eq('id', id);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+    } catch (err) {
+      console.error('Error updating field:', err);
+    }
+  };
 
   return (
+    <InfoPage>
+      <Header />
+      <TableContainer>
+        <TableHead>Participant Info</TableHead>
+        <Table>
+          <tbody>
+            {Object.keys(participant).map((key) => (
+              <TableRow key={key}>
+                <TableLabel>{key.replace(/_/g, ' ')}:</TableLabel>
+                <TableCell>
+                  <input
+                    type='text'
+                    value={participant[key] || ''}
+                    onChange={(e) => handleChange(e, key)}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </tbody>
+        </Table>
+      </TableContainer>
+    </InfoPage>
+  );
+}
+/* return (
     <InfoPage>
       <Header />
       <TableContainer>
@@ -103,47 +172,47 @@ export default function GeneralInfo() {
           <tbody>
             <TableRow>
               <TableLabel> Last Name: </TableLabel>
-              <TableCell> {participant.last_name} </TableCell>
+              <TableCell> {participant?.last_name} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> First Name: </TableLabel>
-              <TableCell> {participant.first_name} </TableCell>
+              <TableCell> {participant?.first_name} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> Middle Name: </TableLabel>
-              <TableCell> {participant.middle_name} </TableCell>
+              <TableCell> {participant?.middle_name} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> Nickname: </TableLabel>
-              <TableCell> {participant.nickname} </TableCell>
+              <TableCell> {participant?.nickname} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> Gender: </TableLabel>
-              <TableCell> {participant.gender} </TableCell>
+              <TableCell> {participant?.gender} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> Date of Birth: </TableLabel>
-              <TableCell> {participant.date_of_birth} </TableCell>
+              <TableCell> {participant?.date_of_birth} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> Maiden Name: </TableLabel>
-              <TableCell> {participant.maiden_name} </TableCell>
+              <TableCell> {participant?.maiden_name} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> Suffix: </TableLabel>
-              <TableCell> {participant.suffix} </TableCell>
+              <TableCell> {participant?.suffix} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> Contract Code: </TableLabel>
-              <TableCell> {participant.contract_code} </TableCell>
+              <TableCell> {participant?.contract_code} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> Caregiver/Recipient: </TableLabel>
-              <TableCell> {participant.care_giver} </TableCell>
+              <TableCell> {participant?.care_giver} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> Preferred Worker: </TableLabel>
-              <TableCell> {participant.preferred_worker} </TableCell>
+              <TableCell> {participant?.preferred_worker} </TableCell>
             </TableRow>
           </tbody>
         </Table>
@@ -154,39 +223,39 @@ export default function GeneralInfo() {
           <tbody>
             <TableRow>
               <TableLabel> Address Line 1: </TableLabel>
-              <TableCell> {participant.address_line_1} </TableCell>
+              <TableCell> {participant?.address_line_1} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> Address Line 2: </TableLabel>
-              <TableCell> {participant.address_line_2} </TableCell>
+              <TableCell> {participant?.address_line_2} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> City: </TableLabel>
-              <TableCell> {participant.city} </TableCell>
+              <TableCell> {participant?.city} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> Township: </TableLabel>
-              <TableCell> {participant.township} </TableCell>
+              <TableCell> {participant?.township} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> State: </TableLabel>
-              <TableCell> {participant.state} </TableCell>
+              <TableCell> {participant?.state} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> Zip Code: </TableLabel>
-              <TableCell> {participant.zip_code} </TableCell>
+              <TableCell> {participant?.zip_code} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> Email: </TableLabel>
-              <TableCell> {participant.email} </TableCell>
+              <TableCell> {participant?.email} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> Primary Phone Number: </TableLabel>
-              <TableCell> {participant.primary_phone_number} </TableCell>
+              <TableCell> {participant?.primary_phone_number} </TableCell>
             </TableRow>
             <TableRow>
               <TableLabel> Secondary Phone Number: </TableLabel>
-              <TableCell> {participant.secondary_phone_number} </TableCell>
+              <TableCell> {participant?.secondary_phone_number} </TableCell>
             </TableRow>
           </tbody>
         </Table>
@@ -194,3 +263,4 @@ export default function GeneralInfo() {
     </InfoPage>
   );
 }
+ */

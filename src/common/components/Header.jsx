@@ -5,8 +5,8 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_ANON_KEY
 );
 
 const HeaderContainer = styled.div`
@@ -17,7 +17,7 @@ const HeaderContainer = styled.div`
 `;
 
 const Left = styled.div`
-  font-size: 20px;
+  font-size: 25px;
   display: flex;
   flex-direction: column;
   justify-content: left;
@@ -32,9 +32,26 @@ const Right = styled.div`
   height: 100%;
 `;
 
+const SmallTextBold = styled.h1`
+  font-size: 15px;
+  font-weight: bold;
+`;
+
 const SmallText = styled.h1`
-  font-size: 12px;
+  font-size: 15px;
   font-weight: normal;
+  margin: 5px 0;
+`;
+
+const StatusButton = styled.span`
+  display: inline-block;
+  padding: 5px 15px;
+  margin-left: 10px;
+  background-color: ${(props) =>
+    props.status === 'Inactive' ? '#f8d7da' : '#d4edda'};
+  color: ${(props) => (props.status === 'Inactive' ? '#721c24' : '#155724')};
+  border-radius: 20px;
+  font-size: 14px;
 `;
 
 export default function Header() {
@@ -51,33 +68,31 @@ export default function Header() {
       if (error) {
         console.error('Error fetching participants:', error);
       } else {
-        setParticipant(data);
+        setParticipant(data[0]);
       }
     };
     fetchParticipant();
-  }, []);
+  }, [id]);
 
   return (
     <HeaderContainer>
       <Left>
-        {participant.first_name || 'User'} {participant.last_name || 'User'}
-        <span
-          style={{
-            backgroundColor:
-              participant.status === 'Inactive' ? '#f8d7da' : '#d4edda',
-            color: participant.status === 'Inactive' ? '#721c24' : '#155724',
-            padding: '5px 15px',
-            borderRadius: '25px',
-            fontSize: '14px',
-          }}
-        >
-          {participant.status}
-        </span>
-        <SmallText>Participant ID: {participant.id || 'N/A'}</SmallText>
+        {participant?.first_name || 'User'} {participant?.last_name || 'User'}{' '}
+        <StatusButton status={participant?.status}>
+          {' '}
+          {participant?.status || 'Unknown'}
+        </StatusButton>
+        <SmallTextBold>
+          Participant ID:<SmallText>{participant?.id || 'N/A'}</SmallText>
+        </SmallTextBold>
       </Left>
       <Right>
-        <SmallText>Date Created: {participant.created_at || 'N/A'}</SmallText>
-        <SmallText>Date Updated: {participant.updated_at || 'N/A'}</SmallText>
+        <SmallTextBold>
+          Date Created:<SmallText>{participant?.created_at || 'N/A'}</SmallText>
+        </SmallTextBold>
+        <SmallTextBold>
+          Date Updated:<SmallText>{participant?.updated_at || 'N/A'}</SmallText>
+        </SmallTextBold>
       </Right>
     </HeaderContainer>
   );
