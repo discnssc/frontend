@@ -37,13 +37,16 @@ const SmallText = styled.h1`
   margin: 5px 0;
 `;
 
-const StatusButton = styled.span`
-  display: inline-block;
+const StatusButton = styled.span.attrs((props) => ({
+  style: {
+    display: 'inline-block',
+    backgroundColor:
+      props.status?.toLowerCase() === 'inactive' ? '#f8d7da' : '#d4edda',
+    color: props.status?.toLowerCase() === 'inactive' ? '#721c24' : '#155724',
+  },
+}))`
   padding: 5px 15px;
   margin-left: 10px;
-  background-color: ${(props) =>
-    props.status === 'Inactive' ? '#f8d7da' : '#d4edda'};
-  color: ${(props) => (props.status === 'Inactive' ? '#721c24' : '#155724')};
   border-radius: 20px;
   font-size: 14px;
   width: 100px;
@@ -55,10 +58,27 @@ export default function Header({ participant }) {
     <HeaderContainer>
       <Left>
         {participant?.first_name || 'User'} {participant?.last_name || 'User'}{' '}
-        <StatusButton status={participant?.status}>
-          {' '}
-          {participant?.status || 'Unknown'}
-        </StatusButton>
+        <div
+          style={{
+            display: 'inline-block',
+            backgroundColor:
+              participant.status?.toLowerCase() === "'inactive'"
+                ? '#f8d7da'
+                : '#d4edda',
+            color:
+              participant.status?.toLowerCase() === "'inactive'"
+                ? '#721c24'
+                : '#155724',
+            padding: '5px 15px',
+            borderRadius: '25px',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            width: '75px',
+          }}
+        >
+          {participant.status}
+        </div>
         <SmallTextBold>
           Participant ID:<SmallText>{participant?.id || 'N/A'}</SmallText>
         </SmallTextBold>
