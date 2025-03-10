@@ -54,7 +54,7 @@ export default function ParticipantDatabase() {
         }
         const data2 = await response2.json();
 
-        // Merge the participant data with the updated_at data
+        // merge the participant data with the updated_at data
         const mergedData = data.map((participant) => {
           const updatedAt = data2.find(
             (p) => p.id === participant.id
@@ -278,11 +278,11 @@ export default function ParticipantDatabase() {
                       style={{
                         display: 'inline-block',
                         backgroundColor:
-                          participant.status === 'Inactive'
+                          participant.status?.toLowerCase() === "'inactive'"
                             ? '#f8d7da'
                             : '#d4edda',
                         color:
-                          participant.status === 'Inactive'
+                          participant.status?.toLowerCase() === "'inactive'"
                             ? '#721c24'
                             : '#155724',
                         padding: '5px 15px',
@@ -297,8 +297,8 @@ export default function ParticipantDatabase() {
                     </div>
                   </td>
                 </tr>
-              ))
-            ) : (
+              )) //  git commit -m "minor UI fix so that inactive users are in red"
+            ) : ( 
               <tr style={{ backgroundColor: 'white' }}>
                 <td
                   colSpan='5'
