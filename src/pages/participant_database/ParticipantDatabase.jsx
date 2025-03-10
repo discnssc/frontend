@@ -1,51 +1,49 @@
 import React, { useEffect, useState } from 'react';
 
+import { Link } from 'react-router-dom';
+
 export default function ParticipantDatabase() {
   const [participants, setParticipants] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [noDataReason, setNoDataReason] = useState('');
 
   useEffect(() => {
     const fetchParticipants = async () => {
       setIsLoading(true);
-      console.log('Supabase URL:', process.env.REACT_APP_SUPABASE_URL);
-      console.log('Token available:', !!localStorage.getItem('access_token'));
-      console.log(
-        'Token from localStorage:',
-        localStorage.getItem('access_token')
-      );
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        console.error('No access token found. Please log in.');
+      const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+      const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY; // env pull
+      if (!supabaseUrl || !supabaseKey) {
+        setError('Configuration error: Missing Supabase connection details');
+        setIsLoading(false);
+        return;
       }
-
+      const tableName = 'participant_general_info'; 
       try {
-        const token = localStorage.getItem('access_token');
-        const response = await fetch(
-          `${process.env.REACT_APP_SUPABASE_URL}/rest/v1/participants`,
-          {
-            headers: {
-              apikey: process.env.REACT_APP_SUPABASE_ANON_KEY,
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-              Prefer: 'return=representation',
-            },
-          }
-        );
-        console.log('Response status:', response.status);
+        const apiUrl = `${supabaseUrl}/rest/v1/${tableName}`; // Working.
+        const queryUrl = `${apiUrl}?select=id,first_name,last_name,care_giver,status`;
+        const response = await fetch(queryUrl, {
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation',
+          },
+        });
 
         if (!response.ok) {
           throw new Error(`API error: ${response.status}`);
         }
         const data = await response.json();
         setParticipants(data);
+        // debugging: auth? security? user? RLS?
+        if (data.length === 0) {
+          setNoDataReason('No participants found in database');
+        }
         setError(null);
-      } catch (err) {
-        // Enhanced error logging
-        console.error('Error details:', err.message);
-        console.error('Error fetching participants:', err);
-        setError('Failed to load participants. Please try again later.');
+      } catch (error) {
+        setError(`Failed to load participants: ${error.message}`);
         setParticipants([]);
       } finally {
         setIsLoading(false);
@@ -54,6 +52,7 @@ export default function ParticipantDatabase() {
 
     fetchParticipants();
   }, []);
+
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -61,12 +60,22 @@ export default function ParticipantDatabase() {
   const filteredParticipants = participants.filter((participant) => {
     const searchLower = searchTerm.toLowerCase();
     return (
-      participant.firstName?.toLowerCase().includes(searchLower) ||
-      participant.lastName?.toLowerCase().includes(searchLower) ||
-      participant.caregiver?.toLowerCase().includes(searchLower) ||
+      participant.first_name?.toLowerCase().includes(searchLower) ||
+      participant.last_name?.toLowerCase().includes(searchLower) ||
+      participant.care_giver?.toLowerCase().includes(searchLower) ||
       participant.status?.toLowerCase().includes(searchLower)
     );
   });
+
+  const getEmptyStateMessage = () => {
+    if (searchTerm) {
+      return 'No matching participants found';
+    }
+    if (noDataReason) {
+      return noDataReason;
+    }
+    return 'No participants available';
+  };
 
   return (
     <div
@@ -88,7 +97,6 @@ export default function ParticipantDatabase() {
         Participant Database
       </h1>
 
-      {/* search facility */}
       <div
         className='search-filter-container'
         style={{
@@ -109,7 +117,6 @@ export default function ParticipantDatabase() {
             }}
           >
             <span style={{ marginRight: '10px' }}>🔍</span>
-            {/* apparently you can copy and paste emojis */}
             <input
               type='text'
               placeholder='Search participants...'
@@ -126,7 +133,6 @@ export default function ParticipantDatabase() {
         </div>
       </div>
 
-      {/* Table for the participants! */}
       <div className='table-container'>
         <table
           style={{
@@ -181,16 +187,6 @@ export default function ParticipantDatabase() {
                   color: 'white',
                 }}
               >
-                Date Updated
-              </th>
-              <th
-                style={{
-                  padding: '15px',
-                  textAlign: 'left',
-                  fontWeight: 'normal',
-                  color: 'white',
-                }}
-              >
                 Status
               </th>
             </tr>
@@ -199,7 +195,7 @@ export default function ParticipantDatabase() {
             {isLoading ? (
               <tr style={{ backgroundColor: 'white' }}>
                 <td
-                  colSpan='5'
+                  colSpan='4'
                   style={{ padding: '20px', textAlign: 'center' }}
                 >
                   Loading participants...
@@ -208,7 +204,7 @@ export default function ParticipantDatabase() {
             ) : error ? (
               <tr style={{ backgroundColor: 'white' }}>
                 <td
-                  colSpan='5'
+                  colSpan='4'
                   style={{
                     padding: '20px',
                     textAlign: 'center',
@@ -221,17 +217,19 @@ export default function ParticipantDatabase() {
             ) : filteredParticipants.length > 0 ? (
               filteredParticipants.map((participant, index) => (
                 <tr
-                  key={participant.id || index}
+                  key={index}
                   style={{
                     backgroundColor: 'white',
                     borderBottom: '1px solid #eee',
                   }}
                 >
-                  <td style={{ padding: '15px' }}>{participant.firstName}</td>
-                  <td style={{ padding: '15px' }}>{participant.lastName}</td>
-                  <td style={{ padding: '15px' }}>{participant.caregiver}</td>
-                  <td style={{ padding: '15px' }}>{participant.dateUpdated}</td>
-                  {/* Active */}
+                  <td style={{ padding: '15px' }}>
+                    <Link to={`/participant/generalinfo/${participant.id}`}>
+                      {participant.first_name}
+                    </Link>
+                  </td>
+                  <td style={{ padding: '15px' }}>{participant.last_name}</td>
+                  <td style={{ padding: '15px' }}>{participant.care_giver}</td>
                   <td style={{ padding: '15px' }}>
                     <div
                       style={{
@@ -260,16 +258,14 @@ export default function ParticipantDatabase() {
             ) : (
               <tr style={{ backgroundColor: 'white' }}>
                 <td
-                  colSpan='5'
+                  colSpan='4'
                   style={{
                     padding: '20px',
                     textAlign: 'center',
                     color: '#6c757d',
                   }}
                 >
-                  {searchTerm
-                    ? 'No matching participants found'
-                    : 'No participants available'}
+                  {getEmptyStateMessage()}
                 </td>
               </tr>
             )}
