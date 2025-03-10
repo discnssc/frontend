@@ -30,7 +30,7 @@ export default function App() {
             </Route>
             <Route element={<PublicOnlyRoute />}>
               <Route path='login' element={<Login />} />
-              <Route path='signnup' element={<SignUp />} />
+              <Route path='signup' element={<SignUp />} />
               <Route path='/participant/:id' element={<GeneralInfo />} />
               <Route
                 path='forgot-password'

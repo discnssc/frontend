@@ -87,7 +87,6 @@ export default function GeneralInfo() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log('ID from URL:', id);
     const fetchData = async () => {
       setLoading(true);
       setError(null);
@@ -158,25 +157,27 @@ export default function GeneralInfo() {
         <Table>
           <tbody>
             {generalInfo &&
-              Object.keys(generalInfo).map((key) => (
-                <TableRow key={key}>
-                  <TableLabel>{key.replace(/_/g, ' ')}:</TableLabel>
-                  <TableCell>
-                    <input
-                      type='text'
-                      value={generalInfo[key] || ''}
-                      onChange={(e) =>
-                        handleChange(
-                          e,
-                          key,
-                          'participant_general_info',
-                          setGeneralInfo
-                        )
-                      }
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+              Object.keys(generalInfo)
+                .filter((key) => key !== 'id')
+                .map((key) => (
+                  <TableRow key={key}>
+                    <TableLabel>{key.replace(/_/g, ' ')}:</TableLabel>
+                    <TableCell>
+                      <input
+                        type='text'
+                        value={generalInfo[key] || ''}
+                        onChange={(e) =>
+                          handleChange(
+                            e,
+                            key,
+                            'participant_general_info',
+                            setGeneralInfo
+                          )
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
           </tbody>
         </Table>
       </TableContainer>
@@ -186,25 +187,27 @@ export default function GeneralInfo() {
         <Table>
           <tbody>
             {contactInfo &&
-              Object.keys(contactInfo).map((key) => (
-                <TableRow key={key}>
-                  <TableLabel>{key.replace(/_/g, ' ')}:</TableLabel>
-                  <TableCell>
-                    <input
-                      type='text'
-                      value={contactInfo[key] || ''}
-                      onChange={(e) =>
-                        handleChange(
-                          e,
-                          key,
-                          'participant_address_and_contact',
-                          setContactInfo
-                        )
-                      }
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+              Object.keys(contactInfo)
+                .filter((key) => key !== 'id')
+                .map((key) => (
+                  <TableRow key={key}>
+                    <TableLabel>{key.replace(/_/g, ' ')}:</TableLabel>
+                    <TableCell>
+                      <input
+                        type='text'
+                        value={contactInfo[key] || ''}
+                        onChange={(e) =>
+                          handleChange(
+                            e,
+                            key,
+                            'participant_address_and_contact',
+                            setContactInfo
+                          )
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
           </tbody>
         </Table>
       </TableContainer>
