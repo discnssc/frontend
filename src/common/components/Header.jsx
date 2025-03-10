@@ -17,6 +17,7 @@ const Left = styled.div`
   justify-content: left;
   font-weight: bold;
   text-align: left;
+  padding: 10px;
 `;
 
 const Right = styled.div`
@@ -58,6 +59,7 @@ export default function Header({ participant }) {
             fontSize: '14px',
             fontWeight: 'bold',
             textAlign: 'center',
+            marginTop: '10px',
             width: '75px',
           }}
         >
