@@ -168,10 +168,15 @@ export default function GeneralInfo() {
           <tbody>
             {generalInfo &&
               Object.keys(generalInfo)
-                .filter((key) => key !== 'id')
+                .filter((key) => key !== 'id' && key !== 'status')
                 .map((key) => (
                   <TableRow key={key}>
-                    <TableLabel>{key.replace(/_/g, ' ')}:</TableLabel>
+                    <TableLabel>
+                      {key
+                        .replace(/_/g, ' ')
+                        .replace(/\b\w/g, (char) => char.toUpperCase())}
+                      :
+                    </TableLabel>
                     <TableCell>
                       <input
                         type='text'
@@ -184,6 +189,13 @@ export default function GeneralInfo() {
                             setGeneralInfo
                           )
                         }
+                        style={{
+                          background: 'transparent', // Match table background
+                          border: 'none', // Remove border
+                          outline: 'none', // Remove focus outline
+                          fontSize: '15px', // Match table text
+                          padding: '5px', // Add some spacing
+                        }}
                       />
                     </TableCell>
                   </TableRow>
@@ -201,7 +213,12 @@ export default function GeneralInfo() {
                 .filter((key) => key !== 'id')
                 .map((key) => (
                   <TableRow key={key}>
-                    <TableLabel>{key.replace(/_/g, ' ')}:</TableLabel>
+                    <TableLabel>
+                      {key
+                        .replace(/_/g, ' ')
+                        .replace(/\b\w/g, (char) => char.toUpperCase())}
+                      :
+                    </TableLabel>
                     <TableCell>
                       <input
                         type='text'
@@ -214,6 +231,13 @@ export default function GeneralInfo() {
                             setContactInfo
                           )
                         }
+                        style={{
+                          background: 'transparent', // Match table background
+                          border: 'none', // Remove border
+                          outline: 'none', // Remove focus outline
+                          fontSize: '15px', // Match table text
+                          padding: '5px', // Add some spacing
+                        }}
                       />
                     </TableCell>
                   </TableRow>
