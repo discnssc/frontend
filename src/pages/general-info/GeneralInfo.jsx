@@ -80,10 +80,10 @@ const Loading = styled.div`
   color: #999;
 `;
 
-export default function Demographics() {
+export default function GeneralInfo() {
   const { id } = useParams();
   const [generalInfo, setGeneralInfo] = useState(null);
-  const [demographicInfo, setDemographicInfo] = useState(null);
+  const [contactInfo, setContactInfo] = useState(null);
   const [participantInfo, setParticipantInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -96,7 +96,7 @@ export default function Demographics() {
       try {
         const [
           { data: generalData, error: generalError },
-          { data: demographicData, error: demographicError },
+          { data: contactData, error: contactError },
           { data: participantData, error: participantError },
         ] = await Promise.all([
           supabase
@@ -105,7 +105,7 @@ export default function Demographics() {
             .eq('id', id)
             .single(),
           supabase
-            .from('participant_demographics')
+            .from('participant_address_and_contact')
             .select('*')
             .eq('id', id)
             .single(),
@@ -117,15 +117,15 @@ export default function Demographics() {
         ]);
 
         if (generalError) throw new Error(generalError.message);
-        if (demographicError) throw new Error(demographicError.message);
+        if (contactError) throw new Error(contactError.message);
         if (participantError) throw new Error(participantError.message);
 
-        console.log('Fetched Demographic Info:', demographicData);
         console.log('Fetched General Info:', generalData);
+        console.log('Fetched Contact Info:', contactData);
         console.log('Fetched Participant Info:', participantData);
 
-        setDemographicInfo(demographicData);
         setGeneralInfo(generalData);
+        setContactInfo(contactData);
         setParticipantInfo(participantData);
       } catch (err) {
         setError(err.message);
@@ -140,22 +140,8 @@ export default function Demographics() {
   if (loading) return <Loading>Loading...</Loading>;
   if (error) return <Loading>Error: {error}</Loading>;
 
-  // List of known boolean fields
-  const booleanFields = [
-    'hispanic_or_latino',
-    'living_alone',
-    'live_in_nursing_home',
-    'case_worker_risk',
-    'has_pet',
-    'homeless',
-    'female_headed_household',
-    'frail_disabled',
-    'limited_english'
-  ];
-
   const handleChange = async (e, field, table, setState) => {
-    const isCheckbox = booleanFields.includes(field);
-    const updatedValue = isCheckbox ? e.target.checked : e.target.value;
+    const updatedValue = e.target.value;
 
     setState((prev) => ({
       ...prev,
@@ -179,69 +165,85 @@ export default function Demographics() {
       <Header participant={{ ...generalInfo, ...participantInfo }} />
       <ParticipantNavbar />
       <TableContainer>
-        <TableHead>Demographics</TableHead>
+        <TableHead>Participant Info</TableHead>
         <Table>
           <tbody>
-            {demographicInfo &&
-              Object.keys(demographicInfo)
+            {generalInfo &&
+              Object.keys(generalInfo)
                 .filter((key) => key !== 'id' && key !== 'status')
-                .map((key) => {
-                  const isBoolean = booleanFields.includes(key);
-                  const value = demographicInfo[key] || false;
+                .map((key) => (
+                  <TableRow key={key}>
+                    <TableLabel>
+                      {key
+                        .replace(/_/g, ' ')
+                        .replace(/\b\w/g, (char) => char.toUpperCase())}
+                      :
+                    </TableLabel>
+                    <TableCell>
+                      <input
+                        type='text'
+                        value={generalInfo[key] || ''}
+                        onChange={(e) =>
+                          handleChange(
+                            e,
+                            key,
+                            'participant_general_info',
+                            setGeneralInfo
+                          )
+                        }
+                        style={{
+                          background: 'transparent', // Match table background
+                          border: 'none', // Remove border
+                          outline: 'none', // Remove focus outline
+                          fontSize: '15px', // Match table text
+                          padding: '5px', // Add some spacing
+                        }}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+          </tbody>
+        </Table>
+      </TableContainer>
 
-                  return (
-                    <TableRow key={key}>
-                      <TableLabel>
-                        {key
-                          .replace(/_/g, ' ')
-                          .replace(/\b\w/g, (char) => char.toUpperCase())}
-                        :
-                      </TableLabel>
-                      <TableCell>
-                        {isBoolean ? (
-                          <input
-                            type="checkbox"
-                            checked={!!value}
-                            onChange={(e) =>
-                              handleChange(
-                                e,
-                                key,
-                                'participant_demographics',
-                                setDemographicInfo
-                              )
-                            }
-                            style={{
-                              margin: '0',
-                              width: '15px',
-                              height: '15px',
-                              cursor: 'pointer',
-                            }}
-                          />
-                        ) : (
-                          <input
-                            type="text"
-                            value={value || ''}
-                            onChange={(e) =>
-                              handleChange(
-                                e,
-                                key,
-                                'participant_demographics',
-                                setDemographicInfo
-                              )
-                            }
-                            style={{
-                              background: 'transparent',
-                              border: 'none',
-                              outline: 'none',
-                              fontSize: '15px',
-                              padding: '5px',
-                            }}
-                          />
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+      <TableContainer>
+        <TableHead>Address and Contact Info</TableHead>
+        <Table>
+          <tbody>
+            {contactInfo &&
+              Object.keys(contactInfo)
+                .filter((key) => key !== 'id')
+                .map((key) => (
+                  <TableRow key={key}>
+                    <TableLabel>
+                      {key
+                        .replace(/_/g, ' ')
+                        .replace(/\b\w/g, (char) => char.toUpperCase())}
+                      :
+                    </TableLabel>
+                    <TableCell>
+                      <input
+                        type='text'
+                        value={contactInfo[key] || ''}
+                        onChange={(e) =>
+                          handleChange(
+                            e,
+                            key,
+                            'participant_address_and_contact',
+                            setContactInfo
+                          )
+                        }
+                        style={{
+                          background: 'transparent', // Match table background
+                          border: 'none', // Remove border
+                          outline: 'none', // Remove focus outline
+                          fontSize: '15px', // Match table text
+                          padding: '5px', // Add some spacing
+                        }}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
           </tbody>
         </Table>
       </TableContainer>

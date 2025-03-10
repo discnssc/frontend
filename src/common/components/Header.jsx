@@ -1,13 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import { createClient } from '@supabase/supabase-js';
-import { useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY
-);
 
 const HeaderContainer = styled.div`
   display: flex;
@@ -21,8 +15,8 @@ const Left = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: left;
-  align-items: center;
   font-weight: bold;
+  text-align: left;
 `;
 
 const Right = styled.div`
@@ -52,28 +46,11 @@ const StatusButton = styled.span`
   color: ${(props) => (props.status === 'Inactive' ? '#721c24' : '#155724')};
   border-radius: 20px;
   font-size: 14px;
+  width: 100px;
+  text-align: center;
 `;
 
-export default function Header() {
-  const { id } = useParams(); // Get participant ID from URL
-  const [participant, setParticipant] = useState(null);
-
-  useEffect(() => {
-    const fetchParticipant = async () => {
-      const { data, error } = await supabase
-        .from('participants')
-        .select('*')
-        .eq('id', id);
-
-      if (error) {
-        console.error('Error fetching participants:', error);
-      } else {
-        setParticipant(data[0]);
-      }
-    };
-    fetchParticipant();
-  }, [id]);
-
+export default function Header({ participant }) {
   return (
     <HeaderContainer>
       <Left>
@@ -88,12 +65,29 @@ export default function Header() {
       </Left>
       <Right>
         <SmallTextBold>
-          Date Created:<SmallText>{participant?.created_at || 'N/A'}</SmallText>
+          Date Created:
+          <SmallText>{participant?.participant_created_at || 'N/A'}</SmallText>
         </SmallTextBold>
         <SmallTextBold>
-          Date Updated:<SmallText>{participant?.updated_at || 'N/A'}</SmallText>
+          Date Updated:
+          <SmallText>{participant?.participant_updated_at || 'N/A'}</SmallText>
         </SmallTextBold>
       </Right>
     </HeaderContainer>
   );
 }
+
+Header.propTypes = {
+  participant: PropTypes.shape({
+    id: PropTypes.string,
+    first_name: PropTypes.string,
+    last_name: PropTypes.string,
+    status: PropTypes.string,
+    participant_created_at: PropTypes.string,
+    participant_updated_at: PropTypes.string,
+  }),
+};
+
+Header.defaultProps = {
+  participant: {},
+};

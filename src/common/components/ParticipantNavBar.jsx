@@ -1,6 +1,6 @@
 import React from 'react';
-
 import styled from 'styled-components';
+import { Link as RouterLink, useParams} from "react-router-dom";
 
 const NavbarContainer = styled.nav`
   width: 1312px;
@@ -11,27 +11,29 @@ const NavbarContainer = styled.nav`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 30px;
-  font-family: 'Roboto', sans-serif;
+  margin: auto;
+  font-family: sans-serif;
 `;
 
-const NavItem = styled.div`
+const StyledLink = styled(RouterLink)`
   color: #000;
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
+  text-decoration: none;
   line-height: normal;
   padding: 8px 12px;
 `;
 
-export default function Navbar() {
+export default function ParticipantNavbar() {
+  const { id } = useParams();
   return (
     <NavbarContainer>
-      <NavItem>General Info</NavItem>
-      <NavItem>Demographics</NavItem>
-      <NavItem>HOW Info</NavItem>
-      <NavItem>Cases/Services</NavItem>
-      <NavItem>Activity Logs</NavItem>
+      <StyledLink to={`/participant/generalinfo/${id}`}>General Info</StyledLink>
+      <StyledLink to={`/participant/demographics/${id}`}>Demographics</StyledLink>
+      <StyledLink to={`/participant/howinfo/${id}`}>HOW Info</StyledLink>
+      <StyledLink to={`/participant/cases/${id}`}>Cases/Services</StyledLink>
+      <StyledLink to={`/participant/activities/${id}`}>Activity Logs</StyledLink>
     </NavbarContainer>
   );
 }

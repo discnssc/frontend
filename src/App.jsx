@@ -13,11 +13,16 @@ import Login from 'pages/account/Login';
 import RequestPasswordReset from 'pages/account/RequestPasswordReset';
 import ResetPassword from 'pages/account/ResetPassword';
 import SignUp from 'pages/account/SignUp';
+import ActivityLogs from 'pages/Activity-Logs/Activities';
+import Cases from 'pages/Cases-Services/Cases';
 import Demographics from 'pages/demographics/Demographics';
+import GeneralInfo from 'pages/general-info/GeneralInfo';
 import Home from 'pages/home/Home';
+import HowInfo from 'pages/HOW-info/HowInfo';
 import NotFound from 'pages/not-found/NotFound';
 
 import './App.css';
+
 
 export default function App() {
   return (
@@ -31,7 +36,20 @@ export default function App() {
             <Route element={<PublicOnlyRoute />}>
               <Route path='login' element={<Login />} />
               <Route path='signup' element={<SignUp />} />
-              <Route path='demographics' element={<Demographics />} />
+              <Route
+                path='/participant/generalinfo/:id'
+                element={<GeneralInfo />}
+              />
+              <Route
+                path='/participant/demographics/:id'
+                element={<Demographics />}
+              />
+              <Route path='/participant/howinfo/:id' element={<HowInfo />} />
+              <Route path='/participant/cases/:id' element={<Cases />} />
+              <Route
+                path='/participant/activities/:id'
+                element={<ActivityLogs />}
+              />
               <Route
                 path='forgot-password'
                 element={<RequestPasswordReset />}
