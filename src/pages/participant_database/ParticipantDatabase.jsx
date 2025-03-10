@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-
 import { Link } from 'react-router-dom';
 
 export default function ParticipantDatabase() {
@@ -13,21 +12,24 @@ export default function ParticipantDatabase() {
     const fetchParticipants = async () => {
       setIsLoading(true);
       const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-      const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY; // env pull
+      const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY; // env pull for NORMAL Supabase key ->
       if (!supabaseUrl || !supabaseKey) {
         setError('Configuration error: Missing Supabase connection details');
         setIsLoading(false);
         return;
       }
-      const tableName = 'participant_general_info'; 
+      const tableName = 'participant_general_info';
+      const tableName2 = 'participants';
       try {
         const apiUrl = `${supabaseUrl}/rest/v1/${tableName}`; // Working.
+        const apiUrl2 = `${supabaseUrl}/rest/v1/${tableName2}`; // Working?
         const queryUrl = `${apiUrl}?select=id,first_name,last_name,care_giver,status`;
+        const queryUrl2 = `${apiUrl2}?select=id,participant_updated_at`;
         const response = await fetch(queryUrl, {
           headers: {
             apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${supabaseKey}`, // this can be super_secret_key
+            'Content-Type': 'application',
             Prefer: 'return=representation',
           },
         });
@@ -36,9 +38,32 @@ export default function ParticipantDatabase() {
           throw new Error(`API error: ${response.status}`);
         }
         const data = await response.json();
-        setParticipants(data);
+
+        const response2 = await fetch(queryUrl2, {
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`, // this can be super_secret_key
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation',
+          },
+        });
+
+        if (!response2.ok) {
+          throw new Error(`API error: ${response2.status}`);
+        }
+        const data2 = await response2.json();
+
+        // Merge the participant data with the updated_at data
+        const mergedData = data.map((participant) => {
+          const updatedAt = data2.find(
+            (p) => p.id === participant.id
+          )?.participant_updated_at;
+          return { ...participant, participant_updated_at: updatedAt };
+        });
+
+        setParticipants(mergedData);
         // debugging: auth? security? user? RLS?
-        if (data.length === 0) {
+        if (mergedData.length === 0) {
           setNoDataReason('No participants found in database');
         }
         setError(null);
@@ -187,6 +212,16 @@ export default function ParticipantDatabase() {
                   color: 'white',
                 }}
               >
+                Last Updated
+              </th>
+              <th
+                style={{
+                  padding: '15px',
+                  textAlign: 'left',
+                  fontWeight: 'normal',
+                  color: 'white',
+                }}
+              >
                 Status
               </th>
             </tr>
@@ -195,16 +230,16 @@ export default function ParticipantDatabase() {
             {isLoading ? (
               <tr style={{ backgroundColor: 'white' }}>
                 <td
-                  colSpan='4'
+                  colSpan='5'
                   style={{ padding: '20px', textAlign: 'center' }}
                 >
-                  Loading participants...
+                  Loading peeps...
                 </td>
               </tr>
             ) : error ? (
               <tr style={{ backgroundColor: 'white' }}>
                 <td
-                  colSpan='4'
+                  colSpan='5'
                   style={{
                     padding: '20px',
                     textAlign: 'center',
@@ -230,6 +265,11 @@ export default function ParticipantDatabase() {
                   </td>
                   <td style={{ padding: '15px' }}>{participant.last_name}</td>
                   <td style={{ padding: '15px' }}>{participant.care_giver}</td>
+                  <td style={{ padding: '15px' }}>
+                    {participant.participant_updated_at
+                      ? new Date(participant.participant_updated_at).toLocaleString()
+                      : 'N/A'}
+                  </td>
                   <td style={{ padding: '15px' }}>
                     <div
                       style={{
@@ -258,7 +298,7 @@ export default function ParticipantDatabase() {
             ) : (
               <tr style={{ backgroundColor: 'white' }}>
                 <td
-                  colSpan='4'
+                  colSpan='5'
                   style={{
                     padding: '20px',
                     textAlign: 'center',
