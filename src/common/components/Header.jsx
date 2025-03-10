@@ -61,7 +61,7 @@ export default function Header() {
   useEffect(() => {
     const fetchParticipant = async () => {
       const { data, error } = await supabase
-        .from('users')
+        .from('participants')
         .select('*')
         .eq('id', id);
 

@@ -80,61 +80,73 @@ const Loading = styled.div`
 `;
 
 export default function GeneralInfo() {
-  const { id } = useParams(); // Get participant ID from URL
-  const [participant, setParticipant] = useState(null);
+  const { id } = useParams();
+  const [generalInfo, setGeneralInfo] = useState(null);
+  const [contactInfo, setContactInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchParticipant = async () => {
+    console.log('ID from URL:', id);
+    const fetchData = async () => {
       setLoading(true);
       setError(null);
-      try {
-        const { data, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', id)
-          .single();
 
-        if (error) {
-          throw new Error(error.message);
-        }
-        setParticipant(data);
+      try {
+        const [
+          { data: generalData, error: generalError },
+          { data: contactData, error: contactError },
+        ] = await Promise.all([
+          supabase
+            .from('participant_general_info')
+            .select('*')
+            .eq('id', id)
+            .single(),
+          supabase
+            .from('participant_address_and_contact')
+            .select('*')
+            .eq('id', id)
+            .single(),
+        ]);
+
+        if (generalError) throw new Error(generalError.message);
+        if (contactError) throw new Error(contactError.message);
+
+        console.log('Fetched General Info:', generalData);
+        console.log('Fetched Contact Info:', contactData);
+
+        setGeneralInfo(generalData);
+        setContactInfo(contactData);
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-    fetchParticipant();
+
+    fetchData();
   }, [id]);
 
-  if (loading) {
-    return <Loading>Loading...</Loading>;
-  }
+  if (loading) return <Loading>Loading...</Loading>;
+  if (error) return <Loading>Error: {error}</Loading>;
 
-  if (error) {
-    return <Loading>Error: {error}</Loading>;
-  }
-
-  const handleChange = async (e, field) => {
+  const handleChange = async (e, field, table, setState) => {
     const updatedValue = e.target.value;
-    setParticipant((prevParticipant) => ({
-      ...prevParticipant,
+
+    setState((prev) => ({
+      ...prev,
       [field]: updatedValue,
     }));
 
     try {
       const { error } = await supabase
-        .from('users')
+        .from(table)
         .update({ [field]: updatedValue })
         .eq('id', id);
 
-      if (error) {
-        throw new Error(error.message);
-      }
+      if (error) throw new Error(error.message);
     } catch (err) {
-      console.error('Error updating field:', err);
+      console.error(`Error updating ${table}:`, err);
     }
   };
 
@@ -145,18 +157,54 @@ export default function GeneralInfo() {
         <TableHead>Participant Info</TableHead>
         <Table>
           <tbody>
-            {Object.keys(participant).map((key) => (
-              <TableRow key={key}>
-                <TableLabel>{key.replace(/_/g, ' ')}:</TableLabel>
-                <TableCell>
-                  <input
-                    type='text'
-                    value={participant[key] || ''}
-                    onChange={(e) => handleChange(e, key)}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
+            {generalInfo &&
+              Object.keys(generalInfo).map((key) => (
+                <TableRow key={key}>
+                  <TableLabel>{key.replace(/_/g, ' ')}:</TableLabel>
+                  <TableCell>
+                    <input
+                      type='text'
+                      value={generalInfo[key] || ''}
+                      onChange={(e) =>
+                        handleChange(
+                          e,
+                          key,
+                          'participant_general_info',
+                          setGeneralInfo
+                        )
+                      }
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+          </tbody>
+        </Table>
+      </TableContainer>
+
+      <TableContainer>
+        <TableHead>Address and Contact Info</TableHead>
+        <Table>
+          <tbody>
+            {contactInfo &&
+              Object.keys(contactInfo).map((key) => (
+                <TableRow key={key}>
+                  <TableLabel>{key.replace(/_/g, ' ')}:</TableLabel>
+                  <TableCell>
+                    <input
+                      type='text'
+                      value={contactInfo[key] || ''}
+                      onChange={(e) =>
+                        handleChange(
+                          e,
+                          key,
+                          'participant_address_and_contact',
+                          setContactInfo
+                        )
+                      }
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
           </tbody>
         </Table>
       </TableContainer>
