@@ -8,7 +8,7 @@ const HeaderContainer = styled.div`
   justify-content: space-between;
   align-items: stretch;
   padding: 20px;
-  margin-top: 20px;
+  margin-top: 40px;
 `;
 
 const Left = styled.div`
