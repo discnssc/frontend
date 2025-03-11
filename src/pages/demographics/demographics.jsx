@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Header from 'common/components/Header';
+import HomeButton from 'common/components/HomeButton';
 import ParticipantNavbar from 'common/components/ParticipantNavbar';
 
 const supabase = createClient(
@@ -26,7 +27,8 @@ const TableContainer = styled.div`
   display: table;
   vertical-align: top;
   float: left;
-  margin-right: 2rem;
+  margin-left: 160px;
+  margin-top: 40px;
   align-items: flex-start;
 `;
 
@@ -177,6 +179,7 @@ export default function Demographics() {
   return (
     <InfoPage>
       <Header participant={{ ...generalInfo, ...participantInfo }} />
+      <HomeButton />
       <ParticipantNavbar />
       <TableContainer>
         <TableHead>Demographics</TableHead>

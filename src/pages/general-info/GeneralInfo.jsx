@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Header from 'common/components/Header';
+import HomeButton from 'common/components/HomeButton';
 import ParticipantNavbar from 'common/components/ParticipantNavbar';
 
 const supabase = createClient(
@@ -18,16 +19,19 @@ const InfoPage = styled.div`
   align-items: left;
   text-align: left;
   padding: 2rem;
+  margin-left: 50px;
 `;
 
 const TableContainer = styled.div`
   font-size: 15px;
-  width: 45%;
+  width: 450px;
   display: table;
   vertical-align: top;
   float: left;
   margin-right: 2rem;
   align-items: flex-start;
+  margin-top: 40px;
+  margin-left: 135px;
 `;
 
 const Table = styled.div`
@@ -163,6 +167,7 @@ export default function GeneralInfo() {
   return (
     <InfoPage>
       <Header participant={{ ...generalInfo, ...participantInfo }} />
+      <HomeButton />
       <ParticipantNavbar />
       <TableContainer>
         <TableHead>Participant Info</TableHead>
