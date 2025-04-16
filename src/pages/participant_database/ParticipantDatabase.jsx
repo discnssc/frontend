@@ -24,7 +24,7 @@ export default function ParticipantDatabase() {
       try {
         const apiUrl = `${supabaseUrl}/rest/v1/${tableName}`; // Working.
         const apiUrl2 = `${supabaseUrl}/rest/v1/${tableName2}`; // Working?
-        const queryUrl = `${apiUrl}?select=id,first_name,last_name,care_giver,status`;
+        const queryUrl = `${apiUrl}?select=id,first_name,last_name,status`;
         const queryUrl2 = `${apiUrl2}?select=id,participant_updated_at`;
         const response = await fetch(queryUrl, {
           headers: {
@@ -298,7 +298,7 @@ export default function ParticipantDatabase() {
                   </td>
                 </tr>
               )) //  git commit -m "minor UI fix so that inactive users are in red"
-            ) : ( 
+            ) : (
               <tr style={{ backgroundColor: 'white' }}>
                 <td
                   colSpan='5'
