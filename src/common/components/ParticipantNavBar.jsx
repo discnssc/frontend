@@ -1,6 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
+
 import { NavLink, useParams } from 'react-router-dom';
+import styled from 'styled-components';
 
 const NavbarContainer = styled.nav`
   width: 1312px;
@@ -68,7 +69,9 @@ export default function ParticipantNavbar() {
         Demographics
       </StyledNavLink>
       <StyledNavLink to={`/participant/howinfo/${id}`}>HOW Info</StyledNavLink>
-      <StyledNavLink to={`/participant/cases/${id}`}>Cases/Services</StyledNavLink>
+      <StyledNavLink to={`/participant/cases/${id}`}>
+        Cases/Services
+      </StyledNavLink>
       <StyledNavLink to={`/participant/activities/${id}`}>
         Activity Logs
       </StyledNavLink>
