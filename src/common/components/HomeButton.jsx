@@ -1,11 +1,12 @@
 import React from 'react';
-import styled from 'styled-components';
+
 import { Link as RouterLink } from 'react-router-dom';
+import styled from 'styled-components';
 
 export default function HomeButton() {
   return (
     <HomeButtonContainer>
-      <StyledLink to="/">Home</StyledLink>
+      <StyledLink to='/'>Home</StyledLink>
     </HomeButtonContainer>
   );
 }

@@ -5,7 +5,6 @@ import noRelativeImportPaths from 'eslint-plugin-no-relative-import-paths';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import pluginReact from 'eslint-plugin-react';
 import globals from 'globals';
-
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {
