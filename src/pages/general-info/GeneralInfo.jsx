@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
-import { createClient } from '@supabase/supabase-js';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Header from 'common/components/Header';
 import HomeButton from 'common/components/HomeButton';
 import ParticipantNavbar from 'common/components/ParticipantNavBar';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY
-);
 
 const InfoPage = styled.div`
   flex-direction: row;
@@ -91,6 +85,7 @@ export default function GeneralInfo() {
   const [participantInfo, setParticipantInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,39 +93,26 @@ export default function GeneralInfo() {
       setError(null);
 
       try {
-        const [
-          { data: generalData, error: generalError },
-          { data: contactData, error: contactError },
-          { data: participantData, error: participantError },
-        ] = await Promise.all([
-          supabase
-            .from('participant_general_info')
-            .select('*')
-            .eq('id', id)
-            .single(),
-          supabase
-            .from('participant_address_and_contact')
-            .select('*')
-            .eq('id', id)
-            .single(),
-          supabase
-            .from('participants')
-            .select('id, participant_created_at, participant_updated_at')
-            .eq('id', id)
-            .single(),
-        ]);
+        // Fetch data through backend API instead of direct Supabase calls
+        const response = await fetch(`${API_BASE_URL}/participants/${id}`, {
+          credentials: 'include',
+        });
 
-        if (generalError) throw new Error(generalError.message);
-        if (contactError) throw new Error(contactError.message);
-        if (participantError) throw new Error(participantError.message);
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
 
-        console.log('Fetched General Info:', generalData);
-        console.log('Fetched Contact Info:', contactData);
-        console.log('Fetched Participant Info:', participantData);
+        const data = await response.json();
+        console.log('Fetched Participant Data:', data);
 
-        setGeneralInfo(generalData);
-        setContactInfo(contactData);
-        setParticipantInfo(participantData);
+        // Extract the data from the response
+        setGeneralInfo(data.participant_general_info || null);
+        setContactInfo(data.participant_address_and_contact || null);
+        setParticipantInfo({
+          id: data.id,
+          participant_created_at: data.participant_created_at,
+          participant_updated_at: data.participant_updated_at,
+        });
       } catch (err) {
         setError(err.message);
       } finally {
@@ -139,7 +121,7 @@ export default function GeneralInfo() {
     };
 
     fetchData();
-  }, [id]);
+  }, [id, API_BASE_URL]);
 
   if (loading) return <Loading>Loading...</Loading>;
   if (error) return <Loading>Error: {error}</Loading>;
@@ -153,12 +135,23 @@ export default function GeneralInfo() {
     }));
 
     try {
-      const { error } = await supabase
-        .from(table)
-        .update({ [field]: updatedValue })
-        .eq('id', id);
+      // Update through the backend API
+      const response = await fetch(`${API_BASE_URL}/participants/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          [table]: {
+            [field]: updatedValue,
+          },
+        }),
+      });
 
-      if (error) throw new Error(error.message);
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
     } catch (err) {
       console.error(`Error updating ${table}:`, err);
     }

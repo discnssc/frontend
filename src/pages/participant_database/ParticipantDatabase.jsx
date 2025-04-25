@@ -12,63 +12,43 @@ export default function ParticipantDatabase() {
   useEffect(() => {
     const fetchParticipants = async () => {
       setIsLoading(true);
-      const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-      const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY; // env pull for NORMAL Supabase key ->
-      if (!supabaseUrl || !supabaseKey) {
-        setError('Configuration error: Missing Supabase connection details');
-        setIsLoading(false);
-        return;
-      }
-      const tableName = 'participant_general_info';
-      const tableName2 = 'participants';
       try {
-        const apiUrl = `${supabaseUrl}/rest/v1/${tableName}`; // Working.
-        const apiUrl2 = `${supabaseUrl}/rest/v1/${tableName2}`; // Working?
-        const queryUrl = `${apiUrl}?select=id,first_name,last_name,status`;
-        const queryUrl2 = `${apiUrl2}?select=id,participant_updated_at`;
-        const response = await fetch(queryUrl, {
+        // Connect to backend API endpoint for participants
+        const baseUrl = process.env.REACT_APP_BACKEND_URL;
+        const apiUrl = `${baseUrl}/participants`;
+        console.log('Fetching participants from:', apiUrl);
+        const response = await fetch(apiUrl, {
           headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`, // this can be super_secret_key
-            'Content-Type': 'application',
-            Prefer: 'return=representation',
+            'Content-Type': 'application/json',
           },
+          credentials: 'include', // Send cookies if authentication is needed
         });
 
         if (!response.ok) {
           throw new Error(`API error: ${response.status}`);
         }
         const data = await response.json();
+        console.log('Participants data received:', data);
+        // Transform the data to match the expected format
+        const formattedData = data.map((participant) => ({
+          id: participant.id,
+          first_name: participant.participant_general_info?.first_name,
+          last_name: participant.participant_general_info?.last_name,
+          status: participant.participant_general_info?.status,
+          participant_updated_at: participant.participant_updated_at,
+          // Extract care_giver information if available
+          care_giver: participant.carepartners?.length > 0
+            ? `${participant.carepartners[0].carepartner?.participant_general_info?.first_name || ''} ${participant.carepartners[0].carepartner?.participant_general_info?.last_name || ''}`.trim()
+            : null,
+        }));
 
-        const response2 = await fetch(queryUrl2, {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`, // this can be super_secret_key
-            'Content-Type': 'application/json',
-            Prefer: 'return=representation',
-          },
-        });
-
-        if (!response2.ok) {
-          throw new Error(`API error: ${response2.status}`);
-        }
-        const data2 = await response2.json();
-
-        // merge the participant data with the updated_at data
-        const mergedData = data.map((participant) => {
-          const updatedAt = data2.find(
-            (p) => p.id === participant.id
-          )?.participant_updated_at;
-          return { ...participant, participant_updated_at: updatedAt };
-        });
-
-        setParticipants(mergedData);
-        // debugging: auth? security? user? RLS?
-        if (mergedData.length === 0) {
+        setParticipants(formattedData);
+        if (formattedData.length === 0) {
           setNoDataReason('No participants found in database');
         }
         setError(null);
       } catch (error) {
+        console.error('Error fetching participants:', error);
         setError(`Failed to load participants: ${error.message}`);
         setParticipants([]);
       } finally {
@@ -297,7 +277,7 @@ export default function ParticipantDatabase() {
                     </div>
                   </td>
                 </tr>
-              )) //  git commit -m "minor UI fix so that inactive users are in red"
+              ))
             ) : (
               <tr style={{ backgroundColor: 'white' }}>
                 <td
