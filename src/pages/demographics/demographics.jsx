@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
-import { createClient } from '@supabase/supabase-js';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Header from 'common/components/Header';
 import HomeButton from 'common/components/HomeButton';
 import ParticipantNavbar from 'common/components/ParticipantNavBar';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY
-);
 
 const InfoPage = styled.div`
   flex-direction: row;
@@ -82,6 +76,10 @@ const Loading = styled.div`
   color: #999;
 `;
 
+// Helper function to build API URLs
+const buildUrl = (endpoint) =>
+  `${process.env.REACT_APP_BACKEND_URL.replace(/\/$/, '')}${endpoint}`;
+
 export default function Demographics() {
   const { id } = useParams();
   const [generalInfo, setGeneralInfo] = useState(null);
@@ -96,31 +94,33 @@ export default function Demographics() {
       setError(null);
 
       try {
-        const [
-          { data: generalData, error: generalError },
-          { data: demographicData, error: demographicError },
-          { data: participantData, error: participantError },
-        ] = await Promise.all([
-          supabase
-            .from('participant_general_info')
-            .select('*')
-            .eq('id', id)
-            .single(),
-          supabase
-            .from('participant_demographics')
-            .select('*')
-            .eq('id', id)
-            .single(),
-          supabase
-            .from('participants')
-            .select('id, participant_created_at, participant_updated_at')
-            .eq('id', id)
-            .single(),
-        ]);
+        // Get auth token from localStorage
+        const token = localStorage.getItem('authToken');
 
-        if (generalError) throw new Error(generalError.message);
-        if (demographicError) throw new Error(demographicError.message);
-        if (participantError) throw new Error(participantError.message);
+        // Fetch participant data from backend
+        const response = await fetch(buildUrl(`/participants/${id}`), {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch participant data');
+        }
+
+        const data = await response.json();
+
+        // Extract data from the response
+        const generalData = data.participant_general_info;
+        const demographicData = data.participant_demographics;
+        const participantData = {
+          id: data.id,
+          participant_created_at: data.participant_created_at,
+          participant_updated_at: data.participant_updated_at,
+        };
 
         console.log('Fetched Demographic Info:', demographicData);
         console.log('Fetched General Info:', generalData);
@@ -131,6 +131,7 @@ export default function Demographics() {
         setParticipantInfo(participantData);
       } catch (err) {
         setError(err.message);
+        console.error('Error fetching data:', err);
       } finally {
         setLoading(false);
       }
@@ -159,18 +160,38 @@ export default function Demographics() {
     const isCheckbox = booleanFields.includes(field);
     const updatedValue = isCheckbox ? e.target.checked : e.target.value;
 
+    // Update the local state
     setState((prev) => ({
       ...prev,
       [field]: updatedValue,
     }));
 
     try {
-      const { error } = await supabase
-        .from(table)
-        .update({ [field]: updatedValue })
-        .eq('id', id);
+      // Get auth token from localStorage
+      const token = localStorage.getItem('authToken');
 
-      if (error) throw new Error(error.message);
+      // Create payload with only the updated table data
+      const payload = {
+        [table]: {
+          [field]: updatedValue,
+        },
+      };
+
+      // Send update to backend
+      const response = await fetch(buildUrl(`/participants/${id}`), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Update failed');
+      }
     } catch (err) {
       console.error(`Error updating ${table}:`, err);
     }
