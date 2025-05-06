@@ -8,7 +8,25 @@
   --text: #191a23;
 }
 
+@font-face {
+  font-family: 'Body';
+  src: url('fonts/Roboto/static/Roboto-Regular.ttf') format('truetype');
+  font-size: 20px;
+}
+
+@font-face {
+  font-family: 'Subheading';
+  src: url('fonts/Roboto/static/Roboto-Medium.ttf') format('truetype');
+  font-size: 30px;
+}
+
+@font-face {
+  font-family: 'Title';
+  src: url('fonts/Roboto/static/Roboto-Bold.ttf') format('truetype');
+  font-size: 40px;
+}
+
 * {
-  font-family: Verdana, sans-serif;
+  font-family: 'Body', sans-serif;
   color: var(--text);
 }
