@@ -37,9 +37,10 @@ export default function ParticipantDatabase() {
           status: participant.participant_general_info?.status,
           participant_updated_at: participant.participant_updated_at,
           // Extract care_giver information if available
-          care_giver: participant.carepartners?.length > 0
-            ? `${participant.carepartners[0].carepartner?.participant_general_info?.first_name || ''} ${participant.carepartners[0].carepartner?.participant_general_info?.last_name || ''}`.trim()
-            : null,
+          care_giver:
+            participant.carepartners?.length > 0
+              ? `${participant.carepartners[0].carepartner?.participant_general_info?.first_name || ''} ${participant.carepartners[0].carepartner?.participant_general_info?.last_name || ''}`.trim()
+              : null,
         }));
 
         setParticipants(formattedData);
