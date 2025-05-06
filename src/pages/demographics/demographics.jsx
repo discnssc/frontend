@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -95,7 +96,7 @@ export default function Demographics() {
       try {
         // Get auth token from localStorage
         const token = localStorage.getItem('authToken');
-        
+
         // Fetch participant data from backend
         const response = await fetch(buildUrl(`/participants/${id}`), {
           method: 'GET',
@@ -111,7 +112,7 @@ export default function Demographics() {
         }
 
         const data = await response.json();
-        
+
         // Extract data from the response
         const generalData = data.participant_general_info;
         const demographicData = data.participant_demographics;
@@ -168,7 +169,7 @@ export default function Demographics() {
     try {
       // Get auth token from localStorage
       const token = localStorage.getItem('authToken');
-      
+
       // Create payload with only the updated table data
       const payload = {
         [table]: {
