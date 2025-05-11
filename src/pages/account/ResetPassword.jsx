@@ -25,10 +25,10 @@ const Input = styled.input`
 
 const Button = styled.button`
   padding: 10px;
-  background-color: #007bff;
+  background-color: var(--dark-blue);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
 
   &:disabled {

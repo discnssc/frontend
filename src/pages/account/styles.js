@@ -16,7 +16,7 @@ export const StyledInput = styled.input`
   font-size: 1rem;
   padding: 8px;
   border-radius: 8px;
-  width: 375px;
+  width: 500px;
 `;
 
 export const PasswordContainer = styled.div`
@@ -35,8 +35,9 @@ export const IconContainer = styled.div`
 export const StyledPage = styled.div`
   flex: 1 0 0;
   display: flex;
-  justify-content: center;
+  justify-content: right;
   align-items: center;
+  background-color: var(--light-grey);
 `;
 
 export const StyledButton = styled(Button.Primary)`

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import GoogleButton from 'common/components/GoogleButton';
+// import GoogleButton from 'common/components/GoogleButton';
 import { Form, FormTitle } from 'common/components/form/Form';
 import { Input } from 'common/components/form/Input';
 import SubmitButton from 'common/components/form/SubmitButton';
@@ -13,20 +13,29 @@ import { useUser } from 'common/contexts/UserContext';
 import { StyledPage } from './styles';
 
 const StyledLink = styled(Link)`
-  color: #007bff;
+  color: var(--dark-blue);
   text-decoration: none;
   font-size: 0.9rem;
-  margin-top: -10px;
-  align-self: flex-end;
+  margin-top: -30px;
+  width: 500px;
+  text-align: right;
+  padding: 0px;
 
   &:hover {
     text-decoration: underline;
   }
 `;
 
+const ImageContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  flex: 1;
+`;
+
 export default function Login() {
   const navigate = useNavigate();
-  const { login, googleAuth } = useUser();
+  // const { login, googleAuth } = useUser();
+  const { login } = useUser();
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -55,23 +64,30 @@ export default function Login() {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      await googleAuth();
-    } catch (error) {
-      setError(error.message);
-    }
-  };
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     await googleAuth();
+  //   } catch (error) {
+  //     setError(error.message);
+  //   }
+  // };
 
   return (
     <StyledPage>
+      <ImageContainer>
+        <img
+          src='/nssc-logo.svg'
+          alt='NSSC logo'
+          style={{ marginTop: '-80px' }}
+        />
+      </ImageContainer>
       <Form onSubmit={handleSubmit}>
-        <FormTitle>Log In</FormTitle>
+        <FormTitle>Staff Portal Login</FormTitle>
         {error && <RedSpan>{error}</RedSpan>}
         <Input.Text
           title='Email'
           name='email'
-          placeholder='jsmith or j@example.com'
+          placeholder='jsmith@example.com'
           value={formState.email}
           onChange={handleChange}
           required
@@ -87,11 +103,10 @@ export default function Login() {
         <SubmitButton disabled={isLoading}>
           {isLoading ? 'Logging in...' : 'Log In'}
         </SubmitButton>
-        <GoogleButton
-          onClick={handleGoogleLogin}
-          isLoading={isLoading}
-          text='Sign in with Google'
-        />
+        <div style={{ width: '400px', fontStyle: 'italic' }}>
+          If you do not have an existing account, please see an admin to receive
+          a registration invite.
+        </div>
       </Form>
     </StyledPage>
   );
