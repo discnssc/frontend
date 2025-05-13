@@ -4,6 +4,7 @@ import AdminNavBar from 'common/components/navigation/AdminNavBar';
 import { Button } from 'common/components/Button';
 import LogoutModal from 'common/components/navigation/LogoutModal';
 
+// API base URL from environment
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Container = styled.div`
@@ -138,17 +139,6 @@ const EditIcon = styled.span`
   cursor: pointer;
 `;
 
-// Dummy data for attendance
-const attendanceData = [
-  { date: '3/1/2025', time: 'AM', firstName: 'Jimmy', lastName: 'Jones', in: '9:00AM', out: '12:00PM', code: 'C' },
-  { date: '3/1/2025', time: 'PM', firstName: 'Jimmy', lastName: 'Jones', in: '8:45AM', out: '11:45PM', code: '' },
-  { date: '3/1/2025', time: 'PM', firstName: 'Jimmy', lastName: 'Jones', in: '9:00AM', out: '5:00PM', code: 'C' },
-  { date: '3/1/2025', time: 'Full-Day', firstName: 'Jimmy', lastName: 'Jones', in: '1:06PM', out: '4:45PM', code: '' },
-  { date: '3/2/2025', time: 'AM', firstName: 'Jimmy', lastName: 'Jones', in: '9:00AM', out: '12:00PM', code: 'C' },
-  { date: '3/2/2025', time: 'AM', firstName: 'Jimmy', lastName: 'Jones', in: '8:45AM', out: '11:45PM', code: '' },
-  { date: '3/2/2025', time: 'AM', firstName: 'Jimmy', lastName: 'Jones', in: '9:00AM', out: '5:00PM', code: 'C' },
-];
-
 // Modal styles (reused from LogoutModal)
 const ModalOverlay = styled.div`
   position: fixed;
@@ -208,21 +198,29 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const TIMES = ['AM', 'PM', 'Full'];
 const TOILETING = ['Remind', 'Assist', 'R/A', 'None'];
 
-// Helper to format schedule for display
+/**
+ * Format a schedule object into a string, always in Monday-Friday order.
+ * @param {object} schedule - The schedule JSON object from the DB.
+ * @returns {string} - Human-readable schedule string.
+ */
 function formatSchedule(schedule) {
   if (!schedule || typeof schedule !== 'object') return '';
-  return Object.entries(schedule)
-    .filter(([day, val]) => val && val.active)
-    .map(([day, val]) => {
+  return DAYS
+    .filter(day => schedule[day] && schedule[day].active)
+    .map(day => {
       let shortDay = day.slice(0, 3);
       if (shortDay === 'Thu') shortDay = 'Thur';
-      let time = val.time === 'Full' ? 'Full' : val.time;
+      let time = schedule[day].time === 'Full' ? 'Full' : schedule[day].time;
       return `${shortDay} (${time})`;
     })
     .join(', ');
 }
 
-// Helper to format toileting for display
+/**
+ * Format the toileting value for display.
+ * @param {string} val - Toileting value from DB.
+ * @returns {string} - Short display value.
+ */
 function formatToileting(val) {
   if (!val || val === 'None') return '';
   if (val === 'Remind') return 'R';
@@ -231,7 +229,12 @@ function formatToileting(val) {
   return val;
 }
 
+/**
+ * Main component for the Participant Schedule and Attendance page.
+ * Handles fetching, displaying, and editing participant schedules.
+ */
 export default function ParticipantSchedule() {
+  // UI state
   const [activeTab, setActiveTab] = useState('Attendance');
   const [month, setMonth] = useState('March');
   const [startDay, setStartDay] = useState(1);
@@ -241,22 +244,28 @@ export default function ParticipantSchedule() {
   const [filter, setFilter] = useState('None');
   const [sort, setSort] = useState('Date');
 
-  // State for participants and schedules
+  // Data state
   const [participants, setParticipants] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Modal state for editing
   const [modalOpen, setModalOpen] = useState(false);
-  const [editingRow, setEditingRow] = useState(null); // {id, firstName, lastName, month, schedule, toileting}
+  const [editingRow, setEditingRow] = useState(null);
   const [editSchedule, setEditSchedule] = useState({});
   const [editToileting, setEditToileting] = useState('Remind');
 
-  // Fetch participants and schedules on mount or when Schedule tab is active
+  // Add attendance state
+  const [attendance, setAttendance] = useState([]);
+
+  // Fetch participants, schedules, and attendance on mount or when Schedule/Attendance tab is active
   useEffect(() => {
-    if (activeTab !== 'Schedule') return;
+    if (activeTab !== 'Schedule' && activeTab !== 'Attendance') return;
     setLoading(true);
     setError(null);
+
+    // Fetch participants and schedules
     Promise.all([
       fetch(`${API_BASE_URL}/participants`, { credentials: 'include' }),
       fetch(`${API_BASE_URL}/participants/schedules`, { credentials: 'include' })
@@ -268,37 +277,81 @@ export default function ParticipantSchedule() {
         const schedulesData = await schedulesRes.json();
         setParticipants(participantsData);
         setSchedules(schedulesData);
+
+        // If on Attendance tab, fetch attendance data
+        if (activeTab === 'Attendance') {
+          const attendanceRes = await fetch(`${API_BASE_URL}/participants/attendance`, { 
+            credentials: 'include' 
+          });
+          if (!attendanceRes.ok) throw new Error('Failed to fetch attendance');
+          const attendanceData = await attendanceRes.json();
+          setAttendance(attendanceData);
+        }
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [activeTab]);
 
-  // Join participants and schedules for the table
+  /**
+   * Join participants and schedules for the table, filtered by selected month and year.
+   * Ensures all participants are shown, even if they have no schedule for the selected month/year.
+   */
   const joinedSchedule = participants.map((p) => {
-    const sched = schedules.find((s) => s.id === p.id && s.month === month);
+    const sched = schedules.find((s) =>
+      (s.participant_id === p.id || s.id === p.id) &&
+      s.month === month &&
+      String(s.year) === String(year)
+    );
     return {
       id: p.id,
       firstName: p.participant_general_info?.first_name || '',
       lastName: p.participant_general_info?.last_name || '',
-      month: sched?.month || '',
       schedule: sched?.schedule || '',
       toileting: sched?.toileting || '',
     };
   });
 
-  // Filter by search only (not by month, since join already does that)
+  /**
+   * Filter joined schedule by search string (first or last name).
+   */
   const filteredSchedule = joinedSchedule.filter(row =>
     row.firstName.toLowerCase().includes(search.toLowerCase()) ||
     row.lastName.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Attendance tab logic remains unchanged
-  const filteredData = attendanceData.filter(row =>
-    row.firstName.toLowerCase().includes(search.toLowerCase()) ||
-    row.lastName.toLowerCase().includes(search.toLowerCase())
-  );
+  // Attendance tab: join attendance with participants, filter by search and selected month/year
+  const filteredAttendance = attendance
+    .filter(row => {
+      // Filter by selected month and year
+      const dateObj = row.date ? new Date(row.date) : null;
+      const matchesMonth = dateObj && dateObj.toLocaleString('default', { month: 'long' }) === month;
+      const matchesYear = dateObj && dateObj.getFullYear() === Number(year);
+      return matchesMonth && matchesYear;
+    })
+    .map(row => {
+      // Join with participant info
+      const participant = participants.find(p => p.id === row.participant_id);
+      return {
+        ...row,
+        firstName: participant?.participant_general_info?.first_name || participant?.id || 'Unknown',
+        lastName: participant?.participant_general_info?.last_name || '',
+      };
+    })
+    .filter(row =>
+      row.firstName.toLowerCase().includes(search.toLowerCase()) ||
+      row.lastName.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  // Open modal for editing
+  // Debugging logs
+  console.log('Attendance:', attendance);
+  console.log('Participants:', participants);
+  console.log('FilteredAttendance:', filteredAttendance);
+
+  /**
+   * Open the edit modal for a participant's schedule.
+   * @param {object} row - The participant row to edit.
+   */
   const handleEdit = (row) => {
     setEditingRow(row);
     // Prepare default schedule state
@@ -318,7 +371,7 @@ export default function ParticipantSchedule() {
     setModalOpen(true);
   };
 
-  // Handle checkbox/radio changes
+  // Handlers for editing modal
   const handleDayCheck = (day) => {
     setEditSchedule(s => ({
       ...s,
@@ -333,21 +386,34 @@ export default function ParticipantSchedule() {
   };
   const handleToiletingChange = (val) => setEditToileting(val);
 
-  // Save to backend
+  /**
+   * Save the edited schedule to the backend.
+   * Sends a POST request to upsert the schedule for the selected month and year.
+   */
   const handleSave = async () => {
     if (!editingRow) return;
     const payload = {
       month,
+      year: Number(year),
       schedule: editSchedule,
       toileting: editToileting
     };
     const url = `${API_BASE_URL}/participants/schedule/${editingRow.id}`;
-    await fetch(url, {
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify(payload)
     });
+    if (!res.ok) {
+      let errMsg = 'Failed to save';
+      try {
+        const err = await res.json();
+        errMsg = err.error || errMsg;
+      } catch {}
+      alert(errMsg);
+      return;
+    }
     setModalOpen(false);
     setEditingRow(null);
     // Refresh data
@@ -449,17 +515,21 @@ export default function ParticipantSchedule() {
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((row, idx) => (
-                <tr key={idx}>
-                  <Td>{row.date}</Td>
-                  <Td><Pill type={row.time}>{row.time}</Pill></Td>
-                  <Td>{row.firstName}</Td>
-                  <Td>{row.lastName}</Td>
-                  <Td>{row.in}</Td>
-                  <Td>{row.out}</Td>
-                  <Td>{row.code}</Td>
-                </tr>
-              ))}
+              {filteredAttendance.length === 0 ? (
+                <tr><Td colSpan={7} style={{ textAlign: 'center', color: '#888' }}>No attendance records found for this month/year.</Td></tr>
+              ) : (
+                filteredAttendance.map((row, idx) => (
+                  <tr key={row.id || idx}>
+                    <Td>{row.date}</Td>
+                    <Td><Pill type={row.time}>{row.time}</Pill></Td>
+                    <Td>{row.firstName}</Td>
+                    <Td>{row.lastName}</Td>
+                    <Td>{row.in}</Td>
+                    <Td>{row.out}</Td>
+                    <Td>{row.code}</Td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </Table>
         )}
@@ -477,7 +547,6 @@ export default function ParticipantSchedule() {
                     <Th></Th>
                     <Th>First Name</Th>
                     <Th>Last Name</Th>
-                    <Th>Month</Th>
                     <Th>Schedule</Th>
                     <Th>Toileting</Th>
                   </tr>
@@ -488,7 +557,6 @@ export default function ParticipantSchedule() {
                       <Td><EditIcon title="Edit" onClick={() => handleEdit(row)}>✏️</EditIcon></Td>
                       <Td>{row.firstName}</Td>
                       <Td>{row.lastName}</Td>
-                      <Td>{row.month}</Td>
                       <Td>{formatSchedule(row.schedule)}</Td>
                       <Td>{formatToileting(row.toileting)}</Td>
                     </tr>
