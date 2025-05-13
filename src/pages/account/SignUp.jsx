@@ -2,19 +2,20 @@ import React, { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
-import GoogleButton from 'common/components/GoogleButton';
+// import GoogleButton from 'common/components/GoogleButton';
 import { Form, FormTitle } from 'common/components/form/Form';
 import { Input } from 'common/components/form/Input';
 import SubmitButton from 'common/components/form/SubmitButton';
-import { useUser } from 'common/contexts/UserContext';
 
-import { StyledPage } from './styles';
+// import { useUser } from 'common/contexts/UserContext';
+
+import { StyledCenterAlignPage } from './Invite';
 
 export default function SignUp() {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { googleAuth } = useUser();
+  // const { googleAuth } = useUser();
 
   const [formState, setFormState] = useState({
     firstname: '',
@@ -49,13 +50,13 @@ export default function SignUp() {
     setError('');
   };
 
-  const handleGoogleSignup = async () => {
-    try {
-      await googleAuth();
-    } catch (error) {
-      setError(error.message);
-    }
-  };
+  // const handleGoogleSignup = async () => {
+  //   try {
+  //     await googleAuth();
+  //   } catch (error) {
+  //     setError(error.message);
+  //   }
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -103,7 +104,7 @@ export default function SignUp() {
   };
 
   return (
-    <StyledPage>
+    <StyledCenterAlignPage>
       <Form onSubmit={handleSubmit}>
         <FormTitle>Create an account</FormTitle>
         {error && <div className='text-red-500 mb-4'>{error}</div>}
@@ -141,12 +142,12 @@ export default function SignUp() {
         <SubmitButton onClick={() => {}} disabled={isLoading}>
           {isLoading ? 'Creating account...' : 'Sign Up'}
         </SubmitButton>
-        <GoogleButton
+        {/* <GoogleButton
           onClick={handleGoogleSignup}
           isLoading={isLoading}
           text='Sign up with Google'
-        />
+        /> */}
       </Form>
-    </StyledPage>
+    </StyledCenterAlignPage>
   );
 }

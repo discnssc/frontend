@@ -10,9 +10,11 @@ const ButtonBase = styled.button`
 `;
 
 const ButtonPrimary = styled(ButtonBase)`
-  background-color: var(--primary-green);
-  border-color: var(--primary-green);
+  background-color: var(--dark-blue);
+  border-color: var(--dark-blue);
   color: var(--white);
+  font-weight: bold;
+  border-radius: 10px;
 `;
 
 const ButtonSecondary = styled(ButtonBase)`

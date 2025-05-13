@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { Button } from 'common/components/Button';
@@ -32,19 +33,31 @@ export const IconContainer = styled.div`
   cursor: pointer;
 `;
 
-export const StyledPage = styled.div`
-  flex: 1 0 0;
-  display: flex;
-  justify-content: right;
-  align-items: center;
-  background-color: var(--light-grey);
-`;
-
 export const StyledButton = styled(Button.Primary)`
-  font-size: 1.1rem;
-  width: content;
+  width: 450px;
+  font-size: 1rem;
   padding-left: 30px;
   padding-right: 30px;
   margin-left: auto;
   margin-right: auto;
+`;
+
+export const ImageContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  flex: 1;
+`;
+
+export const StyledLink = styled(Link)`
+  color: var(--dark-blue);
+  text-decoration: none;
+  font-size: 1rem;
+  margin-top: -30px;
+  width: 500px;
+  padding: 0px;
+  font-style: italic;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;

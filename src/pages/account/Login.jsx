@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 // import GoogleButton from 'common/components/GoogleButton';
@@ -10,26 +10,14 @@ import SubmitButton from 'common/components/form/SubmitButton';
 import { RedSpan } from 'common/components/form/styles';
 import { useUser } from 'common/contexts/UserContext';
 
-import { StyledPage } from './styles';
+import { ImageContainer, StyledLink } from './styles';
 
-const StyledLink = styled(Link)`
-  color: var(--dark-blue);
-  text-decoration: none;
-  font-size: 0.9rem;
-  margin-top: -30px;
-  width: 500px;
-  text-align: right;
-  padding: 0px;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const ImageContainer = styled.div`
+const StyledRightAlignPage = styled.div`
+  flex: 1 0 0;
   display: flex;
-  justify-content: center;
-  flex: 1;
+  justify-content: right;
+  align-items: center;
+  background-color: var(--light-grey);
 `;
 
 export default function Login() {
@@ -73,7 +61,7 @@ export default function Login() {
   // };
 
   return (
-    <StyledPage>
+    <StyledRightAlignPage>
       <ImageContainer>
         <img
           src='/nssc-logo.svg'
@@ -82,7 +70,9 @@ export default function Login() {
         />
       </ImageContainer>
       <Form onSubmit={handleSubmit}>
-        <FormTitle>Staff Portal Login</FormTitle>
+        <FormTitle>
+          <div style={{ marginTop: '80px' }}>Staff Portal Login</div>
+        </FormTitle>
         {error && <RedSpan>{error}</RedSpan>}
         <Input.Text
           title='Email'
@@ -99,7 +89,11 @@ export default function Login() {
           onChange={handleChange}
           required
         />
-        <StyledLink to='/forgot-password'>Forgot Password?</StyledLink>
+        <StyledLink to='/forgot-password'>
+          <div style={{ color: 'var(--dark-blue)', textAlign: 'right' }}>
+            Forgot Password?
+          </div>
+        </StyledLink>
         <SubmitButton disabled={isLoading}>
           {isLoading ? 'Logging in...' : 'Log In'}
         </SubmitButton>
@@ -108,6 +102,6 @@ export default function Login() {
           a registration invite.
         </div>
       </Form>
-    </StyledPage>
+    </StyledRightAlignPage>
   );
 }

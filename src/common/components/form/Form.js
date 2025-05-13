@@ -13,8 +13,6 @@ export const Form = styled.form`
 `;
 
 export const FormTitle = styled.h2`
-  margin-top: 80px;
   font-size: 1.8rem;
-  margin-bottom: 6px;
   font-family: 'Title', sans-serif;
 `;
