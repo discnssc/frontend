@@ -1,7 +1,8 @@
 // This is the navigation bar that is used to navigate the pages
 // Not the three lines in the top left corner
-
 import React from 'react';
+
+import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -58,7 +59,7 @@ const StyledNavLink = styled(NavLink)`
 export default function NavBar({ tabs }) {
   return (
     <NavbarContainer>
-      {tabs.map(({ label, to, end }, idx) => (
+      {tabs.map(({ label, to, end }) => (
         <StyledNavLink key={to} to={to} end={end}>
           {label}
         </StyledNavLink>
@@ -66,3 +67,13 @@ export default function NavBar({ tabs }) {
     </NavbarContainer>
   );
 }
+
+NavBar.propTypes = {
+  tabs: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      to: PropTypes.string.isRequired,
+      end: PropTypes.bool,
+    })
+  ).isRequired,
+};

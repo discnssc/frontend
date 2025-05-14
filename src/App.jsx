@@ -72,7 +72,10 @@ export default function App() {
             <Route path='auth/reset-password' element={<ResetPassword />} />
 
             {/* Admin routes */}
-            <Route path='/admin/participant-schedule' element={<ParticipantSchedule />} />
+            <Route
+              path='/admin/participant-schedule'
+              element={<ParticipantSchedule />}
+            />
 
             {/* Catch-all route for 404 */}
             <Route path='*' element={<NotFound />} />

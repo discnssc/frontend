@@ -1,7 +1,7 @@
 // This is the admin navigation bar that is used to navigate the admin pages
 // Not the three lines in the top left corner
-
 import React from 'react';
+
 import NavBar from './NavBar';
 
 const adminTabs = [

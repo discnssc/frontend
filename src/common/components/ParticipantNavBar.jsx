@@ -1,8 +1,9 @@
 // This is the participant navigation bar that is used to navigate the participant pages
 // Not the three lines in the top left corner
-
 import React from 'react';
+
 import { useParams } from 'react-router-dom';
+
 import NavBar from './navigation/NavBar';
 
 export default function ParticipantNavBar() {
