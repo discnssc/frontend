@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 const NavbarContainer = styled.nav`
-  width: 1312px;
+  width: 1200px;
   height: 75px;
   flex-shrink: 0;
   border-radius: 40px;

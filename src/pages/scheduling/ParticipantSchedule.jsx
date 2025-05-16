@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import { Button } from 'common/components/Button';
 import AdminNavBar from 'common/components/navigation/AdminNavBar';
+import MenuDrawer from 'common/components/navigation/MenuDrawer';
 
 // API base URL from environment
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
@@ -11,13 +12,14 @@ const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 const Container = styled.div`
   background: #f2f2f2;
   min-height: 100vh;
-  padding-bottom: 40px;
+  padding-bottom: 6%;
+  padding-top: 6%;
 `;
 
 const Content = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 32px 0 0 0;
+  padding: 0 24px;
 `;
 
 const Title = styled.h1`
@@ -41,6 +43,20 @@ const FilterRow = styled.div`
   margin-top: 8px;
 `;
 
+const SearchContainer = styled.div`
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex: 1;
+`;
+
+const FilterContainer = styled.div`
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-left: auto;
+`;
+
 const Input = styled.input`
   padding: 12px 18px;
   border-radius: 8px;
@@ -56,6 +72,47 @@ const Select = styled.select`
   border: 1px solid #d9d9d9;
   font-size: 1rem;
   background: #fff;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: ${(props) => {
+    if (props.type === 'date') return '80px';
+    if (props.type === 'month') return '140px';
+    if (props.type === 'year') return '100px';
+    return '140px';
+  }};
+
+  &:hover {
+    border-color: rgb(0, 86, 150);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: rgb(0, 86, 150);
+    box-shadow: 0 0 0 2px rgba(0, 86, 150, 0.1);
+  }
+`;
+
+const SelectWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+const DateRangeContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+`;
+
+const DateRangeLabel = styled.span`
+  font-weight: 500;
+  white-space: nowrap;
 `;
 
 const PrintButton = styled(Button.Primary)`
@@ -237,21 +294,67 @@ function formatToileting(val) {
  * Handles fetching, displaying, and editing participant schedules.
  */
 export default function ParticipantSchedule() {
+  // Get current date info
+  const currentDate = new Date();
+  const currentMonth = currentDate.toLocaleString('default', { month: 'long' });
+  const currentYear = currentDate.getFullYear();
+  const daysInCurrentMonth = new Date(
+    currentYear,
+    currentDate.getMonth() + 1,
+    0
+  ).getDate();
+
+  // Get all months
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  // Get days in month
+  const getDaysInMonth = (month, year) => {
+    return new Date(year, months.indexOf(month) + 1, 0).getDate();
+  };
+
+  // Helper function to check if a date is within range
+  const isDateInRange = (dateStr) => {
+    const date = new Date(dateStr);
+    const startDate = new Date(startYear, months.indexOf(startMonth), startDay);
+    const endDate = new Date(endYear, months.indexOf(endMonth), endDay);
+    return date >= startDate && date <= endDate;
+  };
+
   // UI state
   const [activeTab, setActiveTab] = useState('Attendance');
-  const [month, setMonth] = useState('March');
+  const [month, setMonth] = useState(currentMonth);
+  const [startMonth, setStartMonth] = useState(currentMonth);
+  const [endMonth, setEndMonth] = useState(currentMonth);
   const [startDay, setStartDay] = useState(1);
-  const [endDay, setEndDay] = useState(31);
-  const [year, setYear] = useState(2025);
+  const [endDay, setEndDay] = useState(daysInCurrentMonth);
+  const [year, setYear] = useState(currentYear);
+  const [startYear, setStartYear] = useState(currentYear);
+  const [endYear, setEndYear] = useState(currentYear);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('None');
-  const [sort, setSort] = useState('Date');
+  const [sort, setSort] = useState('Sort By: Date');
 
   // Data state
   const [participants, setParticipants] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [availableYears, setAvailableYears] = useState([]);
+  const [availableAttendanceYears, setAvailableAttendanceYears] = useState([]);
+  const [attendance, setAttendance] = useState([]);
 
   // Modal state for editing
   const [modalOpen, setModalOpen] = useState(false);
@@ -259,8 +362,72 @@ export default function ParticipantSchedule() {
   const [editSchedule, setEditSchedule] = useState({});
   const [editToileting, setEditToileting] = useState('Remind');
 
-  // Add attendance state
-  const [attendance, setAttendance] = useState([]);
+  // Update sort when tab changes
+  useEffect(() => {
+    setSort(activeTab === 'Schedule' ? 'Sort By: Last Name' : 'Sort By: Date');
+  }, [activeTab]);
+
+  // Sort functions
+  const sortSchedule = (data) => {
+    switch (sort) {
+      case 'Sort By: Last Name':
+        return [...data].sort((a, b) => a.lastName.localeCompare(b.lastName));
+      case 'Sort By: First Name':
+        return [...data].sort((a, b) => a.firstName.localeCompare(b.firstName));
+      default:
+        return data;
+    }
+  };
+
+  const sortAttendance = (data) => {
+    switch (sort) {
+      case 'Sort By: Date':
+        return [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
+      case 'Sort By: Last Name':
+        return [...data].sort((a, b) => a.lastName.localeCompare(b.lastName));
+      case 'Sort By: First Name':
+        return [...data].sort((a, b) => a.firstName.localeCompare(b.firstName));
+      default:
+        return data;
+    }
+  };
+
+  // Process and sort attendance data
+  const processAttendanceData = (data) => {
+    return sortAttendance(
+      data
+        .filter((row) => row.date && isDateInRange(row.date))
+        .map((row) => {
+          const participant = participants.find(
+            (p) => p.id === row.participant_id
+          );
+          return {
+            ...row,
+            firstName:
+              participant?.participant_general_info?.first_name ||
+              participant?.id ||
+              'Unknown',
+            lastName: participant?.participant_general_info?.last_name || '',
+          };
+        })
+        .filter(
+          (row) =>
+            row.firstName.toLowerCase().includes(search.toLowerCase()) ||
+            row.lastName.toLowerCase().includes(search.toLowerCase())
+        )
+    );
+  };
+
+  // Process and sort schedule data
+  const processScheduleData = (data) => {
+    return sortSchedule(
+      data.filter(
+        (row) =>
+          row.firstName.toLowerCase().includes(search.toLowerCase()) ||
+          row.lastName.toLowerCase().includes(search.toLowerCase())
+      )
+    );
+  };
 
   // Fetch participants, schedules, and attendance on mount or when Schedule/Attendance tab is active
   useEffect(() => {
@@ -271,9 +438,7 @@ export default function ParticipantSchedule() {
     // Fetch participants and schedules
     Promise.all([
       fetch(`${API_BASE_URL}/participants`, { credentials: 'include' }),
-      fetch(`${API_BASE_URL}/participants/schedules`, {
-        credentials: 'include',
-      }),
+      fetch(`${API_BASE_URL}/schedule/schedules`, { credentials: 'include' }),
     ])
       .then(async ([participantsRes, schedulesRes]) => {
         if (!participantsRes.ok)
@@ -284,10 +449,19 @@ export default function ParticipantSchedule() {
         setParticipants(participantsData);
         setSchedules(schedulesData);
 
+        // Extract unique years from schedules for Schedule tab
+        const years = [...new Set(schedulesData.map((s) => s.year))];
+        const currentYear = new Date().getFullYear();
+        const nextYear = currentYear + 1;
+        const uniqueYears = [
+          ...new Set([...years, currentYear, nextYear]),
+        ].sort((a, b) => b - a);
+        setAvailableYears(uniqueYears);
+
         // If on Attendance tab, fetch attendance data
         if (activeTab === 'Attendance') {
           const attendanceRes = await fetch(
-            `${API_BASE_URL}/participants/attendance`,
+            `${API_BASE_URL}/schedule/attendance`,
             {
               credentials: 'include',
             }
@@ -295,16 +469,24 @@ export default function ParticipantSchedule() {
           if (!attendanceRes.ok) throw new Error('Failed to fetch attendance');
           const attendanceData = await attendanceRes.json();
           setAttendance(attendanceData);
+
+          // Extract unique years from attendance data
+          const attendanceYears = [
+            ...new Set(
+              attendanceData.map((a) => new Date(a.date).getFullYear())
+            ),
+          ];
+          const uniqueAttendanceYears = [
+            ...new Set([...attendanceYears, currentYear, nextYear]),
+          ].sort((a, b) => b - a);
+          setAvailableAttendanceYears(uniqueAttendanceYears);
         }
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [activeTab]);
 
-  /**
-   * Join participants and schedules for the table, filtered by selected month and year.
-   * Ensures all participants are shown, even if they have no schedule for the selected month/year.
-   */
+  // Join participants and schedules for the table
   const joinedSchedule = participants.map((p) => {
     const sched = schedules.find(
       (s) =>
@@ -321,49 +503,9 @@ export default function ParticipantSchedule() {
     };
   });
 
-  /**
-   * Filter joined schedule by search string (first or last name).
-   */
-  const filteredSchedule = joinedSchedule.filter(
-    (row) =>
-      row.firstName.toLowerCase().includes(search.toLowerCase()) ||
-      row.lastName.toLowerCase().includes(search.toLowerCase())
-  );
-
-  // Attendance tab: join attendance with participants, filter by search and selected month/year
-  const filteredAttendance = attendance
-    .filter((row) => {
-      // Filter by selected month and year
-      const dateObj = row.date ? new Date(row.date) : null;
-      const matchesMonth =
-        dateObj &&
-        dateObj.toLocaleString('default', { month: 'long' }) === month;
-      const matchesYear = dateObj && dateObj.getFullYear() === Number(year);
-      return matchesMonth && matchesYear;
-    })
-    .map((row) => {
-      // Join with participant info
-      const participant = participants.find((p) => p.id === row.participant_id);
-      return {
-        ...row,
-        firstName:
-          participant?.participant_general_info?.first_name ||
-          participant?.id ||
-          'Unknown',
-        lastName: participant?.participant_general_info?.last_name || '',
-      };
-    })
-    .filter(
-      (row) =>
-        row.firstName.toLowerCase().includes(search.toLowerCase()) ||
-        row.lastName.toLowerCase().includes(search.toLowerCase())
-    )
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  // Debugging logs
-  console.log('Attendance:', attendance);
-  console.log('Participants:', participants);
-  console.log('FilteredAttendance:', filteredAttendance);
+  // Get filtered and sorted data
+  const filteredSchedule = processScheduleData(joinedSchedule);
+  const filteredAttendance = processAttendanceData(attendance);
 
   /**
    * Open the edit modal for a participant's schedule.
@@ -419,7 +561,7 @@ export default function ParticipantSchedule() {
       schedule: editSchedule,
       toileting: editToileting,
     };
-    const url = `${API_BASE_URL}/participants/schedule/${editingRow.id}`;
+    const url = `${API_BASE_URL}/schedule/schedule/${editingRow.id}`;
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -443,9 +585,7 @@ export default function ParticipantSchedule() {
     setLoading(true);
     Promise.all([
       fetch(`${API_BASE_URL}/participants`, { credentials: 'include' }),
-      fetch(`${API_BASE_URL}/participants/schedules`, {
-        credentials: 'include',
-      }),
+      fetch(`${API_BASE_URL}/schedule/schedules`, { credentials: 'include' }),
     ])
       .then(async ([participantsRes, schedulesRes]) => {
         const participantsData = await participantsRes.json();
@@ -458,63 +598,132 @@ export default function ParticipantSchedule() {
 
   return (
     <Container>
-      <AdminNavBar />
+      <MenuDrawer />
       <Content>
         <Title>Admin Dashboard</Title>
+        <AdminNavBar />
         <SectionTitle>Participant Schedule and Attendance</SectionTitle>
-        {/* Filter row for Schedule tab: only month and year */}
-        {activeTab === 'Schedule' ? (
+
+        {/* Filter row for Schedule tab */}
+        {activeTab === 'Schedule' && (
           <FilterRow>
-            <span style={{ fontWeight: 500 }}>Selected month:</span>
-            <Select value={month} onChange={(e) => setMonth(e.target.value)}>
-              <option>March</option>
-              <option>April</option>
-              <option>May</option>
-            </Select>
-            <Select
-              value={year}
-              onChange={(e) => setYear(Number(e.target.value))}
-            >
-              <option>2025</option>
-              <option>2024</option>
-            </Select>
+            <DateRangeLabel>Selected month:</DateRangeLabel>
+            <SelectWrapper>
+              <Select
+                type='month'
+                value={month}
+                onChange={(e) => setMonth(e.target.value)}
+              >
+                {months.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </Select>
+            </SelectWrapper>
+            <SelectWrapper>
+              <Select
+                type='year'
+                value={year}
+                onChange={(e) => setYear(Number(e.target.value))}
+              >
+                {availableYears.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </Select>
+            </SelectWrapper>
           </FilterRow>
-        ) : (
+        )}
+
+        {/* Filter row for Attendance tab */}
+        {activeTab === 'Attendance' && (
           <FilterRow>
-            <span style={{ fontWeight: 500 }}>Selected dates:</span>
-            <Select value={month} onChange={(e) => setMonth(e.target.value)}>
-              <option>March</option>
-              <option>April</option>
-              <option>May</option>
-            </Select>
-            <Select
-              value={startDay}
-              onChange={(e) => setStartDay(Number(e.target.value))}
-            >
-              {[...Array(31)].map((_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {i + 1}
-                </option>
-              ))}
-            </Select>
-            <span style={{ fontWeight: 500 }}>to</span>
-            <Select
-              value={endDay}
-              onChange={(e) => setEndDay(Number(e.target.value))}
-            >
-              {[...Array(31)].map((_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {i + 1}
-                </option>
-              ))}
-            </Select>
-            <Select
-              value={year}
-              onChange={(e) => setYear(Number(e.target.value))}
-            >
-              <option>2025</option>
-              <option>2024</option>
-            </Select>
+            <DateRangeContainer>
+              <DateRangeLabel>Date range:</DateRangeLabel>
+              <SelectWrapper>
+                <Select
+                  type='month'
+                  value={startMonth}
+                  onChange={(e) => setStartMonth(e.target.value)}
+                >
+                  {months.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </Select>
+              </SelectWrapper>
+              <SelectWrapper>
+                <Select
+                  type='date'
+                  value={startDay}
+                  onChange={(e) => setStartDay(Number(e.target.value))}
+                >
+                  {[...Array(getDaysInMonth(startMonth, startYear))].map(
+                    (_, i) => (
+                      <option key={i + 1} value={i + 1}>
+                        {i + 1}
+                      </option>
+                    )
+                  )}
+                </Select>
+              </SelectWrapper>
+              <SelectWrapper>
+                <Select
+                  type='year'
+                  value={startYear}
+                  onChange={(e) => setStartYear(Number(e.target.value))}
+                >
+                  {availableAttendanceYears.map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </Select>
+              </SelectWrapper>
+              <DateRangeLabel>to</DateRangeLabel>
+              <SelectWrapper>
+                <Select
+                  type='month'
+                  value={endMonth}
+                  onChange={(e) => setEndMonth(e.target.value)}
+                >
+                  {months.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </Select>
+              </SelectWrapper>
+              <SelectWrapper>
+                <Select
+                  type='date'
+                  value={endDay}
+                  onChange={(e) => setEndDay(Number(e.target.value))}
+                >
+                  {[...Array(getDaysInMonth(endMonth, endYear))].map((_, i) => (
+                    <option key={i + 1} value={i + 1}>
+                      {i + 1}
+                    </option>
+                  ))}
+                </Select>
+              </SelectWrapper>
+              <SelectWrapper>
+                <Select
+                  type='year'
+                  value={endYear}
+                  onChange={(e) => setEndYear(Number(e.target.value))}
+                >
+                  {availableAttendanceYears.map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </Select>
+              </SelectWrapper>
+            </DateRangeContainer>
             <PrintButton>Print Attendance</PrintButton>
           </FilterRow>
         )}
@@ -539,19 +748,37 @@ export default function ParticipantSchedule() {
           </Tab>
         </TabSwitcher>
         <FilterRow>
-          <Input
-            placeholder='Search...'
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ width: 220 }}
-          />
-          <Select value={filter} onChange={(e) => setFilter(e.target.value)}>
-            <option>Filter By: None</option>
-          </Select>
-          <Select value={sort} onChange={(e) => setSort(e.target.value)}>
-            <option>Sort By: Last Name</option>
-            <option>Sort By: First Name</option>
-          </Select>
+          <SearchContainer>
+            <Input
+              placeholder='Search...'
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ width: 220 }}
+            />
+          </SearchContainer>
+          <FilterContainer>
+            <Select value={filter} onChange={(e) => setFilter(e.target.value)}>
+              <option>Filter By: None</option>
+            </Select>
+            <Select value={sort} onChange={(e) => setSort(e.target.value)}>
+              {activeTab === 'Schedule' ? (
+                <>
+                  <option value='Sort By: Last Name'>Sort By: Last Name</option>
+                  <option value='Sort By: First Name'>
+                    Sort By: First Name
+                  </option>
+                </>
+              ) : (
+                <>
+                  <option value='Sort By: Date'>Sort By: Date</option>
+                  <option value='Sort By: Last Name'>Sort By: Last Name</option>
+                  <option value='Sort By: First Name'>
+                    Sort By: First Name
+                  </option>
+                </>
+              )}
+            </Select>
+          </FilterContainer>
         </FilterRow>
         {/* Attendance Table */}
         {activeTab === 'Attendance' && (
