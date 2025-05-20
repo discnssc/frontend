@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
+
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-
 
 import Header from 'common/components/Header';
 import HomeButton from 'common/components/HomeButton';
@@ -16,14 +16,13 @@ import {
   TableRowLabel,
 } from 'common/components/tables/Tables';
 
-
 const InfoPage = styled.div`
   display: flex;
   flex-direction: column;
   padding: 2rem;
   margin-left: 0;
   width: 100%;
-  background-color: #ECECEC;
+  background-color: #ececec;
 `;
 
 const TableWrapper = styled.div`
@@ -33,17 +32,14 @@ const TableWrapper = styled.div`
   margin-right: auto;
 `;
 
-
 const Loading = styled.div`
   font-size: 18px;
   color: #999;
 `;
 
-
 // Helper function to build API URLs
 const buildUrl = (endpoint) =>
   `${process.env.REACT_APP_BACKEND_URL.replace(/\/$/, '')}${endpoint}`;
-
 
 export default function Demographics() {
   const { id } = useParams();
@@ -53,17 +49,14 @@ export default function Demographics() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
 
-
       try {
         // Get auth token from localStorage
         const token = localStorage.getItem('authToken');
-
 
         // Fetch participant data from backend
         const response = await fetch(buildUrl(`/participants/${id}`), {
@@ -75,14 +68,11 @@ export default function Demographics() {
           credentials: 'include',
         });
 
-
         if (!response.ok) {
           throw new Error('Failed to fetch participant data');
         }
 
-
         const data = await response.json();
-
 
         // Extract data from the response
         const generalData = data.participant_general_info;
@@ -93,11 +83,9 @@ export default function Demographics() {
           participant_updated_at: data.participant_updated_at,
         };
 
-
         console.log('Fetched Demographic Info:', demographicData);
         console.log('Fetched General Info:', generalData);
         console.log('Fetched Participant Info:', participantData);
-
 
         setDemographicInfo(demographicData);
         setGeneralInfo(generalData);
@@ -110,14 +98,11 @@ export default function Demographics() {
       }
     };
 
-
     fetchData();
   }, [id]);
 
-
   if (loading) return <Loading>Loading...</Loading>;
   if (error) return <Loading>Error: {error}</Loading>;
-
 
   // List of known boolean fields
   const booleanFields = [
@@ -132,11 +117,9 @@ export default function Demographics() {
     'limited_english',
   ];
 
-
   const handleChange = async (e, field, table, setState) => {
     const isCheckbox = booleanFields.includes(field);
     const updatedValue = isCheckbox ? e.target.checked : e.target.value;
-
 
     // Update the local state
     setState((prev) => ({
@@ -144,11 +127,9 @@ export default function Demographics() {
       [field]: updatedValue,
     }));
 
-
     try {
       // Get auth token from localStorage
       const token = localStorage.getItem('authToken');
-
 
       // Create payload with only the updated table data
       const payload = {
@@ -156,7 +137,6 @@ export default function Demographics() {
           [field]: updatedValue,
         },
       };
-
 
       // Send update to backend
       const response = await fetch(buildUrl(`/participants/${id}`), {
@@ -169,7 +149,6 @@ export default function Demographics() {
         body: JSON.stringify(payload),
       });
 
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Update failed');
@@ -178,7 +157,6 @@ export default function Demographics() {
       console.error(`Error updating ${table}:`, err);
     }
   };
-
 
   return (
     <InfoPage>
