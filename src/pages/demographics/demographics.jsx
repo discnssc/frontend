@@ -1,84 +1,49 @@
 import React, { useEffect, useState } from 'react';
-
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+
 
 import Header from 'common/components/Header';
 import HomeButton from 'common/components/HomeButton';
 import ParticipantNavbar from 'common/components/ParticipantNavBar';
+import {
+  Table,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableLabel,
+  TableRow,
+  TableRowLabel,
+} from 'common/components/tables/Tables';
+
 
 const InfoPage = styled.div`
-  flex-direction: row;
-  justify-content: left;
-  align-items: left;
-  text-align: left;
-  padding: 2rem;
-`;
-
-const TableContainer = styled.div`
-  font-size: 15px;
-  width: 45%;
-  display: table;
-  vertical-align: top;
-  float: left;
-  margin-left: 160px;
-  margin-top: 40px;
-  align-items: flex-start;
-`;
-
-const Table = styled.div`
-  font-size: 15px;
-  width: 45%;
-  display: table;
-  vertical-align: top;
-  float: left;
-  margin-right: 2rem;
-  align-items: flex-start;
-`;
-
-const TableHead = styled.div`
-  flex: 1 0 0;
+  display: flex;
   flex-direction: column;
-  justify-content: left;
-  align-items: left;
-  text-align: left;
-  font-size: 15px;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  align-items: flex-start;
+  padding: 2rem;
+  margin-left: 0;
+  width: 100%;
+  background-color: #ECECEC;
 `;
 
-const TableRow = styled.tr`
-  font-size: 15px;
+const TableWrapper = styled.div`
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 `;
 
-const TableLabel = styled.th`
-  padding: 8px;
-  text-align: left;
-  vertical-align: center;
-  background-color: #ffffff;
-  font-weight: bold;
-  border: 0.5px solid #aaaaaa;
-`;
-
-const TableCell = styled.td`
-  padding: 8px;
-  text-align: left;
-  vertical-align: center;
-  background-color: #ffffff;
-  border: 0.5px solid #aaaaaa;
-  justify-content: center;
-  flex-shrink: 0;
-`;
 
 const Loading = styled.div`
   font-size: 18px;
   color: #999;
 `;
 
+
 // Helper function to build API URLs
 const buildUrl = (endpoint) =>
   `${process.env.REACT_APP_BACKEND_URL.replace(/\/$/, '')}${endpoint}`;
+
 
 export default function Demographics() {
   const { id } = useParams();
@@ -88,14 +53,17 @@ export default function Demographics() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
 
+
       try {
         // Get auth token from localStorage
         const token = localStorage.getItem('authToken');
+
 
         // Fetch participant data from backend
         const response = await fetch(buildUrl(`/participants/${id}`), {
@@ -107,11 +75,14 @@ export default function Demographics() {
           credentials: 'include',
         });
 
+
         if (!response.ok) {
           throw new Error('Failed to fetch participant data');
         }
 
+
         const data = await response.json();
+
 
         // Extract data from the response
         const generalData = data.participant_general_info;
@@ -122,9 +93,11 @@ export default function Demographics() {
           participant_updated_at: data.participant_updated_at,
         };
 
+
         console.log('Fetched Demographic Info:', demographicData);
         console.log('Fetched General Info:', generalData);
         console.log('Fetched Participant Info:', participantData);
+
 
         setDemographicInfo(demographicData);
         setGeneralInfo(generalData);
@@ -137,11 +110,14 @@ export default function Demographics() {
       }
     };
 
+
     fetchData();
   }, [id]);
 
+
   if (loading) return <Loading>Loading...</Loading>;
   if (error) return <Loading>Error: {error}</Loading>;
+
 
   // List of known boolean fields
   const booleanFields = [
@@ -156,9 +132,11 @@ export default function Demographics() {
     'limited_english',
   ];
 
+
   const handleChange = async (e, field, table, setState) => {
     const isCheckbox = booleanFields.includes(field);
     const updatedValue = isCheckbox ? e.target.checked : e.target.value;
+
 
     // Update the local state
     setState((prev) => ({
@@ -166,9 +144,11 @@ export default function Demographics() {
       [field]: updatedValue,
     }));
 
+
     try {
       // Get auth token from localStorage
       const token = localStorage.getItem('authToken');
+
 
       // Create payload with only the updated table data
       const payload = {
@@ -176,6 +156,7 @@ export default function Demographics() {
           [field]: updatedValue,
         },
       };
+
 
       // Send update to backend
       const response = await fetch(buildUrl(`/participants/${id}`), {
@@ -188,6 +169,7 @@ export default function Demographics() {
         body: JSON.stringify(payload),
       });
 
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Update failed');
@@ -197,78 +179,66 @@ export default function Demographics() {
     }
   };
 
+
   return (
     <InfoPage>
       <Header participant={{ ...generalInfo, ...participantInfo }} />
       <HomeButton />
       <ParticipantNavbar />
-      <TableContainer>
-        <TableHead>Demographics</TableHead>
-        <Table>
-          <tbody>
-            {demographicInfo &&
-              Object.keys(demographicInfo)
-                .filter((key) => key !== 'id' && key !== 'status')
-                .map((key) => {
-                  const isBoolean = booleanFields.includes(key);
-                  const value = demographicInfo[key] || false;
-
-                  return (
-                    <TableRow key={key}>
-                      <TableLabel>
-                        {key
-                          .replace(/_/g, ' ')
-                          .replace(/\b\w/g, (char) => char.toUpperCase())}
-                        :
-                      </TableLabel>
-                      <TableCell>
-                        {isBoolean ? (
-                          <input
-                            type='checkbox'
-                            checked={!!value}
-                            onChange={(e) =>
-                              handleChange(
-                                e,
-                                key,
-                                'participant_demographics',
-                                setDemographicInfo
-                              )
-                            }
-                            style={{
-                              margin: '0',
-                              width: '15px',
-                              height: '15px',
-                              cursor: 'pointer',
-                            }}
-                          />
-                        ) : (
-                          <input
-                            type='text'
-                            value={value || ''}
-                            onChange={(e) =>
-                              handleChange(
-                                e,
-                                key,
-                                'participant_demographics',
-                                setDemographicInfo
-                              )
-                            }
-                            style={{
-                              background: 'transparent',
-                              border: 'none',
-                              outline: 'none',
-                              fontSize: '15px',
-                              padding: '5px',
-                            }}
-                          />
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-          </tbody>
-        </Table>
-      </TableContainer>
+      <TableWrapper>
+        <TableContainer>
+          <TableLabel>Demographics</TableLabel>
+          <Table>
+            <TableHead>
+              {demographicInfo &&
+                Object.keys(demographicInfo)
+                  .filter((key) => key !== 'id' && key !== 'status')
+                  .map((key) => {
+                    const isBoolean = booleanFields.includes(key);
+                    const value = demographicInfo[key] || false;
+                    return (
+                      <TableRow key={key}>
+                        <TableRowLabel>
+                          {key
+                            .replace(/_/g, ' ')
+                            .replace(/\b\w/g, (char) => char.toUpperCase())}
+                        </TableRowLabel>
+                        <TableCell>
+                          {isBoolean ? (
+                            <input
+                              type='checkbox'
+                              checked={!!value}
+                              onChange={(e) =>
+                                handleChange(
+                                  e,
+                                  key,
+                                  'participant_demographics',
+                                  setDemographicInfo
+                                )
+                              }
+                            />
+                          ) : (
+                            <input
+                              type='text'
+                              value={value || ''}
+                              onChange={(e) =>
+                                handleChange(
+                                  e,
+                                  key,
+                                  'participant_demographics',
+                                  setDemographicInfo
+                                )
+                              }
+                            />
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+            </TableHead>
+          </Table>
+        </TableContainer>
+      </TableWrapper>
     </InfoPage>
   );
 }
