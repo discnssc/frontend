@@ -11,11 +11,7 @@ export default function InviteLandingPage() {
   return (
     <StyledCenterAlignPage>
       <Form>
-        <img
-          src='/nssc-logo.svg'
-          alt='NSSC logo'
-          style={{ width: '130px', marginTop: '30px' }}
-        />
+        <img src='/nssc-logo.svg' alt='NSSC logo' style={{ width: '140px' }} />
         <FormTitle>
           <div style={{ width: '450px', textAlign: 'left' }}>
             You have been invited to register for the NSSC staff portal.
@@ -43,7 +39,9 @@ export default function InviteLandingPage() {
         <Link to='/set-password'>
           <StyledButton>This info looks correct.</StyledButton>
         </Link>
-        <StyledLink>This info does not look correct.</StyledLink>
+        <StyledLink to='/incorrect-info'>
+          This info does not look correct.
+        </StyledLink>
       </Form>
     </StyledCenterAlignPage>
   );

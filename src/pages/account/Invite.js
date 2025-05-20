@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 export const StyledCenterAlignPage = styled.div`
   flex: 1 0 0;
@@ -6,8 +7,12 @@ export const StyledCenterAlignPage = styled.div`
   justify-content: center;
   align-items: center;
   background-color: var(--light-grey);
+  overflow: hidden;
 `;
 
-export const StyledContentContainer = styled.div`
-  background-color: var(--med-dark-grey);
+export const BackArrowContainer = styled(Link)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 70px 20px;
 `;

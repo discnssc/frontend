@@ -18,6 +18,7 @@ const StyledRightAlignPage = styled.div`
   justify-content: right;
   align-items: center;
   background-color: var(--light-grey);
+  overflow: hidden;
 `;
 
 export default function Login() {
@@ -63,16 +64,10 @@ export default function Login() {
   return (
     <StyledRightAlignPage>
       <ImageContainer>
-        <img
-          src='/nssc-logo.svg'
-          alt='NSSC logo'
-          style={{ marginTop: '-80px' }}
-        />
+        <img src='/nssc-logo.svg' alt='NSSC logo' />
       </ImageContainer>
       <Form onSubmit={handleSubmit}>
-        <FormTitle>
-          <div style={{ marginTop: '80px' }}>Staff Portal Login</div>
-        </FormTitle>
+        <FormTitle>Staff Portal Login</FormTitle>
         {error && <RedSpan>{error}</RedSpan>}
         <Input.Text
           title='Email'

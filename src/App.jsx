@@ -13,6 +13,7 @@ import Cases from 'pages/Cases-Services/Cases';
 import HowInfo from 'pages/HOW-info/HowInfo';
 import AuthCallback from 'pages/account/AuthCallback';
 import InviteLandingPage from 'pages/account/InviteLandingPage';
+import IncorrectInfo from 'pages/account/IncorrectInfo';
 import Login from 'pages/account/Login';
 import RequestPasswordReset from 'pages/account/RequestPasswordReset';
 import ResetPassword from 'pages/account/ResetPassword';
@@ -43,6 +44,7 @@ export default function App() {
               <Route path='login' element={<Login />} />
               <Route path='signup' element={<InviteLandingPage />} />
               <Route path='set-password' element={<SetPassword />} />
+              <Route path='incorrect-info' element={<IncorrectInfo />} />
               <Route
                 path='forgot-password'
                 element={<RequestPasswordReset />}
