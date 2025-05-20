@@ -1,8 +1,17 @@
 import React from 'react';
+import { useEffect, useState } from 'react';
 
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import {
+  generateAggregateActivityReport,
+  generateMonthlyActivityParticipationReport,
+} from 'utils/excelExport.js';
 
+import Header from 'common/components/Header';
 import ParticipantNavbar from 'common/components/ParticipantNavBar';
+import ActivitiesTable from 'common/components/activities/ActivitiesTable';
+import MonthYearDropdown from 'common/components/activities/MonthYearDropdown';
 
 const InfoPage = styled.div`
   flex-direction: row;
@@ -10,19 +19,238 @@ const InfoPage = styled.div`
   align-items: left;
   text-align: left;
   padding: 2rem;
+  background-color: #ececec;
 `;
 
-const MessageText = styled.div`
-  font-size: 18px;
-  margin-top: 20px;
-  text-align: center;
+const ActivitiesContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: flex-start;
+  align-content: flex-start;
 `;
+
+const TableContainer = styled.div`
+  font-size: 15px;
+  vertical-align: top;
+  float: left;
+  margin-top: 40px;
+  align-items: flex-start;
+`;
+
+const Loading = styled.div`
+  font-size: 18px;
+  color: #999;
+`;
+
+const Button = styled.button`
+  background-color: #005696;
+  color: #ececec;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  &:hover {
+    background-color: #218bda;
+  }
+`;
+
+// Helper function to build API URLs
+const buildUrl = (endpoint) =>
+  `${process.env.REACT_APP_BACKEND_URL.replace(/\/$/, '')}${endpoint}`;
 
 export default function Activities() {
+  const { id } = useParams();
+  const [participant, setParticipant] = useState(null);
+  const [participantName, setParticipantName] = useState('Minnie May');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [month, setMonth] = useState('04');
+  const [year, setYear] = useState('2025');
+  const [startMonth, setStartMonth] = useState('01');
+  const [endMonth, setEndMonth] = useState('12');
+  const [startYear, setStartYear] = useState('2025');
+  const [endYear, setEndYear] = useState('2025');
+
+  const handleExportMonthlyReport = () => {
+    if (!participantName) return;
+    generateMonthlyActivityParticipationReport(
+      monthlyReportActivities,
+      participantName,
+      year,
+      month
+    );
+  };
+  const handleExportAggregateReport = () => {
+    if (!participantName) return;
+    generateAggregateActivityReport(
+      aggregateReportActivities,
+      participantName,
+      startMonth,
+      startYear,
+      endMonth,
+      endYear
+    );
+  };
+
+  const [monthlyReportActivities, setmonthlyReportActivities] = useState([
+    { activity: "Board Games", declined: "Yes", rating: 0, date: "04/03/2025" },
+    { activity: "Art Therapy", declined: "Yes", rating: -1, date: "04/09/2025" },
+    { activity: "Cooking", declined: "No", rating: 2, date: "04/14/2025" },
+    { activity: "Dance Class", declined: "Yes", rating: 0, date: "04/21/2025" },
+    { activity: "Yoga", declined: "No", rating: 3, date: "04/10/2025" },
+    { activity: "Painting", declined: "No", rating: 2, date: "04/15/2025" },
+    { activity: "Storytelling", declined: "No", rating: 1, date: "04/20/2025" },
+    { activity: "Movie Night", declined: "Yes", rating: 0, date: "04/25/2025" },
+    { activity: "Poetry Reading", declined: "No", rating: 2, date: "04/30/2025" },
+    { activity: "Gardening", declined: "No", rating: 3, date: "04/05/2025" },
+    { activity: "Music Therapy", declined: "No", rating: 2, date: "04/12/2025" },
+    { activity: "Photography Workshop", declined: "Yes", rating: 0, date: "04/18/2025" },
+    { activity: "Meditation", declined: "No", rating: 3, date: "04/22/2025" },
+    { activity: "Book Club", declined: "No", rating: 2, date: "04/28/2025" },
+    { activity: "Board Games", declined: "No", rating: 1, date: "04/06/2025" },
+    { activity: "Art Therapy", declined: "No", rating: 2, date: "04/07/2025" },
+    { activity: "Dance Class", declined: "No", rating: 2, date: "04/08/2025" },
+    { activity: "Movie Night", declined: "No", rating: 3, date: "04/11/2025" },
+    { activity: "Photography Workshop", declined: "No", rating: 2, date: "04/13/2025" },
+    { activity: "Board Games", declined: "No", rating: 2, date: "04/16/2025" },
+    { activity: "Art Therapy", declined: "No", rating: 3, date: "04/17/2025" },
+    { activity: "Cooking", declined: "No", rating: 1, date: "04/19/2025" },
+    { activity: "Dance Class", declined: "No", rating: 2, date: "04/23/2025" },
+    { activity: "Yoga", declined: "No", rating: 3, date: "04/24/2025" },
+    { activity: "Painting", declined: "No", rating: 2, date: "04/26/2025" },
+    { activity: "Storytelling", declined: "No", rating: 1, date: "04/27/2025" },
+    { activity: "Gardening", declined: "No", rating: 3, date: "04/29/2025" },
+    { activity: "Music Therapy", declined: "No", rating: 2, date: "04/02/2025" },
+    { activity: "Meditation", declined: "No", rating: 3, date: "04/01/2025" },
+  ]);
+  const [aggregateReportActivities, setAggregateReportActivities] = useState([
+    { activity: "Art Therapy", declined: "No", rating: 1, date: "03/01/2025" },
+    { activity: "Board Games", declined: "Yes", rating: 0, date: "04/03/2025" },
+    { activity: "Trivia", declined: "No", rating: 1, date: "04/05/2025" },
+    { activity: "Knitting", declined: "No", rating: -1, date: "03/07/2025" },
+    { activity: "Art Therapy", declined: "Yes", rating: 0, date: "04/09/2025" },
+    { activity: "Trivia", declined: "No", rating: 1, date: "03/11/2025" },
+    { activity: "Cooking", declined: "No", rating: 2, date: "04/14/2025" },
+    { activity: "Yoga", declined: "No", rating: 3, date: "03/18/2025" },
+    { activity: "Dance Class", declined: "Yes", rating: 0, date: "04/21/2025" },
+    { activity: "Art Therapy", declined: "No", rating: 2, date: "02/01/2025" },
+    { activity: "Board Games", declined: "No", rating: 1, date: "02/03/2025" },
+    { activity: "Trivia", declined: "Yes", rating: 0, date: "02/05/2025" },
+    { activity: "Knitting", declined: "Yes", rating: 0, date: "02/07/2025" },
+    { activity: "Meditation", declined: "No", rating: 3, date: "02/09/2025" },
+    { activity: "Storytelling", declined: "No", rating: 2, date: "02/11/2025" },
+    { activity: "Movie Night", declined: "No", rating: 3, date: "01/14/2025" },
+    { activity: "Dance Class", declined: "No", rating: 2, date: "01/16/2025" },
+    { activity: "Yoga", declined: "Yes", rating: 0, date: "01/19/2025" },
+    { activity: "Cooking", declined: "No", rating: 1, date: "02/21/2025" },
+    { activity: "Poetry Reading", declined: "No", rating: 2, date: "01/24/2025" },
+    { activity: "Gardening", declined: "No", rating: 3, date: "03/02/2025" },
+    { activity: "Music Therapy", declined: "No", rating: 2, date: "03/04/2025" },
+    { activity: "Meditation", declined: "No", rating: 3, date: "03/06/2025" },
+    { activity: "Book Club", declined: "No", rating: 2, date: "03/08/2025" },
+    { activity: "Photography Workshop", declined: "Yes", rating: 0, date: "03/10/2025" },
+    { activity: "Movie Night", declined: "No", rating: 3, date: "03/12/2025" },
+    { activity: "Art Therapy", declined: "No", rating: 2, date: "03/14/2025" },
+    { activity: "Board Games", declined: "No", rating: 1, date: "03/16/2025" },
+    { activity: "Dance Class", declined: "No", rating: 2, date: "03/20/2025" },
+    { activity: "Yoga", declined: "No", rating: 3, date: "03/22/2025" },
+    { activity: "Painting", declined: "No", rating: 2, date: "03/24/2025" },
+    { activity: "Knitting", declined: "No", rating: 1, date: "03/26/2025" },
+    { activity: "Gardening", declined: "No", rating: 3, date: "03/28/2025" },
+    { activity: "Music Therapy", declined: "No", rating: 2, date: "03/30/2025" },
+    { activity: "Knitting", declined: "No", rating: 3, date: "04/01/2025" },
+    { activity: "Book Club", declined: "No", rating: 2, date: "04/04/2025" },
+    { activity: "Knitting", declined: "No", rating: 2, date: "04/06/2025" },
+    { activity: "Movie Night", declined: "No", rating: 3, date: "04/08/2025" },
+    { activity: "Art Therapy", declined: "No", rating: 3, date: "04/10/2025" },
+  ]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = localStorage.getItem('authToken');
+
+        // Fetch participant data from backend
+        const response = await fetch(buildUrl(`/participants/${id}`), {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch participant data');
+        }
+        const participantData = await response.json();
+
+        // Extract data from the response
+        setParticipant(participantData);
+        setParticipantName(
+          `${participantData.participant_general_info.first_name} ${participantData.participant_general_info.last_name}`
+        );
+        console.log('Participant data:', participantData);
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [id]);
+  if (loading) return <Loading>Loading...</Loading>;
+  if (error) return <Loading>Error: {error}</Loading>;
+
   return (
     <InfoPage>
+      <Header participant={participant} />
       <ParticipantNavbar />
-      <MessageText>Page is not done yet!</MessageText>
+      <ActivitiesContainer>
+        <TableContainer>
+          <MonthYearDropdown
+            monthLabel='Month:'
+            yearLabel='Year:'
+            month={month}
+            year={year}
+            onMonthChange={setMonth}
+            onYearChange={setYear}
+          />
+          <ActivitiesTable activities={monthlyReportActivities} />
+          <Button onClick={handleExportMonthlyReport}>
+            Export Monthly Report
+          </Button>
+        </TableContainer>
+        <TableContainer>
+          <MonthYearDropdown
+            monthLabel='Start Month:'
+            yearLabel='Start Year:'
+            month={startMonth}
+            year={startYear}
+            onMonthChange={setStartMonth}
+            onYearChange={setStartYear}
+          />
+          <MonthYearDropdown
+            monthLabel='End Month:'
+            yearLabel='End Year:'
+            month={endMonth}
+            year={endYear}
+            onMonthChange={setEndMonth}
+            onYearChange={setEndYear}
+          />
+          <ActivitiesTable activities={aggregateReportActivities} />
+          <Button onClick={handleExportAggregateReport}>
+            Export Aggregate Report
+          </Button>
+        </TableContainer>
+      </ActivitiesContainer>
     </InfoPage>
   );
 }
