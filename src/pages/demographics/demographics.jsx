@@ -56,7 +56,6 @@ export default function Demographics() {
       try {
         // Get auth token from localStorage
         const token = localStorage.getItem('authToken');
-
         // Fetch participant data from backend
         const response = await fetch(buildUrl(`/participants/${id}`), {
           method: 'GET',
