@@ -1,19 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 :root {
   --primary-blue: #005696;
-  --background-color: #ECECEC;
-  --darker-grey: #AAAAAA;
-  --light-grey: #D9D9D9;
-  --lighter-grey: #ECECEC;
-  --lighest-grey: #F5F5F5;
-  --active-button-green: #C2E2C3;
-  --active-button-text-green: #496E4B;
-  --inactive-button-red: #EFC6C6;
-  --inactive-button-text-red: #8E5858;
-  --paricipant-button-yellow: #FFE0AB;
-  --paricipant-button--text-yellow: #B16B0E;
-  --care-partner-button-purple: #DDC7F1;
-  --care-partner-button--text-purple: #643A89;
+  --background-color: #ececec;
+  --darker-grey: #aaaaaa;
+  --light-grey: #d9d9d9;
+  --lighter-grey: #ececec;
+  --lighest-grey: #f5f5f5;
+  --active-button-green: #c2e2c3;
+  --active-button-text-green: #496e4b;
+  --inactive-button-red: #efc6c6;
+  --inactive-button-text-red: #8e5858;
+  --paricipant-button-yellow: #ffe0ab;
+  --paricipant-button--text-yellow: #b16b0e;
+  --care-partner-button-purple: #ddc7f1;
+  --care-partner-button--text-purple: #643a89;
   --text: #000;
 }
 
