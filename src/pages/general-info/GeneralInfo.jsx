@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
+
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-
 
 import Header from 'common/components/Header';
 import HomeButton from 'common/components/HomeButton';
@@ -16,14 +16,13 @@ import {
   TableRowLabel,
 } from 'common/components/tables/Tables';
 
-
 const InfoPage = styled.div`
   display: flex;
   flex-direction: column;
   padding: 2rem;
   margin-left: 0;
   width: 100%;
-  background-color: #ECECEC;
+  background-color: #ececec;
 `;
 
 const TablesContainer = styled.div`
@@ -42,7 +41,6 @@ const Loading = styled.div`
   color: #999;
 `;
 
-
 export default function GeneralInfo() {
   const { id } = useParams();
   const [generalInfo, setGeneralInfo] = useState(null);
@@ -52,12 +50,10 @@ export default function GeneralInfo() {
   const [error, setError] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
-
 
       try {
         // Fetch data through backend API instead of direct Supabase calls
@@ -65,15 +61,12 @@ export default function GeneralInfo() {
           credentials: 'include',
         });
 
-
         if (!response.ok) {
           throw new Error(`API error: ${response.status}`);
         }
 
-
         const data = await response.json();
         console.log('Fetched Participant Data:', data);
-
 
         // Extract the data from the response
         setGeneralInfo(data.participant_general_info || null);
@@ -90,24 +83,19 @@ export default function GeneralInfo() {
       }
     };
 
-
     fetchData();
   }, [id, API_BASE_URL]);
-
 
   if (loading) return <Loading>Loading...</Loading>;
   if (error) return <Loading>Error: {error}</Loading>;
 
-
   const handleChange = async (e, field, table, setState) => {
     const updatedValue = e.target.value;
-
 
     setState((prev) => ({
       ...prev,
       [field]: updatedValue,
     }));
-
 
     try {
       // Update through the backend API
@@ -124,7 +112,6 @@ export default function GeneralInfo() {
         }),
       });
 
-
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
       }
@@ -132,7 +119,6 @@ export default function GeneralInfo() {
       console.error(`Error updating ${table}:`, err);
     }
   };
-
 
   return (
     <InfoPage className='general-info'>
