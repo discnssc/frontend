@@ -8,7 +8,8 @@ import {
 } from 'common/components/routes/ProtectedRoutes';
 import { UserProvider } from 'common/contexts/UserContext';
 import NavLayout from 'common/layouts/NavLayout';
-import ActivityLogs from 'pages/Activity-Logs/Activities';
+import ActivityLogs from 'pages/Activity-Logs/ActivityLogs';
+import ViewActivity from 'pages/Activity-Participation-Manager/ViewActivity';
 import Cases from 'pages/Cases-Services/Cases';
 import HowInfo from 'pages/HOW-info/HowInfo';
 import AuthCallback from 'pages/account/AuthCallback';
@@ -16,6 +17,7 @@ import Login from 'pages/account/Login';
 import RequestPasswordReset from 'pages/account/RequestPasswordReset';
 import ResetPassword from 'pages/account/ResetPassword';
 import SignUp from 'pages/account/SignUp';
+import Activities from 'pages/activity-scheduling/ActivitiesSchedule';
 //import ActivityLogs from 'pages/Activity-Logs/Activities';
 //import Cases from 'pages/Cases-Services/Cases';
 import Demographics from 'pages/demographics/demographics';
@@ -61,6 +63,8 @@ export default function App() {
               path='/participant/activities/:id'
               element={<ActivityLogs />}
             />
+            <Route path='/activity/:activityId' element={<ViewActivity />} />
+            <Route path='/activities' element={<Activities />} />
 
             {/* Auth-related routes */}
             <Route path='auth/callback' element={<AuthCallback />} />

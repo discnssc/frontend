@@ -23,12 +23,13 @@ export const generateMonthlyActivityParticipationReport = (
 
   // Group activity ratings by activity name and day
   const activityMap = {};
-  activities.forEach(({ activity, date, rating, declined }) => {
+  activities.forEach(({ schedule, date, rating, declined }) => {
+    const { name: activity } = schedule;
     const activityDate = new Date(date);
     if (
       activityDate.getMonth() === monthIndex &&
       activityDate.getFullYear() === yearIndex &&
-      declined !== 'Yes' &&
+      !declined &&
       rating != null
     ) {
       const day = activityDate.getDate();
@@ -116,12 +117,13 @@ export const generateAggregateActivityReport = (
 
   const activityMap = {};
   const totalOffered = {};
-  activities.forEach(({ activity, date, rating, declined }) => {
+  activities.forEach(({ schedule, date, rating, declined }) => {
+    const { name: activity } = schedule;
     const activityDate = new Date(date);
     if (activityDate >= startDate && activityDate <= endDate) {
       if (!totalOffered[activity]) totalOffered[activity] = 0;
       totalOffered[activity]++;
-      if (declined !== 'Yes' && rating != null) {
+      if (!declined && rating != null) {
         if (!activityMap[activity]) activityMap[activity] = [];
         activityMap[activity].push(rating);
       }
