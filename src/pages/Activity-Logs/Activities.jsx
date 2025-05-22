@@ -95,6 +95,15 @@ export default function Activities() {
       endYear
     );
   };
+  const startDate = (month, year) => {
+    const startDate = new Date(year, month - 1, 1);
+    return startDate.toISOString().split('T')[0];
+  };
+
+  const endDate = (month, year) => {
+    const endDate = new Date(year, month, 0);
+    return endDate.toISOString().split('T')[0];
+  };
 
   const [monthlyReportActivities, setmonthlyReportActivities] = useState([
     { activity: "Board Games", declined: "Yes", rating: 0, date: "04/03/2025" },
@@ -168,7 +177,48 @@ export default function Activities() {
     { activity: "Movie Night", declined: "No", rating: 3, date: "04/08/2025" },
     { activity: "Art Therapy", declined: "No", rating: 3, date: "04/10/2025" },
   ]);
+  useEffect(() => {
+    const fetchActivityLogs = async() => {
+      try {
+        const startDateforMonthlyReport = startDate(month, year);
+        const endDateforMonthlyReport = endDate(month, year);
+        const startDateforAggregateReport = startDate(startMonth, startYear);
+        const endDateforAggregateReport = endDate(endMonth, endYear);
+    
+        const [responseMonthlyReport, responseAggregateReport] = await Promise.all([
+          fetch(
+            buildUrl(
+              `/participants/${id}/activity-logs?start=${startDateForMonthlyReport}&end=${endDateForMonthlyReport}`
+            )
+          ),
+          fetch(
+            buildUrl(
+              `/participants/${id}/activity-logs?start=${startDateForAggregateReport}&end=${endDateForAggregateReport}`
+            )
+          )
+        ]);
 
+          if (!responseMonthlyReport.ok) {
+          const errorData = await responseMonthlyReport.json();
+          throw new Error(errorData.error || 'Failed to fetch monthly activity logs');
+        }
+        if (!responseAggregateReport.ok) {
+          const errorData = await responseAggregateReport.json();
+          throw new Error(errorData.error || 'Failed to fetch aggregate activity logs');
+        }
+    
+        const monthlyData = await responseMonthlyReport.json();
+        const aggregateData = await responseAggregateReport.json();
+        setmonthlyReportActivities(monthlyData);
+        setAggregateReportActivities(aggregateData);
+        console.log('Fetched monthly report activities:', monthlyData);
+        console.log('Fetched aggregate report activities:', aggregateData);
+      } catch (err) {
+        console.error('Error fetching activity logs:', err.message);
+      }
+    }
+    fetchActivityLogs();
+  }, [startMonth, startYear, endMonth, endYear, month, year, id]);
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
