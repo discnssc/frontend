@@ -1,5 +1,4 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -68,6 +67,10 @@ export default function Activities() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [monthlyReportActivities, setmonthlyReportActivities] = useState([]);
+  const [aggregateReportActivities, setAggregateReportActivities] = useState(
+    []
+  );
   const [month, setMonth] = useState('04');
   const [year, setYear] = useState('2025');
   const [startMonth, setStartMonth] = useState('01');
@@ -104,109 +107,40 @@ export default function Activities() {
     const endDate = new Date(year, month, 0);
     return endDate.toISOString().split('T')[0];
   };
-
-  const [monthlyReportActivities, setmonthlyReportActivities] = useState([
-    { activity: "Board Games", declined: "Yes", rating: 0, date: "04/03/2025" },
-    { activity: "Art Therapy", declined: "Yes", rating: -1, date: "04/09/2025" },
-    { activity: "Cooking", declined: "No", rating: 2, date: "04/14/2025" },
-    { activity: "Dance Class", declined: "Yes", rating: 0, date: "04/21/2025" },
-    { activity: "Yoga", declined: "No", rating: 3, date: "04/10/2025" },
-    { activity: "Painting", declined: "No", rating: 2, date: "04/15/2025" },
-    { activity: "Storytelling", declined: "No", rating: 1, date: "04/20/2025" },
-    { activity: "Movie Night", declined: "Yes", rating: 0, date: "04/25/2025" },
-    { activity: "Poetry Reading", declined: "No", rating: 2, date: "04/30/2025" },
-    { activity: "Gardening", declined: "No", rating: 3, date: "04/05/2025" },
-    { activity: "Music Therapy", declined: "No", rating: 2, date: "04/12/2025" },
-    { activity: "Photography Workshop", declined: "Yes", rating: 0, date: "04/18/2025" },
-    { activity: "Meditation", declined: "No", rating: 3, date: "04/22/2025" },
-    { activity: "Book Club", declined: "No", rating: 2, date: "04/28/2025" },
-    { activity: "Board Games", declined: "No", rating: 1, date: "04/06/2025" },
-    { activity: "Art Therapy", declined: "No", rating: 2, date: "04/07/2025" },
-    { activity: "Dance Class", declined: "No", rating: 2, date: "04/08/2025" },
-    { activity: "Movie Night", declined: "No", rating: 3, date: "04/11/2025" },
-    { activity: "Photography Workshop", declined: "No", rating: 2, date: "04/13/2025" },
-    { activity: "Board Games", declined: "No", rating: 2, date: "04/16/2025" },
-    { activity: "Art Therapy", declined: "No", rating: 3, date: "04/17/2025" },
-    { activity: "Cooking", declined: "No", rating: 1, date: "04/19/2025" },
-    { activity: "Dance Class", declined: "No", rating: 2, date: "04/23/2025" },
-    { activity: "Yoga", declined: "No", rating: 3, date: "04/24/2025" },
-    { activity: "Painting", declined: "No", rating: 2, date: "04/26/2025" },
-    { activity: "Storytelling", declined: "No", rating: 1, date: "04/27/2025" },
-    { activity: "Gardening", declined: "No", rating: 3, date: "04/29/2025" },
-    { activity: "Music Therapy", declined: "No", rating: 2, date: "04/02/2025" },
-    { activity: "Meditation", declined: "No", rating: 3, date: "04/01/2025" },
-  ]);
-  const [aggregateReportActivities, setAggregateReportActivities] = useState([
-    { activity: "Art Therapy", declined: "No", rating: 1, date: "03/01/2025" },
-    { activity: "Board Games", declined: "Yes", rating: 0, date: "04/03/2025" },
-    { activity: "Trivia", declined: "No", rating: 1, date: "04/05/2025" },
-    { activity: "Knitting", declined: "No", rating: -1, date: "03/07/2025" },
-    { activity: "Art Therapy", declined: "Yes", rating: 0, date: "04/09/2025" },
-    { activity: "Trivia", declined: "No", rating: 1, date: "03/11/2025" },
-    { activity: "Cooking", declined: "No", rating: 2, date: "04/14/2025" },
-    { activity: "Yoga", declined: "No", rating: 3, date: "03/18/2025" },
-    { activity: "Dance Class", declined: "Yes", rating: 0, date: "04/21/2025" },
-    { activity: "Art Therapy", declined: "No", rating: 2, date: "02/01/2025" },
-    { activity: "Board Games", declined: "No", rating: 1, date: "02/03/2025" },
-    { activity: "Trivia", declined: "Yes", rating: 0, date: "02/05/2025" },
-    { activity: "Knitting", declined: "Yes", rating: 0, date: "02/07/2025" },
-    { activity: "Meditation", declined: "No", rating: 3, date: "02/09/2025" },
-    { activity: "Storytelling", declined: "No", rating: 2, date: "02/11/2025" },
-    { activity: "Movie Night", declined: "No", rating: 3, date: "01/14/2025" },
-    { activity: "Dance Class", declined: "No", rating: 2, date: "01/16/2025" },
-    { activity: "Yoga", declined: "Yes", rating: 0, date: "01/19/2025" },
-    { activity: "Cooking", declined: "No", rating: 1, date: "02/21/2025" },
-    { activity: "Poetry Reading", declined: "No", rating: 2, date: "01/24/2025" },
-    { activity: "Gardening", declined: "No", rating: 3, date: "03/02/2025" },
-    { activity: "Music Therapy", declined: "No", rating: 2, date: "03/04/2025" },
-    { activity: "Meditation", declined: "No", rating: 3, date: "03/06/2025" },
-    { activity: "Book Club", declined: "No", rating: 2, date: "03/08/2025" },
-    { activity: "Photography Workshop", declined: "Yes", rating: 0, date: "03/10/2025" },
-    { activity: "Movie Night", declined: "No", rating: 3, date: "03/12/2025" },
-    { activity: "Art Therapy", declined: "No", rating: 2, date: "03/14/2025" },
-    { activity: "Board Games", declined: "No", rating: 1, date: "03/16/2025" },
-    { activity: "Dance Class", declined: "No", rating: 2, date: "03/20/2025" },
-    { activity: "Yoga", declined: "No", rating: 3, date: "03/22/2025" },
-    { activity: "Painting", declined: "No", rating: 2, date: "03/24/2025" },
-    { activity: "Knitting", declined: "No", rating: 1, date: "03/26/2025" },
-    { activity: "Gardening", declined: "No", rating: 3, date: "03/28/2025" },
-    { activity: "Music Therapy", declined: "No", rating: 2, date: "03/30/2025" },
-    { activity: "Knitting", declined: "No", rating: 3, date: "04/01/2025" },
-    { activity: "Book Club", declined: "No", rating: 2, date: "04/04/2025" },
-    { activity: "Knitting", declined: "No", rating: 2, date: "04/06/2025" },
-    { activity: "Movie Night", declined: "No", rating: 3, date: "04/08/2025" },
-    { activity: "Art Therapy", declined: "No", rating: 3, date: "04/10/2025" },
-  ]);
   useEffect(() => {
-    const fetchActivityLogs = async() => {
+    const fetchActivityLogs = async () => {
       try {
         const startDateforMonthlyReport = startDate(month, year);
         const endDateforMonthlyReport = endDate(month, year);
         const startDateforAggregateReport = startDate(startMonth, startYear);
         const endDateforAggregateReport = endDate(endMonth, endYear);
-    
-        const [responseMonthlyReport, responseAggregateReport] = await Promise.all([
-          fetch(
-            buildUrl(
-              `/participants/${id}/activity-logs?start=${startDateForMonthlyReport}&end=${endDateForMonthlyReport}`
-            )
-          ),
-          fetch(
-            buildUrl(
-              `/participants/${id}/activity-logs?start=${startDateForAggregateReport}&end=${endDateForAggregateReport}`
-            )
-          )
-        ]);
+        const [responseMonthlyReport, responseAggregateReport] =
+          await Promise.all([
+            fetch(
+              buildUrl(
+                `/participants/${id}/activity-logs?start=${startDateforMonthlyReport}&end=${endDateforMonthlyReport}`
+              )
+            ),
+            fetch(
+              buildUrl(
+                `/participants/${id}/activity-logs?start=${startDateforAggregateReport}&end=${endDateforAggregateReport}`
+              )
+            ),
+          ]);
 
-          if (!responseMonthlyReport.ok) {
+        if (!responseMonthlyReport.ok) {
           const errorData = await responseMonthlyReport.json();
-          throw new Error(errorData.error || 'Failed to fetch monthly activity logs');
+          throw new Error(
+            errorData.error || 'Failed to fetch monthly activity logs'
+          );
         }
         if (!responseAggregateReport.ok) {
           const errorData = await responseAggregateReport.json();
-          throw new Error(errorData.error || 'Failed to fetch aggregate activity logs');
+          throw new Error(
+            errorData.error || 'Failed to fetch aggregate activity logs'
+          );
         }
-    
+
         const monthlyData = await responseMonthlyReport.json();
         const aggregateData = await responseAggregateReport.json();
         setmonthlyReportActivities(monthlyData);
@@ -216,7 +150,7 @@ export default function Activities() {
       } catch (err) {
         console.error('Error fetching activity logs:', err.message);
       }
-    }
+    };
     fetchActivityLogs();
   }, [startMonth, startYear, endMonth, endYear, month, year, id]);
   useEffect(() => {

@@ -60,10 +60,17 @@ const ActivitiesTable = ({ activities }) => {
           <LableTableCell>Date</LableTableCell>
         </TableRow>
         <tbody>
-          {activities.map((activity, index) => (
-            <TableRow key={index}>
-              <TableCell>{activity.activity}</TableCell>
-              <TableCell>{activity.declined}</TableCell>
+          {activities.map((activity) => (
+            <TableRow key={activity.id}>
+              <TableCell>
+                <a
+                  href={`/activity/${activity.schedule?.id}`}
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                  {activity.schedule?.name || 'No name'}
+                </a>
+              </TableCell>
+              <TableCell>{activity.declined ? 'Yes' : 'No'}</TableCell>
               <TableCell>{activity.rating}</TableCell>
               <TableCell>{activity.date}</TableCell>
             </TableRow>
