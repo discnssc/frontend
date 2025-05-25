@@ -1,16 +1,20 @@
-/* global color presets */
-
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 :root {
-  --dark-blue: #005696;
-  --dark-grey: #AAAAAA;
-  --med-dark-grey: #D9D9D9;
-  --med-grey: #ECECEC;
-  --light-grey: #F5F5F5;
-  --primary-green: #45bf84;
-  --secondary-lightgrey: #f3f3f3;
-  --darkgrey: #747474;
-  --white: #fff;
-  --text: #191a23;
+  --primary-blue: #005696;
+  --background-color: #ececec;
+  --darker-grey: #aaaaaa;
+  --light-grey: #d9d9d9;
+  --lighter-grey: #ececec;
+  --lighest-grey: #f5f5f5;
+  --active-button-green: #c2e2c3;
+  --active-button-text-green: #496e4b;
+  --inactive-button-red: #efc6c6;
+  --inactive-button-text-red: #8e5858;
+  --paricipant-button-yellow: #ffe0ab;
+  --paricipant-button--text-yellow: #b16b0e;
+  --care-partner-button-purple: #ddc7f1;
+  --care-partner-button--text-purple: #643a89;
+  --text: #000;
 }
 
 @font-face {
@@ -32,6 +36,27 @@
 }
 
 * {
-  font-family: 'Body', sans-serif;
+  font-family: 'Roboto', sans-serif;
+  line-height: normal;
   color: var(--text);
+}
+
+body {
+  margin: 100px;
+  background-color: var(--background-color);
+}
+
+.text-title {
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.text-subheading {
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.text-body {
+  font-size: 20px;
+  font-weight: 400;
 }

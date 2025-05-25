@@ -27,6 +27,7 @@ import GeneralInfo from 'pages/general-info/GeneralInfo';
 //import HowInfo from 'pages/HOW-info/HowInfo';
 import NotFound from 'pages/not-found/NotFound';
 import ParticipantDatabase from 'pages/participant_database/ParticipantDatabase';
+import ParticipantSchedule from 'pages/scheduling/ParticipantSchedule';
 
 import './App.css';
 
@@ -75,6 +76,12 @@ export default function App() {
               element={<ParticipantDatabase />}
             />
             <Route path='auth/reset-password' element={<ResetPassword />} />
+
+            {/* Admin routes */}
+            <Route
+              path='/admin/participant-schedule'
+              element={<ParticipantSchedule />}
+            />
 
             {/* Catch-all route for 404 */}
             <Route path='*' element={<NotFound />} />
