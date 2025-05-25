@@ -108,11 +108,7 @@ export default function GeneralInfo() {
         // Extract the data from the response
         setGeneralInfo(data.participant_general_info || null);
         setContactInfo(data.participant_address_and_contact || null);
-        setParticipantInfo({
-          id: data.id,
-          participant_created_at: data.participant_created_at,
-          participant_updated_at: data.participant_updated_at,
-        });
+        setParticipantInfo(data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -159,7 +155,7 @@ export default function GeneralInfo() {
 
   return (
     <InfoPage>
-      <Header participant={{ ...generalInfo, ...participantInfo }} />
+      <Header participant={participantInfo} />
       <HomeButton />
       <ParticipantNavbar />
       <TableContainer>

@@ -82,7 +82,6 @@ const buildUrl = (endpoint) =>
 
 export default function Demographics() {
   const { id } = useParams();
-  const [generalInfo, setGeneralInfo] = useState(null);
   const [demographicInfo, setDemographicInfo] = useState(null);
   const [participantInfo, setParticipantInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -114,20 +113,13 @@ export default function Demographics() {
         const data = await response.json();
 
         // Extract data from the response
-        const generalData = data.participant_general_info;
         const demographicData = data.participant_demographics;
-        const participantData = {
-          id: data.id,
-          participant_created_at: data.participant_created_at,
-          participant_updated_at: data.participant_updated_at,
-        };
+        const participantData = data;
 
         console.log('Fetched Demographic Info:', demographicData);
-        console.log('Fetched General Info:', generalData);
         console.log('Fetched Participant Info:', participantData);
 
         setDemographicInfo(demographicData);
-        setGeneralInfo(generalData);
         setParticipantInfo(participantData);
       } catch (err) {
         setError(err.message);
@@ -199,7 +191,7 @@ export default function Demographics() {
 
   return (
     <InfoPage>
-      <Header participant={{ ...generalInfo, ...participantInfo }} />
+      <Header participant={participantInfo} />
       <HomeButton />
       <ParticipantNavbar />
       <TableContainer>
