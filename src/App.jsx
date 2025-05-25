@@ -27,6 +27,7 @@ import GeneralInfo from 'pages/general-info/GeneralInfo';
 import NotFound from 'pages/not-found/NotFound';
 import ParticipantDatabase from 'pages/participant_database/ParticipantDatabase';
 import ParticipantSchedule from 'pages/scheduling/ParticipantSchedule';
+import UserDashboard from 'pages/user-dashboard/UserDashboard';
 
 import './App.css';
 
@@ -80,6 +81,9 @@ export default function App() {
               path='/admin/participant-schedule'
               element={<ParticipantSchedule />}
             />
+
+            {/* User dashboard */}
+            <Route path='/admin-dashboard' element={<UserDashboard />} />
 
             {/* Catch-all route for 404 */}
             <Route path='*' element={<NotFound />} />
