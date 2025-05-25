@@ -18,7 +18,7 @@ import Login from 'pages/account/Login';
 import RequestPasswordReset from 'pages/account/RequestPasswordReset';
 import ResetPassword from 'pages/account/ResetPassword';
 import SetPassword from 'pages/account/SetPassword';
-// import SignUp from 'pages/account/SignUp';
+import SignUp from 'pages/account/SignUp';
 //import ActivityLogs from 'pages/Activity-Logs/Activities';
 //import Cases from 'pages/Cases-Services/Cases';
 import Demographics from 'pages/demographics/demographics';
@@ -45,6 +45,7 @@ export default function App() {
               <Route path='signup' element={<InviteLandingPage />} />
               <Route path='set-password' element={<SetPassword />} />
               <Route path='incorrect-info' element={<IncorrectInfo />} />
+              <Route path='test' element={<SignUp />} />
               <Route
                 path='forgot-password'
                 element={<RequestPasswordReset />}
