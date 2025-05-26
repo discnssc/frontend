@@ -47,7 +47,7 @@ export const TableRowLabel = styled.div`
   text-align: left;
   vertical-align: middle;
   border: 1px solid #e0e0e0;
-  width: %auto;
+  width: auto;
   background-color: white;
 `;
 
@@ -58,7 +58,7 @@ export const TableCell = styled.div`
   text-align: left;
   vertical-align: middle;
   border: 1px solid #e0e0e0;
-  width: %auto;
+  width: auto;
   background-color: white;
 
   input[type='checkbox'] {

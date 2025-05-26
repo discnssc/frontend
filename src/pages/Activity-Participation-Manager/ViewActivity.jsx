@@ -12,7 +12,7 @@ const ActivityPage = styled.div`
   justify-content: left;
   align-items: left;
   text-align: left;
-  padding: 2rem;
+  padding: 4rem 6rem;
   background-color: #ececec;
 `;
 const ActivityInfo = styled.div`
@@ -21,7 +21,7 @@ const ActivityInfo = styled.div`
   margin-top: 1rem;
 `;
 const Table = styled.table`
-  width: auto;
+  width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
   vertical-align: top;
@@ -48,9 +48,20 @@ const LableTableCell = styled.td`
   }
   &:first-child {
     border-top-left-radius: 10px;
+    width: 20%;
+  }
+  &:nth-child(2) {
+    width: 20%;
+  }
+  &:nth-child(3) {
+    width: 10%;
+  }
+  &:nth-child(4) {
+    width: 10%;
   }
   &:last-child {
     border-top-right-radius: 10px;
+    width: 40%;
   }
 `;
 const TableCell = styled.td`
@@ -84,19 +95,18 @@ const InputBox = styled.input`
 `;
 
 const SearchBox = styled.input`
-  padding: 15px 70px 15px 20px;
+  padding: 15px 20px 15px 20px;
+  width: 30%;
   color: #aaaaaa;
   font-size: 15px;
   border: 0px;
   border-radius: 30px;
   background-color: #ffffff;
-  font-style: italic;
   &:focus {
     outline: none;
   }
   &::placeholder {
     color: #aaaaaa;
-    font-style: italic;
   }
 `;
 const ErrorMessage = styled.div`
@@ -238,13 +248,14 @@ const ViewActivity = () => {
       </ActivityInfo>
       <SearchBox
         type='text'
-        placeholder='Search participants...'
+        placeholder='🔍   Search participants...'
         onChange={(e) => setSearchTerm(e.target.value)}
         value={searchTerm}
       />
       <Table>
         <TableRow>
-          <LableTableCell>Name</LableTableCell>
+          <LableTableCell>First Name</LableTableCell>
+          <LableTableCell>Last Name</LableTableCell>
           <LableTableCell>Declined?</LableTableCell>
           <LableTableCell>Rating</LableTableCell>
           <LableTableCell>Notes</LableTableCell>
@@ -255,8 +266,10 @@ const ViewActivity = () => {
             return (
               <TableRow key={participant.id}>
                 <TableCell>
-                  {participant.participant_general_info?.first_name || 'N/A'}{' '}
-                  {participant.participant_general_info?.last_name || ''}
+                  {participant.participant_general_info?.first_name || 'N/A'}
+                </TableCell>
+                <TableCell>
+                  {participant.participant_general_info?.last_name || 'N/A'}
                 </TableCell>
                 <TableCell>
                   <InputBox
