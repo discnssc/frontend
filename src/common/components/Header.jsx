@@ -39,10 +39,12 @@ const SmallText = styled.h1`
 `;
 
 export default function Header({ participant }) {
+  console.log('Participant Header:', participant);
   return (
     <HeaderContainer>
       <Left>
-        {participant?.first_name || 'User'} {participant?.last_name || 'User'}{' '}
+        {participant?.participant_general_info?.first_name || 'User'}{' '}
+        {participant?.participant_general_info?.last_name || 'User'}{' '}
         <div
           style={{
             display: 'inline-block',
@@ -85,8 +87,10 @@ export default function Header({ participant }) {
 Header.propTypes = {
   participant: PropTypes.shape({
     id: PropTypes.string,
-    first_name: PropTypes.string,
-    last_name: PropTypes.string,
+    participant_general_info: PropTypes.shape({
+      first_name: PropTypes.string,
+      last_name: PropTypes.string,
+    }),
     status: PropTypes.string,
     participant_created_at: PropTypes.string,
     participant_updated_at: PropTypes.string,
