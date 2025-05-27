@@ -6,71 +6,34 @@ import styled from 'styled-components';
 import Header from 'common/components/Header';
 import HomeButton from 'common/components/HomeButton';
 import ParticipantNavbar from 'common/components/ParticipantNavBar';
+import {
+  Table,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableLabel,
+  TableRow,
+  TableRowLabel,
+} from 'common/components/tables/Tables';
 
 const InfoPage = styled.div`
-  flex-direction: row;
-  justify-content: left;
-  align-items: left;
-  text-align: left;
-  padding: 2rem;
-  margin-left: 50px;
-`;
-
-const TableContainer = styled.div`
-  font-size: 15px;
-  width: 450px;
-  display: table;
-  vertical-align: top;
-  float: left;
-  margin-right: 2rem;
-  align-items: flex-start;
-  margin-top: 40px;
-  margin-left: 135px;
-`;
-
-const Table = styled.div`
-  font-size: 15px;
-  width: 45%;
-  display: table;
-  vertical-align: top;
-  float: left;
-  margin-right: 2rem;
-  align-items: flex-start;
-`;
-
-const TableHead = styled.div`
-  flex: 1 0 0;
+  display: flex;
   flex-direction: column;
-  justify-content: left;
-  align-items: left;
-  text-align: left;
-  font-size: 15px;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  align-items: flex-start;
+  padding: 2rem;
+  margin-left: 0;
+  width: 100%;
+  background-color: #ececec;
 `;
 
-const TableRow = styled.tr`
-  font-size: 15px;
-`;
-
-const TableLabel = styled.th`
-  padding: 8px;
-  text-align: left;
-  vertical-align: center;
-  background-color: #ffffff;
-  font-weight: bold;
-  border: 0.5px solid #aaaaaa;
-`;
-
-const TableCell = styled.td`
-  padding: 8px;
-  text-align: left;
-  vertical-align: center;
-  background-color: #ffffff;
-  border: 0.5px solid #aaaaaa;
-  justify-content: center;
-  flex-shrink: 0;
+const TablesContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 `;
 
 const Loading = styled.div`
@@ -108,11 +71,7 @@ export default function GeneralInfo() {
         // Extract the data from the response
         setGeneralInfo(data.participant_general_info || null);
         setContactInfo(data.participant_address_and_contact || null);
-        setParticipantInfo({
-          id: data.id,
-          participant_created_at: data.participant_created_at,
-          participant_updated_at: data.participant_updated_at,
-        });
+        setParticipantInfo(data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -159,92 +118,78 @@ export default function GeneralInfo() {
 
   return (
     <InfoPage>
-      <Header participant={{ ...generalInfo, ...participantInfo }} />
+      <Header participant={participantInfo} />
       <HomeButton />
       <ParticipantNavbar />
-      <TableContainer>
-        <TableHead>Participant Info</TableHead>
-        <Table>
-          <tbody>
-            {generalInfo &&
-              Object.keys(generalInfo)
-                .filter((key) => key !== 'id' && key !== 'status')
-                .map((key) => (
-                  <TableRow key={key}>
-                    <TableLabel>
-                      {key
-                        .replace(/_/g, ' ')
-                        .replace(/\b\w/g, (char) => char.toUpperCase())}
-                      :
-                    </TableLabel>
-                    <TableCell>
-                      <input
-                        type='text'
-                        value={generalInfo[key] || ''}
-                        onChange={(e) =>
-                          handleChange(
-                            e,
-                            key,
-                            'participant_general_info',
-                            setGeneralInfo
-                          )
-                        }
-                        style={{
-                          background: 'transparent', // Match table background
-                          border: 'none', // Remove border
-                          outline: 'none', // Remove focus outline
-                          fontSize: '15px', // Match table text
-                          padding: '5px', // Add some spacing
-                        }}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-          </tbody>
-        </Table>
-      </TableContainer>
+      <TablesContainer>
+        <TableContainer>
+          <TableLabel>Participant Info</TableLabel>
+          <Table>
+            <TableHead>
+              {generalInfo &&
+                Object.keys(generalInfo)
+                  .filter((key) => key !== 'id' && key !== 'status')
+                  .map((key) => (
+                    <TableRow key={key}>
+                      <TableRowLabel>
+                        {key
+                          .replace(/_/g, ' ')
+                          .replace(/\b\w/g, (char) => char.toUpperCase())}
+                      </TableRowLabel>
+                      <TableCell>
+                        <input
+                          type='text'
+                          value={generalInfo[key] || ''}
+                          onChange={(e) =>
+                            handleChange(
+                              e,
+                              key,
+                              'participant_general_info',
+                              setGeneralInfo
+                            )
+                          }
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+            </TableHead>
+          </Table>
+        </TableContainer>
 
-      <TableContainer>
-        <TableHead>Address and Contact Info</TableHead>
-        <Table>
-          <tbody>
-            {contactInfo &&
-              Object.keys(contactInfo)
-                .filter((key) => key !== 'id')
-                .map((key) => (
-                  <TableRow key={key}>
-                    <TableLabel>
-                      {key
-                        .replace(/_/g, ' ')
-                        .replace(/\b\w/g, (char) => char.toUpperCase())}
-                      :
-                    </TableLabel>
-                    <TableCell>
-                      <input
-                        type='text'
-                        value={contactInfo[key] || ''}
-                        onChange={(e) =>
-                          handleChange(
-                            e,
-                            key,
-                            'participant_address_and_contact',
-                            setContactInfo
-                          )
-                        }
-                        style={{
-                          background: 'transparent', // Match table background
-                          border: 'none', // Remove border
-                          outline: 'none', // Remove focus outline
-                          fontSize: '15px', // Match table text
-                          padding: '5px', // Add some spacing
-                        }}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-          </tbody>
-        </Table>
-      </TableContainer>
+        <TableContainer>
+          <TableLabel>Address and Contact Info</TableLabel>
+          <Table>
+            <TableHead>
+              {contactInfo &&
+                Object.keys(contactInfo)
+                  .filter((key) => key !== 'id')
+                  .map((key) => (
+                    <TableRow key={key}>
+                      <TableRowLabel>
+                        {key
+                          .replace(/_/g, ' ')
+                          .replace(/\b\w/g, (char) => char.toUpperCase())}
+                      </TableRowLabel>
+                      <TableCell>
+                        <input
+                          type='text'
+                          value={contactInfo[key] || ''}
+                          onChange={(e) =>
+                            handleChange(
+                              e,
+                              key,
+                              'participant_address_and_contact',
+                              setContactInfo
+                            )
+                          }
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+            </TableHead>
+          </Table>
+        </TableContainer>
+      </TablesContainer>
     </InfoPage>
   );
 }

@@ -6,69 +6,30 @@ import styled from 'styled-components';
 import Header from 'common/components/Header';
 import HomeButton from 'common/components/HomeButton';
 import ParticipantNavbar from 'common/components/ParticipantNavBar';
+import {
+  Table,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableLabel,
+  TableRow,
+  TableRowLabel,
+} from 'common/components/tables/Tables';
 
 const InfoPage = styled.div`
-  flex-direction: row;
-  justify-content: left;
-  align-items: left;
-  text-align: left;
-  padding: 2rem;
-`;
-
-const TableContainer = styled.div`
-  font-size: 15px;
-  width: 45%;
-  display: table;
-  vertical-align: top;
-  float: left;
-  margin-left: 160px;
-  margin-top: 40px;
-  align-items: flex-start;
-`;
-
-const Table = styled.div`
-  font-size: 15px;
-  width: 45%;
-  display: table;
-  vertical-align: top;
-  float: left;
-  margin-right: 2rem;
-  align-items: flex-start;
-`;
-
-const TableHead = styled.div`
-  flex: 1 0 0;
+  display: flex;
   flex-direction: column;
-  justify-content: left;
-  align-items: left;
-  text-align: left;
-  font-size: 15px;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  align-items: flex-start;
+  padding: 2rem;
+  margin-left: 0;
+  width: 100%;
+  background-color: #ececec;
 `;
 
-const TableRow = styled.tr`
-  font-size: 15px;
-`;
-
-const TableLabel = styled.th`
-  padding: 8px;
-  text-align: left;
-  vertical-align: center;
-  background-color: #ffffff;
-  font-weight: bold;
-  border: 0.5px solid #aaaaaa;
-`;
-
-const TableCell = styled.td`
-  padding: 8px;
-  text-align: left;
-  vertical-align: center;
-  background-color: #ffffff;
-  border: 0.5px solid #aaaaaa;
-  justify-content: center;
-  flex-shrink: 0;
+const TableWrapper = styled.div`
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 `;
 
 const Loading = styled.div`
@@ -82,7 +43,6 @@ const buildUrl = (endpoint) =>
 
 export default function Demographics() {
   const { id } = useParams();
-  const [generalInfo, setGeneralInfo] = useState(null);
   const [demographicInfo, setDemographicInfo] = useState(null);
   const [participantInfo, setParticipantInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -114,20 +74,13 @@ export default function Demographics() {
         const data = await response.json();
 
         // Extract data from the response
-        const generalData = data.participant_general_info;
         const demographicData = data.participant_demographics;
-        const participantData = {
-          id: data.id,
-          participant_created_at: data.participant_created_at,
-          participant_updated_at: data.participant_updated_at,
-        };
+        const participantData = data;
 
         console.log('Fetched Demographic Info:', demographicData);
-        console.log('Fetched General Info:', generalData);
         console.log('Fetched Participant Info:', participantData);
 
         setDemographicInfo(demographicData);
-        setGeneralInfo(generalData);
         setParticipantInfo(participantData);
       } catch (err) {
         setError(err.message);
@@ -199,76 +152,63 @@ export default function Demographics() {
 
   return (
     <InfoPage>
-      <Header participant={{ ...generalInfo, ...participantInfo }} />
+      <Header participant={participantInfo} />
       <HomeButton />
       <ParticipantNavbar />
-      <TableContainer>
-        <TableHead>Demographics</TableHead>
-        <Table>
-          <tbody>
-            {demographicInfo &&
-              Object.keys(demographicInfo)
-                .filter((key) => key !== 'id' && key !== 'status')
-                .map((key) => {
-                  const isBoolean = booleanFields.includes(key);
-                  const value = demographicInfo[key] || false;
-
-                  return (
-                    <TableRow key={key}>
-                      <TableLabel>
-                        {key
-                          .replace(/_/g, ' ')
-                          .replace(/\b\w/g, (char) => char.toUpperCase())}
-                        :
-                      </TableLabel>
-                      <TableCell>
-                        {isBoolean ? (
-                          <input
-                            type='checkbox'
-                            checked={!!value}
-                            onChange={(e) =>
-                              handleChange(
-                                e,
-                                key,
-                                'participant_demographics',
-                                setDemographicInfo
-                              )
-                            }
-                            style={{
-                              margin: '0',
-                              width: '15px',
-                              height: '15px',
-                              cursor: 'pointer',
-                            }}
-                          />
-                        ) : (
-                          <input
-                            type='text'
-                            value={value || ''}
-                            onChange={(e) =>
-                              handleChange(
-                                e,
-                                key,
-                                'participant_demographics',
-                                setDemographicInfo
-                              )
-                            }
-                            style={{
-                              background: 'transparent',
-                              border: 'none',
-                              outline: 'none',
-                              fontSize: '15px',
-                              padding: '5px',
-                            }}
-                          />
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-          </tbody>
-        </Table>
-      </TableContainer>
+      <TableWrapper>
+        <TableContainer>
+          <TableLabel>Demographics</TableLabel>
+          <Table>
+            <TableHead>
+              {demographicInfo &&
+                Object.keys(demographicInfo)
+                  .filter((key) => key !== 'id' && key !== 'status')
+                  .map((key) => {
+                    const isBoolean = booleanFields.includes(key);
+                    const value = demographicInfo[key] || false;
+                    return (
+                      <TableRow key={key}>
+                        <TableRowLabel>
+                          {key
+                            .replace(/_/g, ' ')
+                            .replace(/\b\w/g, (char) => char.toUpperCase())}
+                        </TableRowLabel>
+                        <TableCell>
+                          {isBoolean ? (
+                            <input
+                              type='checkbox'
+                              checked={!!value}
+                              onChange={(e) =>
+                                handleChange(
+                                  e,
+                                  key,
+                                  'participant_demographics',
+                                  setDemographicInfo
+                                )
+                              }
+                            />
+                          ) : (
+                            <input
+                              type='text'
+                              value={value || ''}
+                              onChange={(e) =>
+                                handleChange(
+                                  e,
+                                  key,
+                                  'participant_demographics',
+                                  setDemographicInfo
+                                )
+                              }
+                            />
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+            </TableHead>
+          </Table>
+        </TableContainer>
+      </TableWrapper>
     </InfoPage>
   );
 }
