@@ -17,7 +17,7 @@ const StyledRightAlignPage = styled.div`
   display: flex;
   justify-content: right;
   align-items: center;
-  background-color: var(--light-grey);
+  background-color: var(--lighter-grey);
   overflow: hidden;
 `;
 
@@ -85,7 +85,7 @@ export default function Login() {
           required
         />
         <StyledLink to='/forgot-password'>
-          <div style={{ color: 'var(--dark-blue)', textAlign: 'right' }}>
+          <div style={{ color: 'var(--primary-blue)', textAlign: 'right' }}>
             Forgot Password?
           </div>
         </StyledLink>

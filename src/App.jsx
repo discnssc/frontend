@@ -28,6 +28,8 @@ import GeneralInfo from 'pages/general-info/GeneralInfo';
 import NotFound from 'pages/not-found/NotFound';
 import ParticipantDatabase from 'pages/participant_database/ParticipantDatabase';
 import ParticipantSchedule from 'pages/scheduling/ParticipantSchedule';
+import AdminDashboard from 'pages/admin-dashboard/AdminDashboard';
+import ManageUsers from 'pages/admin-dashboard/ManageUsers';
 
 import './App.css';
 
@@ -78,10 +80,10 @@ export default function App() {
             <Route path='auth/reset-password' element={<ResetPassword />} />
 
             {/* Admin routes */}
-            <Route
-              path='/admin/participant-schedule'
-              element={<ParticipantSchedule />}
-            />
+            <Route path='admin' element={<AdminDashboard />}>
+              <Route index element={<ManageUsers />} />
+              <Route path='manage-users' element={<ManageUsers />} />
+            </Route>
 
             {/* Catch-all route for 404 */}
             <Route path='*' element={<NotFound />} />

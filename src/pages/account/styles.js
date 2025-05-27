@@ -40,6 +40,7 @@ export const StyledButton = styled(Button.Primary)`
   padding-right: 30px;
   margin-left: auto;
   margin-right: auto;
+  color: white;
 `;
 
 export const ImageContainer = styled.div`
@@ -49,7 +50,7 @@ export const ImageContainer = styled.div`
 `;
 
 export const StyledLink = styled(Link)`
-  color: var(--dark-blue);
+  color: var(--primary-blue);
   text-decoration: none;
   font-size: 1rem;
   margin-top: -30px;

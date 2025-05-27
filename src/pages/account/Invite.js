@@ -6,7 +6,7 @@ export const StyledCenterAlignPage = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--light-grey);
+  background-color: var(--lighter-grey);
   overflow: hidden;
 `;
 

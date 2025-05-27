@@ -49,6 +49,6 @@ export const StyledButton = styled(Button.Primary)`
   font-weight: bold;
   width: 500px;
   color: white;
-  background-color: var(--dark-blue);
+  background-color: var(--primary-blue);
   padding: 10px 15px;
 `;

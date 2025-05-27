@@ -1,12 +1,14 @@
 import styled from 'styled-components';
 
 export const TableContainer = styled.div`
-  width: 800px;
-  margin: 48px 0 0 0;
+  width: 100%;
+  margin: 0px;
   background: transparent;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  border-radius: 10px;
+  overflow: hidden;
 `;
 
 export const Table = styled.div`
@@ -46,18 +48,31 @@ export const TableRowLabel = styled.div`
   font-size: 16px;
   text-align: left;
   vertical-align: middle;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--lighter-grey);
   width: %auto;
   background-color: white;
 `;
 
+export const TableHeaderCell = styled.div`
+  display: table-cell;
+  padding: 20px 30px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  text-align: left;
+  vertical-align: middle;
+  border: 1px solid var(--lighter-grey);
+  width: %auto;
+  background-color: var(--primary-blue);
+`;
+
 export const TableCell = styled.div`
   display: table-cell;
-  padding: 25px 30px;
+  padding: 20px 30px;
   font-size: 16px;
   text-align: left;
   vertical-align: middle;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--lighter-grey);
   width: %auto;
   background-color: white;
 
