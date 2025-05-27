@@ -117,6 +117,24 @@ export default function Demographics() {
     'limited_english',
   ];
 
+  const incomeOptions = [
+    '$0 - $25,000',
+    '$25,001 - $50,000',
+    '$50,001 - $100,000',
+    '$100,001 - $200,000',
+    '$200,001 - $500,000',
+    '$500,001 - $1,000,000',
+    '$1,000,000 and up',
+  ];
+
+  const maritalStatusOptions = [
+    'Single',
+    'Married',
+    'Divorced',
+    'Widowed',
+    'Separated',
+  ];
+
   const handleChange = async (e, field, table, setState) => {
     const isCheckbox = booleanFields.includes(field);
     const updatedValue = isCheckbox ? e.target.checked : e.target.value;
@@ -195,6 +213,44 @@ export default function Demographics() {
                                 )
                               }
                             />
+                          ) : key === 'income' ? (
+                            <select
+                              value={value || ''}
+                              onChange={(e) =>
+                                handleChange(
+                                  e,
+                                  key,
+                                  'participant_demographics',
+                                  setDemographicInfo
+                                )
+                              }
+                            >
+                              <option value=''>Select income range</option>
+                              {incomeOptions.map((option) => (
+                                <option key={option} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </select>
+                          ) : key === 'marital_status' ? (
+                            <select
+                              value={value || ''}
+                              onChange={(e) =>
+                                handleChange(
+                                  e,
+                                  key,
+                                  'participant_demographics',
+                                  setDemographicInfo
+                                )
+                              }
+                            >
+                              <option value=''>Select marital status</option>
+                              {maritalStatusOptions.map((option) => (
+                                <option key={option} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </select>
                           ) : (
                             <input
                               type='text'
