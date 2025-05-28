@@ -174,26 +174,6 @@ const Td = styled.td`
   font-size: 1rem;
 `;
 
-const Pill = styled.span`
-  display: inline-block;
-  padding: 4px 14px;
-  border-radius: 16px;
-  font-size: 0.95em;
-  font-weight: 500;
-  color: ${({ type }) => {
-    if (type === 'AM') return '#b26a00';
-    if (type === 'PM') return '#a1006b';
-    if (type === 'Full-Day') return '#0056b3';
-    return '#333';
-  }};
-  background: ${({ type }) => {
-    if (type === 'AM') return '#ffe5c2';
-    if (type === 'PM') return '#f9c7e7';
-    if (type === 'Full-Day') return '#d2e6fa';
-    return '#eee';
-  }};
-`;
-
 const EditIcon = styled.span`
   font-size: 1.2em;
   margin-right: 8px;
@@ -289,6 +269,20 @@ function formatToileting(val) {
   return val;
 }
 
+// Format a time string (HH:mm or HH:mm:ss) to 12-hour format with AM/PM.
+function formatTime12Hour(timeStr) {
+  if (!timeStr) return '';
+  const [h, m] = timeStr.split(':');
+  let hour = parseInt(h, 10);
+  const minute = m;
+  if (isNaN(hour) || minute === undefined) return timeStr;
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12;
+  if (hour === 0) hour = 12;
+  const hourStr = hour < 10 ? `0${hour}` : `${hour}`;
+  return `${hourStr}:${minute} ${ampm}`;
+}
+
 /**
  * Main component for the Participant Schedule and Attendance page.
  * Handles fetching, displaying, and editing participant schedules.
@@ -327,9 +321,18 @@ export default function ParticipantSchedule() {
 
   // Helper function to check if a date is within range
   const isDateInRange = (dateStr) => {
-    const date = new Date(dateStr);
+    // Parse dateStr as local date
+    const [yyyy, mm, dd] = dateStr.split('-').map(Number);
+    const date = new Date(yyyy, mm - 1, dd);
+
     const startDate = new Date(startYear, months.indexOf(startMonth), startDay);
     const endDate = new Date(endYear, months.indexOf(endMonth), endDay);
+
+    // Zero out the time for all dates
+    date.setHours(0, 0, 0, 0);
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+
     return date >= startDate && date <= endDate;
   };
 
@@ -724,7 +727,17 @@ export default function ParticipantSchedule() {
                 </Select>
               </SelectWrapper>
             </DateRangeContainer>
-            <PrintButton>Print Attendance</PrintButton>
+            <PrintButton
+              onClick={() => {
+                // Build filename based on selected date range
+                const start = `${startMonth}_${startDay}_${startYear}`;
+                const end = `${endMonth}_${endDay}_${endYear}`;
+                const filename = `Attendance_${start}_to_${end}.xlsx`;
+                exportAttendanceReport(filteredAttendance, filename);
+              }}
+            >
+              Export Attendance
+            </PrintButton>
           </FilterRow>
         )}
         <TabSwitcher>
@@ -786,7 +799,6 @@ export default function ParticipantSchedule() {
             <thead>
               <tr>
                 <Th>Date</Th>
-                <Th>Time</Th>
                 <Th>First Name</Th>
                 <Th>Last Name</Th>
                 <Th>In</Th>
@@ -798,7 +810,7 @@ export default function ParticipantSchedule() {
               {filteredAttendance.length === 0 ? (
                 <tr>
                   <Td
-                    colSpan={7}
+                    colSpan={6}
                     style={{ textAlign: 'center', color: '#888' }}
                   >
                     No attendance records found for this month/year.
@@ -808,13 +820,10 @@ export default function ParticipantSchedule() {
                 filteredAttendance.map((row, idx) => (
                   <tr key={row.id || idx}>
                     <Td>{row.date}</Td>
-                    <Td>
-                      <Pill type={row.time}>{row.time}</Pill>
-                    </Td>
                     <Td>{row.firstName}</Td>
                     <Td>{row.lastName}</Td>
-                    <Td>{row.in}</Td>
-                    <Td>{row.out}</Td>
+                    <Td>{formatTime12Hour(row.in)}</Td>
+                    <Td>{formatTime12Hour(row.out)}</Td>
                     <Td>{row.code}</Td>
                   </tr>
                 ))
