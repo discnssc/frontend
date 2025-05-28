@@ -56,7 +56,7 @@ const StyledNavLink = styled(NavLink)`
   }
 `;
 
-export default function NavBar({ tabs }) {
+const NavBar = React.memo(({ tabs }) => {
   return (
     <NavbarContainer>
       {tabs.map(({ label, to, end }) => (
@@ -66,7 +66,9 @@ export default function NavBar({ tabs }) {
       ))}
     </NavbarContainer>
   );
-}
+});
+
+NavBar.displayName = 'NavBar';
 
 NavBar.propTypes = {
   tabs: PropTypes.arrayOf(
@@ -77,3 +79,5 @@ NavBar.propTypes = {
     })
   ).isRequired,
 };
+
+export default NavBar;

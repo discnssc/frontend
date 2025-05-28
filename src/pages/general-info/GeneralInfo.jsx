@@ -41,6 +41,10 @@ const Loading = styled.div`
   color: #999;
 `;
 
+const CareSearchInput = styled.div`
+  margin-bottom: 1rem;
+`;
+
 export default function GeneralInfo() {
   const { id } = useParams();
   const [generalInfo, setGeneralInfo] = useState(null);
@@ -112,9 +116,10 @@ export default function GeneralInfo() {
 
   const filteredCare = carePartners
     .filter(
-      (carePartner) => carePartner.participant_general_info?.status === 'Active'
+      (cp) =>
+        cp.participant_general_info &&
+        cp.participant_general_info.status === 'Active'
     )
-    .filter((carePartner) => carePartner.participant_general_info) // exclude nulls
     .filter((carePartner) => {
       const searchLower = careSearchTerm.toLowerCase();
       return (
@@ -142,9 +147,6 @@ export default function GeneralInfo() {
     }
     return 'No care partners available';
   };
-
-  if (loading) return <Loading>Loading...</Loading>;
-  if (error) return <Loading>Error: {error}</Loading>;
 
   if (loading) return <Loading>Loading...</Loading>;
   if (error) return <Loading>Error: {error}</Loading>;
@@ -295,83 +297,99 @@ export default function GeneralInfo() {
 
         <TableContainer>
           <TableLabel>Care Partners</TableLabel>
-          <input
-            type='text'
-            placeholder='Search care partners...'
-            value={careSearchTerm}
-            onChange={handleSearchChange}
+          <div
             style={{
-              border: 'none',
-              outline: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: 'white',
+              borderRadius: '25px',
+              padding: '10px 20px',
+              boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+              marginBottom: '15px',
               width: '100%',
-              fontSize: '15px',
             }}
-          />
+          >
+            <span style={{ marginRight: '10px' }}>🔍</span>
+            <input
+              type='text'
+              placeholder='Search care partners...'
+              value={careSearchTerm}
+              onChange={handleSearchChange}
+              style={{
+                border: 'none',
+                outline: 'none',
+                width: '100%',
+                fontSize: '15px',
+              }}
+            />
+          </div>
           {careSearchTerm && (
-            <Table>
-              <tbody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className='text-center py-6'>
-                      Loading people...
-                    </TableCell>
-                  </TableRow>
-                ) : error ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={5}
-                      className='text-center py-6 text-red-600'
-                    >
-                      {error}
-                    </TableCell>
-                  </TableRow>
-                ) : filteredCare.length > 0 ? (
-                  filteredCare.map((caregiver, index) => (
-                    <TableRow key={index} className='bg-white border-b'>
-                      <TableCell className='py-4'>
-                        <Link
-                          to={`/participant/generalinfo/${caregiver.id}`}
-                          className='text-blue-600 hover:underline'
-                        >
-                          {caregiver.participant_general_info.first_name}
-                        </Link>
-                      </TableCell>
-                      <TableCell className='py-4'>
-                        {caregiver.participant_general_info.last_name}
-                      </TableCell>
-                      <TableCell className='py-4'>
-                        {caregiver.participant_general_info.status}
-                      </TableCell>
-                      <TableCell className='py-4'>
-                        <button
-                          onClick={() => handleAddCaregiver(caregiver.id)}
-                          style={{
-                            backgroundColor: '#4CAF50',
-                            color: 'white',
-                            padding: '5px 10px',
-                            borderRadius: '5px',
-                            border: 'none',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                          }}
-                        >
-                          Add
-                        </button>
+            <CareSearchInput>
+              <Table>
+                <tbody>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className='text-center py-6'>
+                        Loading people...
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={5}
-                      className='text-center py-6 text-gray-500'
-                    >
-                      {getEmptyStateMessage()}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </tbody>
-            </Table>
+                  ) : error ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={5}
+                        className='text-center py-6 text-red-600'
+                      >
+                        {error}
+                      </TableCell>
+                    </TableRow>
+                  ) : filteredCare.length > 0 ? (
+                    filteredCare.map((caregiver, index) => (
+                      <TableRow key={index} className='bg-white border-b'>
+                        <TableCell className='py-4'>
+                          <Link
+                            to={`/participant/generalinfo/${caregiver.id}`}
+                            className='text-blue-600 hover:underline'
+                          >
+                            {caregiver.participant_general_info.first_name}
+                          </Link>
+                        </TableCell>
+                        <TableCell className='py-4'>
+                          {caregiver.participant_general_info.last_name}
+                        </TableCell>
+                        <TableCell className='py-4'>
+                          {caregiver.participant_general_info.status}
+                        </TableCell>
+                        <TableCell className='py-4'>
+                          <button
+                            onClick={() => handleAddCaregiver(caregiver.id)}
+                            style={{
+                              backgroundColor: '#4CAF50',
+                              color: 'white',
+                              padding: '5px 10px',
+                              borderRadius: '5px',
+                              border: 'none',
+                              cursor: 'pointer',
+                              fontSize: '14px',
+                            }}
+                          >
+                            Add
+                          </button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={5}
+                        className='text-center py-6 text-gray-500'
+                      >
+                        {getEmptyStateMessage()}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </tbody>
+              </Table>
+            </CareSearchInput>
           )}
 
           <Table>
@@ -410,6 +428,15 @@ export default function GeneralInfo() {
                     primaryChecked
                   ) => {
                     try {
+                      console.log(
+                        `Toggling primary for ${caregiverId} to ${primaryChecked}`
+                      );
+                      console.log('Sending update for:', {
+                        participant_care: {
+                          carepartner_id: caregiverId,
+                          primary: primaryChecked,
+                        },
+                      });
                       const res = await fetch(
                         `${API_BASE_URL}/participants/${id}`,
                         {
@@ -424,7 +451,6 @@ export default function GeneralInfo() {
                           }),
                         }
                       );
-
                       if (!res.ok)
                         throw new Error('Failed to update primary status');
                       alert('Primary status updated');
@@ -482,9 +508,15 @@ export default function GeneralInfo() {
                           <input
                             type='checkbox'
                             checked={isPrimary}
-                            onChange={() =>
-                              handlePrimaryToggle(cp.carepartner_id, !isPrimary)
-                            }
+                            onChange={() => {
+                              const caregiverId =
+                                cp.carepartner_id || cp.carepartner?.id;
+                              if (caregiverId) {
+                                handlePrimaryToggle(caregiverId, !isPrimary);
+                              } else {
+                                console.error('Missing carepartner ID', cp);
+                              }
+                            }}
                           />
                         </label>
                       </TableCell>
