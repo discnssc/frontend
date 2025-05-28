@@ -12,14 +12,14 @@ import { InlayContainer } from './styles';
 
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [noDataReason, setNoDataReason] = useState('');
+  //   const [searchTerm, setSearchTerm] = useState('');
+  //   const [isLoading, setIsLoading] = useState(true);
+  //   const [error, setError] = useState(null);
+  //   const [noDataReason, setNoDataReason] = useState('');
 
   useEffect(() => {
     const fetchUsers = async () => {
-      setIsLoading(true);
+      //   setIsLoading(true);
       try {
         const baseUrl = process.env.REACT_APP_BACKEND_URL;
         console.log(`Fetching participants from ${baseUrl}/users`);
@@ -36,16 +36,16 @@ export default function ManageUsers() {
         const data = await response.json();
 
         if (data.length === 0) {
-          setNoDataReason('No participants found in database');
+          //   setNoDataReason('No participants found in database');
         }
-        setError(null);
+        // setError(null);
         setUsers(data);
       } catch (error) {
         console.error('Error fetching users:', error);
-        setError(`Failed to load users: ${error.message}`);
+        // setError(`Failed to load users: ${error.message}`);
         setUsers([]);
       } finally {
-        setIsLoading(false);
+        // setIsLoading(false);
       }
     };
     fetchUsers();
