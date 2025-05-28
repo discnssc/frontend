@@ -8,7 +8,8 @@ import {
 } from 'common/components/routes/ProtectedRoutes';
 import { UserProvider } from 'common/contexts/UserContext';
 import NavLayout from 'common/layouts/NavLayout';
-import ActivityLogs from 'pages/Activity-Logs/Activities';
+import ActivityLogs from 'pages/Activity-Logs/ActivityLogs';
+import ViewActivity from 'pages/Activity-Participation-Manager/ViewActivity';
 import Cases from 'pages/Cases-Services/Cases';
 import HowInfo from 'pages/HOW-info/HowInfo';
 import AuthCallback from 'pages/account/AuthCallback';
@@ -19,6 +20,7 @@ import RequestPasswordReset from 'pages/account/RequestPasswordReset';
 import ResetPassword from 'pages/account/ResetPassword';
 import SetPassword from 'pages/account/SetPassword';
 import SignUp from 'pages/account/SignUp';
+import Activities from 'pages/activity-scheduling/ActivitiesSchedule';
 //import ActivityLogs from 'pages/Activity-Logs/Activities';
 //import Cases from 'pages/Cases-Services/Cases';
 import Demographics from 'pages/demographics/demographics';
@@ -28,6 +30,7 @@ import GeneralInfo from 'pages/general-info/GeneralInfo';
 import NotFound from 'pages/not-found/NotFound';
 import ParticipantDatabase from 'pages/participant_database/ParticipantDatabase';
 import ParticipantSchedule from 'pages/scheduling/ParticipantSchedule';
+import UserDashboard from 'pages/user-dashboard/UserDashboard';
 import AdminDashboard from 'pages/admin-dashboard/AdminDashboard';
 import ManageUsers from 'pages/admin-dashboard/ManageUsers';
 
@@ -70,6 +73,8 @@ export default function App() {
               path='/participant/activities/:id'
               element={<ActivityLogs />}
             />
+            <Route path='/activity/:activityId' element={<ViewActivity />} />
+            <Route path='/activities' element={<Activities />} />
 
             {/* Auth-related routes */}
             <Route path='auth/callback' element={<AuthCallback />} />
@@ -80,6 +85,13 @@ export default function App() {
             <Route path='auth/reset-password' element={<ResetPassword />} />
 
             {/* Admin routes */}
+            <Route
+              path='/admin/participant-schedule'
+              element={<ParticipantSchedule />}
+            />
+
+            {/* User dashboard */}
+            <Route path='/admin-dashboard' element={<UserDashboard />} />
             <Route path='admin' element={<AdminDashboard />}>
               <Route index element={<ManageUsers />} />
               <Route path='manage-users' element={<ManageUsers />} />

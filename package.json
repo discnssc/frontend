@@ -5,6 +5,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
     "cra-template": "1.2.0",
+    "file-saver": "^2.0.5",
     "lucide-react": "^0.510.0",
     "prop-types": "^15.8.1",
     "react": "^19.0.0",
@@ -12,7 +13,8 @@
     "react-router-dom": "^7.3.0",
     "react-scripts": "5.0.1",
     "styled-components": "^6.1.15",
-    "web-vitals": "^4.2.4"
+    "web-vitals": "^4.2.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "cross-env PORT=3001 react-scripts start",

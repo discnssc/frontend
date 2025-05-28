@@ -48,8 +48,13 @@ export const TableRowLabel = styled.div`
   font-size: 16px;
   text-align: left;
   vertical-align: middle;
+<<<<<<< HEAD
   border: 1px solid var(--lighter-grey);
   width: %auto;
+=======
+  border: 1px solid #e0e0e0;
+  width: auto;
+>>>>>>> 56ffbbe58e367d2dba3aada43e3fe889ed7e2cc3
   background-color: white;
 `;
 
@@ -72,8 +77,13 @@ export const TableCell = styled.div`
   font-size: 16px;
   text-align: left;
   vertical-align: middle;
+<<<<<<< HEAD
   border: 1px solid var(--lighter-grey);
   width: %auto;
+=======
+  border: 1px solid #e0e0e0;
+  width: auto;
+>>>>>>> 56ffbbe58e367d2dba3aada43e3fe889ed7e2cc3
   background-color: white;
 
   input[type='checkbox'] {
