@@ -21,7 +21,6 @@ const InfoPage = styled.div`
   flex-direction: column;
   padding: 2rem;
   margin-left: 0;
-  width: 100%;
   background-color: #ececec;
 `;
 

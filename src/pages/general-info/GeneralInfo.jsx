@@ -21,7 +21,6 @@ const InfoPage = styled.div`
   flex-direction: column;
   padding: 2rem;
   margin-left: 0;
-  width: 100%;
   background-color: #ececec;
 `;
 
@@ -66,7 +65,6 @@ export default function GeneralInfo() {
     setError(null);
 
     try {
-      // Fetch data through backend API instead of direct Supabase calls
       const [participantRes, carePartnersRes] = await Promise.all([
         fetch(`${API_BASE_URL}/participants/${id}`, {
           credentials: 'include',
@@ -92,11 +90,7 @@ export default function GeneralInfo() {
       // Extract the data from the response
       setGeneralInfo(participantData.participant_general_info || null);
       setContactInfo(participantData.participant_address_and_contact || null);
-      setParticipantInfo({
-        id: participantData.id,
-        participant_created_at: participantData.participant_created_at,
-        participant_updated_at: participantData.participant_updated_at,
-      });
+      setParticipantInfo(participantData);
       setCarePartners(carePartnersData);
       setAttachedCarePartners(participantData.carepartners || []);
     } catch (err) {
@@ -211,8 +205,54 @@ export default function GeneralInfo() {
       alert('Failed to add caregiver');
     }
   };
+  const handleRemove = async (caregiverId) => {
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/participants/participant_care/${id}?carepartner_id=${caregiverId}`, // `id` is participant's id
+        {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+        }
+      );
+      if (!res.ok) throw new Error('Failed to remove caregiver');
+      alert('Caregiver removed!');
+      await fetchData(); // refresh list after remove
+    } catch (err) {
+      console.error('Remove error:', err);
+      alert('Failed to remove caregiver');
+    }
+  };
 
-  //change the header calls to just be passed one participant
+  const handlePrimaryToggle = async (caregiverId, primaryChecked) => {
+    try {
+      console.log(`Toggling primary for ${caregiverId} to ${primaryChecked}`);
+      console.log('Sending update for:', {
+        participant_care: {
+          carepartner_id: caregiverId,
+          primary: primaryChecked,
+        },
+      });
+      const res = await fetch(`${API_BASE_URL}/participants/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          participant_care: {
+            carepartner_id: caregiverId,
+            primary: primaryChecked,
+          },
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to update primary status');
+      alert('Primary status updated');
+      await fetchData();
+    } catch (err) {
+      console.error('Primary update error:', err);
+      alert('Failed to update');
+    }
+  };
+
   return (
     <InfoPage>
       <Header participant={participantInfo} />
@@ -306,7 +346,7 @@ export default function GeneralInfo() {
               padding: '10px 20px',
               boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
               marginBottom: '15px',
-              width: '100%',
+              width: '90%',
             }}
           >
             <span style={{ marginRight: '10px' }}>🔍</span>
@@ -396,76 +436,18 @@ export default function GeneralInfo() {
             <tbody>
               {attachedCarePartners.length > 0 ? (
                 attachedCarePartners.map((cp, idx) => {
+                  console.log('Attached Care Partner:', cp);
                   const info = cp.carepartner?.participant_general_info;
                   const name = info
                     ? `${info.first_name ?? ''} ${info.last_name ?? ''}`.trim()
                     : 'Unknown';
                   const isPrimary = cp.primary;
 
-                  const handleRemove = async (caregiverId) => {
-                    try {
-                      const res = await fetch(
-                        `${API_BASE_URL}/participants/participant_care/${id}`, // `id` is participant's id
-                        {
-                          method: 'DELETE',
-                          headers: { 'Content-Type': 'application/json' },
-                          credentials: 'include',
-                          body: JSON.stringify({ carepartner_id: caregiverId }), // Must be exact id
-                        }
-                      );
-                      if (!res.ok)
-                        throw new Error('Failed to remove caregiver');
-                      alert('Caregiver removed!');
-                      await fetchData(); // refresh list after remove
-                    } catch (err) {
-                      console.error('Remove error:', err);
-                      alert('Failed to remove caregiver');
-                    }
-                  };
-
-                  const handlePrimaryToggle = async (
-                    caregiverId,
-                    primaryChecked
-                  ) => {
-                    try {
-                      console.log(
-                        `Toggling primary for ${caregiverId} to ${primaryChecked}`
-                      );
-                      console.log('Sending update for:', {
-                        participant_care: {
-                          carepartner_id: caregiverId,
-                          primary: primaryChecked,
-                        },
-                      });
-                      const res = await fetch(
-                        `${API_BASE_URL}/participants/${id}`,
-                        {
-                          method: 'PUT',
-                          headers: { 'Content-Type': 'application/json' },
-                          credentials: 'include',
-                          body: JSON.stringify({
-                            participant_care: {
-                              carepartner_id: caregiverId,
-                              primary: primaryChecked,
-                            },
-                          }),
-                        }
-                      );
-                      if (!res.ok)
-                        throw new Error('Failed to update primary status');
-                      alert('Primary status updated');
-                      await fetchData();
-                    } catch (err) {
-                      console.error('Primary update error:', err);
-                      alert('Failed to update');
-                    }
-                  };
-
                   return (
                     <TableRow key={idx}>
                       <TableCell style={{ width: '40px', textAlign: 'center' }}>
                         <div
-                          onClick={() => handleRemove(cp.carepartner_id)}
+                          onClick={() => handleRemove(cp.carepartner.id)}
                           style={{
                             cursor: 'pointer',
                             display: 'flex',
@@ -487,7 +469,7 @@ export default function GeneralInfo() {
                       </TableCell>
                       <TableCell>
                         <Link
-                          to={`/participant/generalinfo/${cp.carepartner_id}`}
+                          to={`/participant/generalinfo/${cp.carepartner.id}`}
                           style={{
                             textDecoration: 'underline',
                           }}
@@ -510,7 +492,7 @@ export default function GeneralInfo() {
                             checked={isPrimary}
                             onChange={() => {
                               const caregiverId =
-                                cp.carepartner_id || cp.carepartner?.id;
+                                cp.carepartner.id || cp.carepartner?.id;
                               if (caregiverId) {
                                 handlePrimaryToggle(caregiverId, !isPrimary);
                               } else {
