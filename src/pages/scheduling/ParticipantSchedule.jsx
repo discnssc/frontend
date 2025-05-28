@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
+import { exportAttendanceReport } from 'utils/excelExport';
 
 import { Button } from 'common/components/Button';
 import AdminNavBar from 'common/components/navigation/AdminNavBar';
