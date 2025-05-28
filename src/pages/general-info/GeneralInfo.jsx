@@ -49,56 +49,58 @@ export default function GeneralInfo() {
   const [loading, setLoading] = useState(true);
   const [careSearchTerm, setCareSearchTerm] = useState('');
   const [carePartners, setCarePartners] = useState([]);
+  const [attachedCarePartners, setAttachedCarePartners] = useState([]);
   const [error, setError] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        // Fetch data through backend API instead of direct Supabase calls
-        const [participantRes, carePartnersRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/participants/${id}`, {
-            credentials: 'include',
-          }),
-          fetch(`${API_BASE_URL}/participants/carepartners`, {
-            credentials: 'include',
-          }),
-        ]);
-
-        if (!participantRes.ok) {
-          throw new Error(`API error: ${participantRes.status}`);
-        }
-        if (!carePartnersRes.ok) {
-          throw new Error(`API error: ${carePartnersRes.status}`);
-        }
-
-        const participantData = await participantRes.json();
-        const carePartnersData = await carePartnersRes.json();
-
-        console.log('Fetched Participant Data:', participantData);
-        console.log('Fetched Care Partners Data:', carePartnersData);
-
-        // Extract the data from the response
-        setGeneralInfo(participantData.participant_general_info || null);
-        setContactInfo(participantData.participant_address_and_contact || null);
-        setParticipantInfo({
-          id: participantData.id,
-          participant_created_at: participantData.participant_created_at,
-          participant_updated_at: participantData.participant_updated_at,
-        });
-        setCarePartners(carePartnersData);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, [id, API_BASE_URL]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Fetch data through backend API instead of direct Supabase calls
+      const [participantRes, carePartnersRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/participants/${id}`, {
+          credentials: 'include',
+        }),
+        fetch(`${API_BASE_URL}/participants/carepartners`, {
+          credentials: 'include',
+        }),
+      ]);
+
+      if (!participantRes.ok) {
+        throw new Error(`API error: ${participantRes.status}`);
+      }
+      if (!carePartnersRes.ok) {
+        throw new Error(`API error: ${carePartnersRes.status}`);
+      }
+
+      const participantData = await participantRes.json();
+      const carePartnersData = await carePartnersRes.json();
+
+      console.log('Fetched Participant Data:', participantData);
+      console.log('Fetched Care Partners Data:', carePartnersData);
+
+      // Extract the data from the response
+      setGeneralInfo(participantData.participant_general_info || null);
+      setContactInfo(participantData.participant_address_and_contact || null);
+      setParticipantInfo({
+        id: participantData.id,
+        participant_created_at: participantData.participant_created_at,
+        participant_updated_at: participantData.participant_updated_at,
+      });
+      setCarePartners(carePartnersData);
+      setAttachedCarePartners(participantData.carepartners || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   //searching to add care partners
   const handleSearchChange = (e) => {
@@ -126,7 +128,13 @@ export default function GeneralInfo() {
           ?.toLowerCase()
           .includes(searchLower)
       );
-    });
+    })
+    .filter(
+      (carePartner) =>
+        !attachedCarePartners.some(
+          (attached) => attached.carepartner_id === carePartner.id
+        )
+    );
 
   const getEmptyStateMessage = () => {
     if (careSearchTerm) {
@@ -137,8 +145,6 @@ export default function GeneralInfo() {
 
   if (loading) return <Loading>Loading...</Loading>;
   if (error) return <Loading>Error: {error}</Loading>;
-
-  //const booleanFields = ['primary'];
 
   if (loading) return <Loading>Loading...</Loading>;
   if (error) return <Loading>Error: {error}</Loading>;
@@ -177,15 +183,15 @@ export default function GeneralInfo() {
   const handleAddCaregiver = async (caregiverId) => {
     try {
       //fix this whole thing to cnnect to backend
-      const res = await fetch(`${API_BASE_URL}/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/participants/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          table: 'participant_care',
-          field: 'add_caregiver',
-          value: caregiverId,
+          participant_care: {
+            carepartner_id: caregiverId,
+          },
         }),
       });
 
@@ -196,6 +202,8 @@ export default function GeneralInfo() {
 
       alert('Caregiver added successfully!');
       // maybe refresh data here later
+      await fetchData();
+      console.log('Updated attachedCarePartners:', attachedCarePartners);
     } catch (err) {
       console.error('Error adding caregiver:', err);
       alert('Failed to add caregiver');
@@ -299,66 +307,193 @@ export default function GeneralInfo() {
               fontSize: '15px',
             }}
           />
-          <Table>
-            <tbody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={5} className='text-center py-6'>
-                    Loading people...
-                  </TableCell>
-                </TableRow>
-              ) : error ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className='text-center py-6 text-red-600'
-                  >
-                    {error}
-                  </TableCell>
-                </TableRow>
-              ) : filteredCare.length > 0 ? (
-                filteredCare.map((caregiver, index) => (
-                  <TableRow key={index} className='bg-white border-b'>
-                    <TableCell className='py-4'>
-                      <Link
-                        to={`/participant/generalinfo/${caregiver.id}`}
-                        className='text-blue-600 hover:underline'
-                      >
-                        {caregiver.participant_general_info.first_name}
-                      </Link>
-                    </TableCell>
-                    <TableCell className='py-4'>
-                      {caregiver.participant_general_info.last_name}
-                    </TableCell>
-                    <TableCell className='py-4'>
-                      {caregiver.participant_general_info.status}
-                    </TableCell>
-                    <TableCell className='py-4'>
-                      <button
-                        onClick={() => handleAddCaregiver(caregiver.id)}
-                        style={{
-                          backgroundColor: '#4CAF50',
-                          color: 'white',
-                          padding: '5px 10px',
-                          borderRadius: '5px',
-                          border: 'none',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                        }}
-                      >
-                        Add
-                      </button>
+          {careSearchTerm && (
+            <Table>
+              <tbody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className='text-center py-6'>
+                      Loading people...
                     </TableCell>
                   </TableRow>
-                ))
+                ) : error ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={5}
+                      className='text-center py-6 text-red-600'
+                    >
+                      {error}
+                    </TableCell>
+                  </TableRow>
+                ) : filteredCare.length > 0 ? (
+                  filteredCare.map((caregiver, index) => (
+                    <TableRow key={index} className='bg-white border-b'>
+                      <TableCell className='py-4'>
+                        <Link
+                          to={`/participant/generalinfo/${caregiver.id}`}
+                          className='text-blue-600 hover:underline'
+                        >
+                          {caregiver.participant_general_info.first_name}
+                        </Link>
+                      </TableCell>
+                      <TableCell className='py-4'>
+                        {caregiver.participant_general_info.last_name}
+                      </TableCell>
+                      <TableCell className='py-4'>
+                        {caregiver.participant_general_info.status}
+                      </TableCell>
+                      <TableCell className='py-4'>
+                        <button
+                          onClick={() => handleAddCaregiver(caregiver.id)}
+                          style={{
+                            backgroundColor: '#4CAF50',
+                            color: 'white',
+                            padding: '5px 10px',
+                            borderRadius: '5px',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                          }}
+                        >
+                          Add
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={5}
+                      className='text-center py-6 text-gray-500'
+                    >
+                      {getEmptyStateMessage()}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </tbody>
+            </Table>
+          )}
+
+          <Table>
+            <tbody>
+              {attachedCarePartners.length > 0 ? (
+                attachedCarePartners.map((cp, idx) => {
+                  const info = cp.carepartner?.participant_general_info;
+                  const name = info
+                    ? `${info.first_name ?? ''} ${info.last_name ?? ''}`.trim()
+                    : 'Unknown';
+                  const isPrimary = cp.primary;
+
+                  const handleRemove = async (caregiverId) => {
+                    try {
+                      const res = await fetch(
+                        `${API_BASE_URL}/participants/participant_care/${id}`, // `id` is participant's id
+                        {
+                          method: 'DELETE',
+                          headers: { 'Content-Type': 'application/json' },
+                          credentials: 'include',
+                          body: JSON.stringify({ carepartner_id: caregiverId }), // Must be exact id
+                        }
+                      );
+                      if (!res.ok)
+                        throw new Error('Failed to remove caregiver');
+                      alert('Caregiver removed!');
+                      await fetchData(); // refresh list after remove
+                    } catch (err) {
+                      console.error('Remove error:', err);
+                      alert('Failed to remove caregiver');
+                    }
+                  };
+
+                  const handlePrimaryToggle = async (
+                    caregiverId,
+                    primaryChecked
+                  ) => {
+                    try {
+                      const res = await fetch(
+                        `${API_BASE_URL}/participants/${id}`,
+                        {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json' },
+                          credentials: 'include',
+                          body: JSON.stringify({
+                            participant_care: {
+                              carepartner_id: caregiverId,
+                              primary: primaryChecked,
+                            },
+                          }),
+                        }
+                      );
+
+                      if (!res.ok)
+                        throw new Error('Failed to update primary status');
+                      alert('Primary status updated');
+                      await fetchData();
+                    } catch (err) {
+                      console.error('Primary update error:', err);
+                      alert('Failed to update');
+                    }
+                  };
+
+                  return (
+                    <TableRow key={idx}>
+                      <TableCell style={{ width: '40px', textAlign: 'center' }}>
+                        <div
+                          onClick={() => handleRemove(cp.carepartner_id)}
+                          style={{
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: '#dc3545',
+                            color: 'white',
+                            borderRadius: '50%',
+                            width: '24px',
+                            height: '24px',
+                            fontWeight: 'bold',
+                            fontSize: '16px',
+                            lineHeight: '24px',
+                          }}
+                          title='Remove care partner'
+                        >
+                          &minus;
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Link
+                          to={`/participant/generalinfo/${cp.carepartner_id}`}
+                          style={{
+                            textDecoration: 'underline',
+                          }}
+                        >
+                          {name}
+                        </Link>
+                      </TableCell>
+                      <TableCell colSpan={2} style={{ textAlign: 'right' }}>
+                        <label
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            justifyContent: 'flex-end',
+                          }}
+                        >
+                          <span>Primary</span>
+                          <input
+                            type='checkbox'
+                            checked={isPrimary}
+                            onChange={() =>
+                              handlePrimaryToggle(cp.carepartner_id, !isPrimary)
+                            }
+                          />
+                        </label>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               ) : (
                 <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className='text-center py-6 text-gray-500'
-                  >
-                    {getEmptyStateMessage()}
-                  </TableCell>
+                  <TableCell colSpan={4}>No attached care partners.</TableCell>
                 </TableRow>
               )}
             </tbody>
