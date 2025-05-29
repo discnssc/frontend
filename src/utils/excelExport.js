@@ -209,14 +209,14 @@ export function exportAttendanceReport(
   ];
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Attendance');
-  
+
   const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
   const blob = new Blob([buffer], {
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   });
-  
+
   saveAs(blob, filename);
-};
+}
 
 export const generateDemographicsReport = (demographics, participantName) => {
   const filename = `${participantName} Demographics Report.xlsx`;
@@ -246,6 +246,6 @@ export const generateDemographicsReport = (demographics, participantName) => {
   const blob = new Blob([buffer], {
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   });
-  
+
   saveAs(blob, filename);
 };
