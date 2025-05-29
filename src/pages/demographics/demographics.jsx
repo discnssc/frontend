@@ -21,7 +21,6 @@ const InfoPage = styled.div`
   flex-direction: column;
   padding: 2rem;
   margin-left: 0;
-  width: 100%;
   background-color: #ececec;
 `;
 
@@ -56,7 +55,6 @@ export default function Demographics() {
       try {
         // Get auth token from localStorage
         const token = localStorage.getItem('authToken');
-
         // Fetch participant data from backend
         const response = await fetch(buildUrl(`/participants/${id}`), {
           method: 'GET',
