@@ -209,9 +209,43 @@ export function exportAttendanceReport(
   ];
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Attendance');
+  
   const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
   const blob = new Blob([buffer], {
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   });
+  
   saveAs(blob, filename);
-}
+};
+
+export const generateDemographicsReport = (demographics, participantName) => {
+  const filename = `${participantName} Demographics Report.xlsx`;
+  // Create headers and data rows
+  const rows = [
+    ['Demographics Report', participantName],
+    ['Field', 'Value'],
+  ];
+
+  // Add each demographic field and its value
+  Object.entries(demographics).forEach(([key, value]) => {
+    if (key !== 'id' && key !== 'status') {
+      const formattedKey = key
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+      rows.push([formattedKey, value]);
+    }
+  });
+
+  // Create worksheet and export
+  const worksheet = XLSX.utils.aoa_to_sheet(rows);
+  worksheet['!cols'] = [{ wch: 30 }, { wch: 30 }];
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Demographics Report');
+
+  const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([buffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  
+  saveAs(blob, filename);
+};
