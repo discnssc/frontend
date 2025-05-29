@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { generateDemographicsReport } from 'utils/excelExport.js';
 
 import Header from 'common/components/Header';
 import HomeButton from 'common/components/HomeButton';
@@ -21,6 +22,7 @@ const InfoPage = styled.div`
   flex-direction: column;
   padding: 2rem;
   margin-left: 0;
+  width: 100%;
   background-color: #ececec;
 `;
 
@@ -34,6 +36,19 @@ const TableWrapper = styled.div`
 const Loading = styled.div`
   font-size: 18px;
   color: #999;
+`;
+
+const Button = styled.button`
+  background-color: #005696;
+  color: #ececec;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  &:hover {
+    background-color: #218bda;
+  }
 `;
 
 // Helper function to build API URLs
@@ -55,6 +70,7 @@ export default function Demographics() {
       try {
         // Get auth token from localStorage
         const token = localStorage.getItem('authToken');
+
         // Fetch participant data from backend
         const response = await fetch(buildUrl(`/participants/${id}`), {
           method: 'GET',
@@ -107,6 +123,24 @@ export default function Demographics() {
     'limited_english',
   ];
 
+  const incomeOptions = [
+    '$0 - $25,000',
+    '$25,001 - $50,000',
+    '$50,001 - $100,000',
+    '$100,001 - $200,000',
+    '$200,001 - $500,000',
+    '$500,001 - $1,000,000',
+    '$1,000,000 and up',
+  ];
+
+  const maritalStatusOptions = [
+    'Single',
+    'Married',
+    'Divorced',
+    'Widowed',
+    'Separated',
+  ];
+
   const handleChange = async (e, field, table, setState) => {
     const isCheckbox = booleanFields.includes(field);
     const updatedValue = isCheckbox ? e.target.checked : e.target.value;
@@ -148,6 +182,12 @@ export default function Demographics() {
     }
   };
 
+  const handleExportDemographicsReport = () => {
+    if (!participantInfo || !demographicInfo) return;
+    const participantName = `${participantInfo.participant_general_info.first_name} ${participantInfo.participant_general_info.last_name}`;
+    generateDemographicsReport(demographicInfo, participantName);
+  };
+
   return (
     <InfoPage>
       <Header participant={participantInfo} />
@@ -185,6 +225,44 @@ export default function Demographics() {
                                 )
                               }
                             />
+                          ) : key === 'income' ? (
+                            <select
+                              value={value || ''}
+                              onChange={(e) =>
+                                handleChange(
+                                  e,
+                                  key,
+                                  'participant_demographics',
+                                  setDemographicInfo
+                                )
+                              }
+                            >
+                              <option value=''>Select income range</option>
+                              {incomeOptions.map((option) => (
+                                <option key={option} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </select>
+                          ) : key === 'marital_status' ? (
+                            <select
+                              value={value || ''}
+                              onChange={(e) =>
+                                handleChange(
+                                  e,
+                                  key,
+                                  'participant_demographics',
+                                  setDemographicInfo
+                                )
+                              }
+                            >
+                              <option value=''>Select marital status</option>
+                              {maritalStatusOptions.map((option) => (
+                                <option key={option} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </select>
                           ) : (
                             <input
                               type='text'
@@ -205,6 +283,9 @@ export default function Demographics() {
                   })}
             </TableHead>
           </Table>
+          <Button onClick={handleExportDemographicsReport}>
+            Export Demographics Report
+          </Button>
         </TableContainer>
       </TableWrapper>
     </InfoPage>
