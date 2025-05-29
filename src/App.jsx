@@ -22,6 +22,7 @@ import Activities from 'pages/activity-scheduling/ActivitiesSchedule';
 //import Cases from 'pages/Cases-Services/Cases';
 import Demographics from 'pages/demographics/demographics';
 import GeneralInfo from 'pages/general-info/GeneralInfo';
+import ManageRecords from 'pages/manage-records/ManageRecords';
 //import Home from 'pages/home/Home';
 //import HowInfo from 'pages/HOW-info/HowInfo';
 import NotFound from 'pages/not-found/NotFound';
@@ -81,6 +82,9 @@ export default function App() {
               path='/admin/participant-schedule'
               element={<ParticipantSchedule />}
             />
+
+            {/* Manage records */}
+            <Route path='/admin/manage-records' element={<ManageRecords />} />
 
             {/* User dashboard */}
             <Route path='/admin-dashboard' element={<UserDashboard />} />
