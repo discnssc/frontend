@@ -11,6 +11,8 @@ import { BackArrowContainer, StyledCenterAlignPage } from './Invite';
 export default function SetPassword() {
   const [isLoading, setIsLoading] = useState(false);
 
+  setIsLoading(false);
+
   return (
     <StyledCenterAlignPage>
       <Form>

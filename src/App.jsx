@@ -13,14 +13,16 @@ import ViewActivity from 'pages/Activity-Participation-Manager/ViewActivity';
 import Cases from 'pages/Cases-Services/Cases';
 import HowInfo from 'pages/HOW-info/HowInfo';
 import AuthCallback from 'pages/account/AuthCallback';
-import InviteLandingPage from 'pages/account/InviteLandingPage';
 import IncorrectInfo from 'pages/account/IncorrectInfo';
+import InviteLandingPage from 'pages/account/InviteLandingPage';
 import Login from 'pages/account/Login';
 import RequestPasswordReset from 'pages/account/RequestPasswordReset';
 import ResetPassword from 'pages/account/ResetPassword';
 import SetPassword from 'pages/account/SetPassword';
 import SignUp from 'pages/account/SignUp';
 import Activities from 'pages/activity-scheduling/ActivitiesSchedule';
+import AdminDashboard from 'pages/admin-dashboard/AdminDashboard';
+import ManageUsers from 'pages/admin-dashboard/ManageUsers';
 //import ActivityLogs from 'pages/Activity-Logs/Activities';
 //import Cases from 'pages/Cases-Services/Cases';
 import Demographics from 'pages/demographics/demographics';
@@ -31,8 +33,6 @@ import NotFound from 'pages/not-found/NotFound';
 import ParticipantDatabase from 'pages/participant_database/ParticipantDatabase';
 import ParticipantSchedule from 'pages/scheduling/ParticipantSchedule';
 import UserDashboard from 'pages/user-dashboard/UserDashboard';
-import AdminDashboard from 'pages/admin-dashboard/AdminDashboard';
-import ManageUsers from 'pages/admin-dashboard/ManageUsers';
 
 import './App.css';
 
