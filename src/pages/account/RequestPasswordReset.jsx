@@ -25,7 +25,7 @@ const Input = styled.input`
 
 const Button = styled.button`
   padding: 10px;
-  background-color: #007bff;
+  background-color: var(--primary-blue);
   color: white;
   border: none;
   border-radius: 4px;
@@ -59,7 +59,7 @@ const SuccessMessage = styled.div`
 `;
 
 const StyledLink = styled(Link)`
-  color: #007bff;
+  color: var(--primary-blue);
   text-decoration: none;
   text-align: center;
   margin-top: 10px;

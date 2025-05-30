@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 const NavbarContainer = styled.nav`
-  width: 90%;
+  width: 100%;
   height: 75px;
   flex-shrink: 0;
   border-radius: 40px;
@@ -15,7 +15,6 @@ const NavbarContainer = styled.nav`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: auto;
   font-family: sans-serif;
   position: relative;
   z-index: 1;
@@ -49,7 +48,7 @@ const StyledNavLink = styled(NavLink)`
       transform: translate(-50%, -50%);
       width: calc(100% + 24px);
       height: calc(100% + 16px);
-      background-color: rgb(0, 86, 150);
+      background-color: var(--primary-blue);
       border-radius: 50px;
       z-index: -1;
     }

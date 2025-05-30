@@ -1,32 +1,30 @@
 import React, { useState } from 'react';
 
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import GoogleButton from 'common/components/GoogleButton';
+// import GoogleButton from 'common/components/GoogleButton';
 import { Form, FormTitle } from 'common/components/form/Form';
 import { Input } from 'common/components/form/Input';
 import SubmitButton from 'common/components/form/SubmitButton';
 import { RedSpan } from 'common/components/form/styles';
 import { useUser } from 'common/contexts/UserContext';
 
-import { StyledPage } from './styles';
+import { ImageContainer, StyledLink } from './styles';
 
-const StyledLink = styled(Link)`
-  color: #007bff;
-  text-decoration: none;
-  font-size: 0.9rem;
-  margin-top: -10px;
-  align-self: flex-end;
-
-  &:hover {
-    text-decoration: underline;
-  }
+const StyledRightAlignPage = styled.div`
+  flex: 1 0 0;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  background-color: var(--lighter-grey);
+  overflow: hidden;
 `;
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, googleAuth } = useUser();
+  // const { login, googleAuth } = useUser();
+  const { login } = useUser();
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -55,23 +53,26 @@ export default function Login() {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      await googleAuth();
-    } catch (error) {
-      setError(error.message);
-    }
-  };
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     await googleAuth();
+  //   } catch (error) {
+  //     setError(error.message);
+  //   }
+  // };
 
   return (
-    <StyledPage>
+    <StyledRightAlignPage>
+      <ImageContainer>
+        <img src='/nssc-logo.svg' alt='NSSC logo' />
+      </ImageContainer>
       <Form onSubmit={handleSubmit}>
-        <FormTitle>Log In</FormTitle>
+        <FormTitle>Staff Portal Login</FormTitle>
         {error && <RedSpan>{error}</RedSpan>}
         <Input.Text
           title='Email'
           name='email'
-          placeholder='jsmith or j@example.com'
+          placeholder='jsmith@example.com'
           value={formState.email}
           onChange={handleChange}
           required
@@ -83,16 +84,19 @@ export default function Login() {
           onChange={handleChange}
           required
         />
-        <StyledLink to='/forgot-password'>Forgot Password?</StyledLink>
+        <StyledLink to='/forgot-password'>
+          <div style={{ color: 'var(--primary-blue)', textAlign: 'right' }}>
+            Forgot Password?
+          </div>
+        </StyledLink>
         <SubmitButton disabled={isLoading}>
           {isLoading ? 'Logging in...' : 'Log In'}
         </SubmitButton>
-        <GoogleButton
-          onClick={handleGoogleLogin}
-          isLoading={isLoading}
-          text='Sign in with Google'
-        />
+        <div style={{ width: '400px', fontStyle: 'italic' }}>
+          If you do not have an existing account, please see an admin to receive
+          a registration invite.
+        </div>
       </Form>
-    </StyledPage>
+    </StyledRightAlignPage>
   );
 }
