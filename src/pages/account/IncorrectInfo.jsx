@@ -1,8 +1,10 @@
 import React from 'react';
 
-import { Form, FormTitle } from 'common/components/form/Form';
-import { StyledCenterAlignPage, BackArrowContainer } from './Invite';
 import { ArrowLeft } from 'lucide-react';
+
+import { Form, FormTitle } from 'common/components/form/Form';
+
+import { BackArrowContainer, StyledCenterAlignPage } from './Invite';
 
 export default function IncorrectInfo() {
   return (
