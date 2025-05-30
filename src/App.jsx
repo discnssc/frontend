@@ -13,11 +13,16 @@ import ViewActivity from 'pages/Activity-Participation-Manager/ViewActivity';
 import Cases from 'pages/Cases-Services/Cases';
 import HowInfo from 'pages/HOW-info/HowInfo';
 import AuthCallback from 'pages/account/AuthCallback';
+import IncorrectInfo from 'pages/account/IncorrectInfo';
+import InviteLandingPage from 'pages/account/InviteLandingPage';
 import Login from 'pages/account/Login';
 import RequestPasswordReset from 'pages/account/RequestPasswordReset';
 import ResetPassword from 'pages/account/ResetPassword';
+import SetPassword from 'pages/account/SetPassword';
 import SignUp from 'pages/account/SignUp';
 import Activities from 'pages/activity-scheduling/ActivitiesSchedule';
+import AdminDashboard from 'pages/admin-dashboard/AdminDashboard';
+import ManageUsers from 'pages/admin-dashboard/ManageUsers';
 //import ActivityLogs from 'pages/Activity-Logs/Activities';
 //import Cases from 'pages/Cases-Services/Cases';
 import Demographics from 'pages/demographics/demographics';
@@ -43,7 +48,10 @@ export default function App() {
             {/* Public routes */}
             <Route element={<PublicOnlyRoute />}>
               <Route path='login' element={<Login />} />
-              <Route path='signup' element={<SignUp />} />
+              <Route path='signup' element={<InviteLandingPage />} />
+              <Route path='set-password' element={<SetPassword />} />
+              <Route path='incorrect-info' element={<IncorrectInfo />} />
+              <Route path='test' element={<SignUp />} />
               <Route
                 path='forgot-password'
                 element={<RequestPasswordReset />}
@@ -84,6 +92,10 @@ export default function App() {
 
             {/* User dashboard */}
             <Route path='/admin-dashboard' element={<UserDashboard />} />
+            <Route path='admin' element={<AdminDashboard />}>
+              <Route index element={<ManageUsers />} />
+              <Route path='manage-users' element={<ManageUsers />} />
+            </Route>
 
             {/* Catch-all route for 404 */}
             <Route path='*' element={<NotFound />} />
