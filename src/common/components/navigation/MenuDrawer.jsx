@@ -85,8 +85,8 @@ const icons = {
 };
 
 const menuTabs = [
-  { label: 'Dashboard', to: '/dashboard' },
-  { label: 'Database', to: '/database' },
+  { label: 'Dashboard', to: '/admin-dashboard' },
+  { label: 'Database', to: '/participant-database' },
   { label: 'My Account', to: '/account' },
   { label: 'Admin Dashboard', to: '/admin' },
   { label: 'Billing', to: '/billing' },

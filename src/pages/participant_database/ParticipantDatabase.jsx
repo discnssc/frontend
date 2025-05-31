@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 
 import { Link } from 'react-router-dom';
 
+import MenuDrawer from 'common/components/navigation/MenuDrawer';
+
 export default function ParticipantDatabase() {
   const [participants, setParticipants] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -129,9 +131,11 @@ export default function ParticipantDatabase() {
         fontSize: '15px',
       }}
     >
+      <MenuDrawer />
       <h1
         style={{
           fontSize: '28px',
+          marginTop: '40px',
           marginBottom: '20px',
           fontWeight: 'bold',
         }}
@@ -233,23 +237,6 @@ export default function ParticipantDatabase() {
             </option>
             <option value='status'>Sort By: Status</option>
           </select>
-
-          {/* Create New Button */}
-          <button
-            style={{
-              padding: '10px 20px',
-              borderRadius: '25px',
-              border: 'none',
-              backgroundColor: '#005696', // Example blue color
-              color: 'white',
-              fontSize: '15px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-            }}
-          >
-            + Create New
-          </button>
         </div>
       </div>
 
