@@ -5,8 +5,9 @@ import styled from 'styled-components';
 
 const HeaderContainer = styled.div`
   display: flex;
+  width: 100%;
   justify-content: space-between;
-  align-items: stretch;
+  align-items: flex-start;
   padding: 20px;
   margin-top: 40px;
 `;
