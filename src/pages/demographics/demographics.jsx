@@ -21,12 +21,14 @@ const InfoPage = styled.div`
   display: flex;
   flex-direction: column;
   padding: 2rem;
-  margin-left: 0;
-  width: 100%;
   background-color: #ececec;
 `;
 
 const TableWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 2rem;
   width: 100%;
   max-width: 1200px;
   margin-left: auto;
@@ -68,15 +70,11 @@ export default function Demographics() {
       setError(null);
 
       try {
-        // Get auth token from localStorage
-        const token = localStorage.getItem('authToken');
-
         // Fetch participant data from backend
         const response = await fetch(buildUrl(`/participants/${id}`), {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
           },
           credentials: 'include',
         });
@@ -86,19 +84,36 @@ export default function Demographics() {
         }
 
         const data = await response.json();
+        console.log('Raw API Response:', data);
 
         // Extract data from the response
-        const demographicData = data.participant_demographics;
+        const demographicData =
+          data.demographics || data.participant_demographics || {};
         const participantData = data;
 
-        console.log('Fetched Demographic Info:', demographicData);
-        console.log('Fetched Participant Info:', participantData);
+        console.log('Demographic Data:', demographicData);
+        console.log('Participant Data:', participantData);
 
-        setDemographicInfo(demographicData);
+        // Initialize with default demographics if none exist
+        const defaultDemographics = {
+          hispanic_or_latino: false,
+          living_alone: false,
+          live_in_nursing_home: false,
+          case_worker_risk: false,
+          has_pet: false,
+          homeless: false,
+          female_headed_household: false,
+          frail_disabled: false,
+          limited_english: false,
+          income: '',
+          marital_status: '',
+        };
+
+        setDemographicInfo({ ...defaultDemographics, ...demographicData });
         setParticipantInfo(participantData);
       } catch (err) {
+        console.error('Error in fetchData:', err);
         setError(err.message);
-        console.error('Error fetching data:', err);
       } finally {
         setLoading(false);
       }
@@ -109,6 +124,7 @@ export default function Demographics() {
 
   if (loading) return <Loading>Loading...</Loading>;
   if (error) return <Loading>Error: {error}</Loading>;
+  if (!demographicInfo) return <Loading>No demographic data available</Loading>;
 
   // List of known boolean fields
   const booleanFields = [
@@ -145,37 +161,28 @@ export default function Demographics() {
     const isCheckbox = booleanFields.includes(field);
     const updatedValue = isCheckbox ? e.target.checked : e.target.value;
 
-    // Update the local state
     setState((prev) => ({
       ...prev,
       [field]: updatedValue,
     }));
 
     try {
-      // Get auth token from localStorage
-      const token = localStorage.getItem('authToken');
-
-      // Create payload with only the updated table data
-      const payload = {
-        [table]: {
-          [field]: updatedValue,
-        },
-      };
-
-      // Send update to backend
+      // Update through the backend API
       const response = await fetch(buildUrl(`/participants/${id}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         credentials: 'include',
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          [table]: {
+            [field]: updatedValue,
+          },
+        }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Update failed');
+        throw new Error(`API error: ${response.status}`);
       }
     } catch (err) {
       console.error(`Error updating ${table}:`, err);
