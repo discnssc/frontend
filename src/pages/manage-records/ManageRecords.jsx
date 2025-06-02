@@ -69,6 +69,7 @@ const CreateButton = styled(Button.Primary)`
   font-size: 1.1rem;
   border-radius: 8px;
   margin-left: 8px;
+  color: #fff;
 `;
 
 const FilterButton = styled.button`
