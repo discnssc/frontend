@@ -11,7 +11,7 @@ export default function ParticipantNavBar() {
   const participantTabs = [
     { label: 'General Info', to: `/participant/generalinfo/${id}`, end: true },
     { label: 'Demographics', to: `/participant/demographics/${id}` },
-    //{ label: 'HOW Info', to: `/participant/howinfo/${id}` },
+    { label: 'HOW Info', to: `/participant/howinfo/${id}` },
     { label: 'Cases/Services', to: `/participant/cases/${id}` },
     { label: 'Activity Logs', to: `/participant/activities/${id}` },
   ];

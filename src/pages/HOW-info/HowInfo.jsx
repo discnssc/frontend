@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Header from 'common/components/Header';
-import HomeButton from 'common/components/HomeButton';
 import ParticipantNavbar from 'common/components/ParticipantNavBar';
 import HowInfoTable, {
   DataFieldForm,
@@ -13,6 +12,7 @@ import HowInfoTable, {
   ProgramForm,
   ToiletingForm,
 } from 'common/components/how-info/HowInfoTables';
+import MenuDrawer from 'common/components/navigation/MenuDrawer';
 
 const InfoPage = styled.div`
   display: flex;
@@ -172,8 +172,8 @@ export default function HowInfo() {
 
   return (
     <InfoPage>
+      <MenuDrawer />
       <Header participant={participantInfo} />
-      <HomeButton />
       <ParticipantNavbar />
 
       <Section>
