@@ -45,7 +45,7 @@ export default function Login() {
 
     try {
       await login(formState.email, formState.password);
-      navigate('/', { replace: true });
+      navigate('/admin-dashboard', { replace: true });
     } catch (error) {
       setError(error.message || 'Failed to login. Please try again.');
     } finally {

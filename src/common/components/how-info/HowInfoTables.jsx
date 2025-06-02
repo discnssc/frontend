@@ -18,6 +18,12 @@ const TableHeader = styled.th`
   color: #fff;
   padding: 8px;
   text-align: left;
+  &:first-child {
+    border-top-left-radius: 10px;
+  }
+  &:last-child {
+    border-top-right-radius: 10px;
+  }
 `;
 
 const TableCell = styled.td`
@@ -95,8 +101,7 @@ const Input = styled.input`
 
 const SaveButton = styled(AddButton)`
   background-color: #28a745;
-  margin-right: 0.5rem;
-  margin-left: 0;
+  margin: 0.2rem;
   &:hover {
     background-color: #218838;
   }
@@ -104,11 +109,25 @@ const SaveButton = styled(AddButton)`
 
 const CancelButton = styled(EditButton)`
   background-color: #6c757d;
+  margin: 0.2rem;
   &:hover {
     background-color: #5a6268;
   }
 `;
 
+const DeleteButton = styled(EditButton)`
+  background-color: #dc3545;
+  margin: 0.2rem;
+  &:hover {
+    background-color: #c82333;
+  }
+`;
+const ButtonRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: stretch;
+`;
 // Helper function to build API URLs
 const buildUrl = (endpoint) =>
   `${process.env.REACT_APP_BACKEND_URL.replace(/\/$/, '')}${endpoint}`;
@@ -190,6 +209,52 @@ function TableRow({ row, columns, tableType, participantId, onDataUpdate }) {
     }
   };
 
+  const deleteRow = async () => {
+    if (!window.confirm('Are you sure you want to delete this record?')) return;
+
+    try {
+      let tableName = '';
+      switch (tableType) {
+        case 'programs':
+          tableName = 'participant_how_programs';
+          break;
+        case 'dataFields':
+          tableName = 'participant_how_data_fields';
+          break;
+        case 'hospitalizations':
+          tableName = 'participant_how_hospitalization';
+          break;
+        case 'falls':
+          tableName = 'participant_how_falls';
+          break;
+        case 'toileting':
+          tableName = 'participant_how_toileting';
+          break;
+        default:
+          throw new Error('Unknown table type');
+      }
+
+      const endpoint = `/participants/${tableName}/${participantId}?entry_id=${row.entry_id}`;
+      const response = await fetch(buildUrl(endpoint), {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete record');
+      }
+
+      onDataUpdate(); // Refresh data after deletion
+    } catch (err) {
+      console.error('Error deleting record:', err);
+      alert('Failed to delete record');
+    }
+  };
+
   const renderCell = (column) => {
     const value = row[column.key] || '';
 
@@ -262,13 +327,14 @@ function TableRow({ row, columns, tableType, participantId, onDataUpdate }) {
   };
 
   return (
-    <tr key={row.id}>
+    <tr key={row.entry_id}>
       <TableCell>
         {isEditing ? (
-          <>
+          <ButtonRow>
             <SaveButton onClick={saveEdit}>Save</SaveButton>
+            <DeleteButton onClick={deleteRow}>Delete</DeleteButton>
             <CancelButton onClick={cancelEdit}>Cancel</CancelButton>
-          </>
+          </ButtonRow>
         ) : (
           <EditButton onClick={startEdit}>Edit</EditButton>
         )}
@@ -283,6 +349,7 @@ function TableRow({ row, columns, tableType, participantId, onDataUpdate }) {
 TableRow.propTypes = {
   row: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    entry_id: PropTypes.string.isRequired, // entry_id is used for deletion
   }).isRequired,
   columns: PropTypes.arrayOf(
     PropTypes.shape({
@@ -394,7 +461,7 @@ export default function HowInfoTable({
           <tbody>
             {data.map((row) => (
               <TableRow
-                key={row.id}
+                key={row.entry_id}
                 row={row}
                 columns={columns}
                 tableType={tableType}

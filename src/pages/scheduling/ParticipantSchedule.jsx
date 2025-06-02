@@ -27,7 +27,7 @@ const Title = styled.h1`
   font-size: 2.2rem;
   font-weight: bold;
   margin-bottom: 16px;
-  margin-top: 24px;
+  margin-top: -21px;
 `;
 
 const SectionTitle = styled.h2`
@@ -736,6 +736,7 @@ export default function ParticipantSchedule() {
                 const filename = `Attendance_${start}_to_${end}.xlsx`;
                 exportAttendanceReport(filteredAttendance, filename);
               }}
+              style={{ color: 'white' }}
             >
               Export Attendance
             </PrintButton>

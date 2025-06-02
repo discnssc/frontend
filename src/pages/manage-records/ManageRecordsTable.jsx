@@ -49,7 +49,7 @@ const StatusToggle = styled.div`
   border-radius: 999px;
   overflow: visible;
   width: 180px;
-  height: 20px;
+  height: 36px;
   background: ${({ active }) => (active ? '#cde7d3' : '#f3d3d3')};
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   align-items: center;
@@ -64,15 +64,15 @@ const ToggleSide = styled.button`
     selected ? (active ? '#5b8f6a' : '#b97a7a') : 'transparent'};
   color: ${({ selected, active }) =>
     selected ? '#fff' : active ? '#40694d' : '#8a5a5a'};
-  font-size: 1.25rem;
+  font-size: 0.95rem;
   font-weight: 500;
   cursor: ${({ selected }) => (selected ? 'default' : 'pointer')};
   border-radius: 999px;
   margin: 0 2px;
-  padding: 10px 0 10px 0;
+  height: 100%;
   box-shadow: ${({ selected }) =>
     selected ? '0 2px 8px rgba(0,0,0,0.10)' : 'none'};
-  border: ${({ selected }) => (selected ? '3px solid #fff' : 'none')};
+  border: ${({ selected }) => (selected ? '1px solid #fff' : 'none')};
   z-index: ${({ selected }) => (selected ? 1 : 0)};
   transition:
     background 0.18s,
@@ -80,7 +80,7 @@ const ToggleSide = styled.button`
     box-shadow 0.18s,
     border 0.18s,
     transform 0.18s;
-  transform: ${({ selected }) => (selected ? 'scale(1.07)' : 'scale(1)')};
+  transform: ${({ selected }) => (selected ? 'scale(1.01)' : 'scale(1)')};
 `;
 
 const NameLink = styled.button`

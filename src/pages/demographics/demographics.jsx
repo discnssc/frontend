@@ -5,8 +5,8 @@ import styled from 'styled-components';
 import { generateDemographicsReport } from 'utils/excelExport.js';
 
 import Header from 'common/components/Header';
-import HomeButton from 'common/components/HomeButton';
 import ParticipantNavbar from 'common/components/ParticipantNavBar';
+import MenuDrawer from 'common/components/navigation/MenuDrawer';
 import {
   Table,
   TableCell,
@@ -21,6 +21,7 @@ const InfoPage = styled.div`
   display: flex;
   flex-direction: column;
   padding: 2rem;
+  margin-left: 0;
   background-color: #ececec;
 `;
 
@@ -33,6 +34,7 @@ const TableWrapper = styled.div`
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 30px;
 `;
 
 const Loading = styled.div`
@@ -197,8 +199,8 @@ export default function Demographics() {
 
   return (
     <InfoPage>
+      <MenuDrawer />
       <Header participant={participantInfo} />
-      <HomeButton />
       <ParticipantNavbar />
       <TableWrapper>
         <TableContainer>

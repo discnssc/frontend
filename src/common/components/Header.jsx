@@ -28,6 +28,27 @@ const Right = styled.div`
   height: 100%;
 `;
 
+const FlexRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+`;
+const TypeBadge = styled.div`
+  display: inline-block;
+  padding: 5px 15px;
+  margin-left: 10px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  min-width: 80px;
+  background-color: ${({ type }) =>
+    type?.toLowerCase() === 'participant' ? '#FFE0AB' : '#DDC7F1'};
+  color: ${({ type }) =>
+    type?.toLowerCase() === 'participant' ? '#B16B0E' : '#643A89'};
+`;
+
 const SmallTextBold = styled.h1`
   font-size: 15px;
   font-weight: bold;
@@ -44,8 +65,13 @@ export default function Header({ participant }) {
   return (
     <HeaderContainer>
       <Left>
-        {participant?.participant_general_info?.first_name || 'User'}{' '}
-        {participant?.participant_general_info?.last_name || 'User'}{' '}
+        <FlexRow>
+          {participant?.participant_general_info?.first_name || 'User'}{' '}
+          {participant?.participant_general_info?.last_name || 'User'}{' '}
+          <TypeBadge type={participant.participant_general_info.type}>
+            {participant.participant_general_info.type}
+          </TypeBadge>
+        </FlexRow>
         <div
           style={{
             display: 'inline-block',
@@ -70,15 +96,26 @@ export default function Header({ participant }) {
         <SmallTextBold>
           Participant ID:<SmallText>{participant?.id || 'N/A'}</SmallText>
         </SmallTextBold>
+        <SmallTextBold>
+          HOW ID:<SmallText>123456</SmallText>
+        </SmallTextBold>
       </Left>
       <Right>
         <SmallTextBold>
           Date Created:
-          <SmallText>{participant?.participant_created_at || 'N/A'}</SmallText>
+          <SmallText>
+            {participant?.participant_created_at
+              ? participant.participant_created_at.split('T')[0]
+              : 'N/A'}
+          </SmallText>
         </SmallTextBold>
         <SmallTextBold>
           Date Updated:
-          <SmallText>{participant?.participant_updated_at || 'N/A'}</SmallText>
+          <SmallText>
+            {participant?.participant_updated_at
+              ? participant.participant_updated_at.split('T')[0]
+              : 'N/A'}
+          </SmallText>
         </SmallTextBold>
       </Right>
     </HeaderContainer>
@@ -91,6 +128,7 @@ Header.propTypes = {
     participant_general_info: PropTypes.shape({
       first_name: PropTypes.string,
       last_name: PropTypes.string,
+      type: PropTypes.string, // e.g., 'Participant', 'Care partner'
     }),
     status: PropTypes.string,
     participant_created_at: PropTypes.string,
