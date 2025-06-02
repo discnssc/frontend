@@ -29,6 +29,11 @@ export default [
   // react/jsx related
   pluginReact.configs.flat.recommended,
   {
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
     rules: {
       'react/jsx-filename-extension': [
         2,

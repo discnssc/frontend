@@ -129,6 +129,7 @@ export default function ParticipantDatabase() {
         padding: '30px',
         fontFamily: 'Arial, sans-serif',
         fontSize: '15px',
+        position: 'relative',
       }}
     >
       <MenuDrawer />
