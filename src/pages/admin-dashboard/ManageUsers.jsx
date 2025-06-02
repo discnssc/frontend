@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
+import MenuDrawer from 'common/components/navigation/MenuDrawer';
 import {
   Table,
   TableCell,
@@ -53,6 +54,7 @@ export default function ManageUsers() {
 
   return (
     <InlayContainer>
+      <MenuDrawer />
       <div className='text-subheading'>Registered Users</div>
 
       <TableContainer>
