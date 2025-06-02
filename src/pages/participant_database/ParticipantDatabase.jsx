@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-
 import { Link } from 'react-router-dom';
+import MenuDrawer from 'common/components/navigation/MenuDrawer';
 
 export default function ParticipantDatabase() {
   const [participants, setParticipants] = useState([]);
@@ -127,8 +127,10 @@ export default function ParticipantDatabase() {
         padding: '30px',
         fontFamily: 'Arial, sans-serif',
         fontSize: '15px',
+        position: 'relative',
       }}
     >
+      <MenuDrawer />
       <h1
         style={{
           fontSize: '28px',
