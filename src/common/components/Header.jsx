@@ -70,15 +70,26 @@ export default function Header({ participant }) {
         <SmallTextBold>
           Participant ID:<SmallText>{participant?.id || 'N/A'}</SmallText>
         </SmallTextBold>
+        <SmallTextBold>
+          HOW ID:<SmallText>123456</SmallText>
+        </SmallTextBold>
       </Left>
       <Right>
         <SmallTextBold>
           Date Created:
-          <SmallText>{participant?.participant_created_at || 'N/A'}</SmallText>
+          <SmallText>
+            {participant?.participant_created_at
+              ? participant.participant_created_at.split('T')[0]
+              : 'N/A'}
+          </SmallText>
         </SmallTextBold>
         <SmallTextBold>
           Date Updated:
-          <SmallText>{participant?.participant_updated_at || 'N/A'}</SmallText>
+          <SmallText>
+            {participant?.participant_updated_at
+              ? participant.participant_updated_at.split('T')[0]
+              : 'N/A'}
+          </SmallText>
         </SmallTextBold>
       </Right>
     </HeaderContainer>
