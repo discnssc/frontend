@@ -90,7 +90,7 @@ const icons = {
 const menuTabs = [
   { label: 'Dashboard', to: '/admin-dashboard' },
   { label: 'Database', to: '/participant-database' },
-  { label: 'Admin Dashboard', to: '/admin' },
+  { label: 'Admin Dashboard', to: '/admin/manage-users' },
   { label: 'Billing', to: '/billing' },
   { label: 'My Account', to: '/account' },
 ];

@@ -4,9 +4,9 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Header from 'common/components/Header';
-import HomeButton from 'common/components/HomeButton';
 import ParticipantNavbar from 'common/components/ParticipantNavBar';
 import EditServiceModal from 'common/components/form/EditingServicesModal';
+import MenuDrawer from 'common/components/navigation/MenuDrawer';
 
 const InfoPage = styled.div`
   display: flex;
@@ -273,8 +273,8 @@ export default function Cases() {
   if (error) return <Loading>Error: {error}</Loading>;
   return (
     <InfoPage>
+      <MenuDrawer />
       <Header participant={participant} />
-      <HomeButton />
       <ParticipantNavbar />
       {showEditModal && (
         <EditServiceModal

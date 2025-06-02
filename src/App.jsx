@@ -84,20 +84,16 @@ export default function App() {
             />
             <Route path='auth/reset-password' element={<ResetPassword />} />
 
-            {/* Admin routes */}
-            <Route
-              path='/admin/participant-schedule'
-              element={<ParticipantSchedule />}
-            />
-
-            {/* Manage records */}
-            <Route path='/admin/manage-records' element={<ManageRecords />} />
-
-            {/* User dashboard */}
-            <Route path='/admin-dashboard' element={<UserDashboard />} />
+            {/* Admin dashboard and user dashboard */}
+            <Route path='admin-dashboard' element={<UserDashboard />} />
             <Route path='admin' element={<AdminDashboard />}>
               <Route index element={<ManageUsers />} />
               <Route path='manage-users' element={<ManageUsers />} />
+              <Route path='manage-records' element={<ManageRecords />} />
+              <Route
+                path='participant-schedule'
+                element={<ParticipantSchedule />}
+              />
             </Route>
 
             {/* Catch-all route for 404 */}
