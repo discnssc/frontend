@@ -43,7 +43,7 @@ export default function App() {
         <Routes>
           <Route path='/' element={<NavLayout />}>
             {/* Make ParticipantDatabase the home page */}
-            <Route index element={<ParticipantDatabase />} />
+            <Route index element={<UserDashboard />} />
 
             {/* Public routes */}
             <Route element={<PublicOnlyRoute />}>
