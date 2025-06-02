@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+
 import { Link } from 'react-router-dom';
+
 import MenuDrawer from 'common/components/navigation/MenuDrawer';
 
 export default function ParticipantDatabase() {
