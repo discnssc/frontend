@@ -736,6 +736,7 @@ export default function ParticipantSchedule() {
                 const filename = `Attendance_${start}_to_${end}.xlsx`;
                 exportAttendanceReport(filteredAttendance, filename);
               }}
+              style={{ color: 'white' }}
             >
               Export Attendance
             </PrintButton>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import 'App.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -29,7 +30,7 @@ const Drawer = styled.div`
   top: 16px;
   left: 16px;
   width: 260px;
-  background: #fff;
+  background: var(--lighest-grey);
   border-radius: 18px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
   padding: 18px 0;
@@ -43,17 +44,19 @@ const MenuItem = styled.div`
   display: flex;
   align-items: center;
   gap: 18px;
-  font-size: 1.25rem;
-  font-weight: 500;
   padding: 16px 24px;
   border-radius: 14px;
   cursor: pointer;
-  background: ${({ active }) => (active ? '#f5f5f5' : 'none')};
+  background: ${({ active }) => (active ? 'var(--light-grey)' : 'none')};
   border: ${({ active }) =>
-    active ? '2px solid #ededed' : '2px solid transparent'};
+    active ? '2px solid var(--lighter-grey)' : '2px solid transparent'};
   transition:
     background 0.2s,
     border 0.2s;
+
+  &:hover {
+    background: var(--light-grey);
+  }
 `;
 
 const icons = {
@@ -87,9 +90,9 @@ const icons = {
 const menuTabs = [
   { label: 'Dashboard', to: '/admin-dashboard' },
   { label: 'Database', to: '/participant-database' },
-  { label: 'My Account', to: '/account' },
   { label: 'Admin Dashboard', to: '/admin' },
   { label: 'Billing', to: '/billing' },
+  { label: 'My Account', to: '/account' },
 ];
 
 export default function MenuDrawer() {
@@ -99,7 +102,6 @@ export default function MenuDrawer() {
 
   const handleMenuClick = (to) => {
     setOpen(false);
-    // Placeholder: navigate to the route (replace with real routes later)
     navigate(to);
   };
 
@@ -116,11 +118,11 @@ export default function MenuDrawer() {
           {menuTabs.map((tab) => (
             <MenuItem
               key={tab.to}
-              active={location.pathname.startsWith(tab.to)}
+              active={location.pathname === tab.to}
               onClick={() => handleMenuClick(tab.to)}
             >
               {icons[tab.label] || '•'}
-              {tab.label}
+              <span className='text-body'>{tab.label}</span>
             </MenuItem>
           ))}
         </Drawer>
