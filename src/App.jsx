@@ -13,16 +13,21 @@ import ViewActivity from 'pages/Activity-Participation-Manager/ViewActivity';
 import Cases from 'pages/Cases-Services/Cases';
 import HowInfo from 'pages/HOW-info/HowInfo';
 import AuthCallback from 'pages/account/AuthCallback';
+import IncorrectInfo from 'pages/account/IncorrectInfo';
+import InviteLandingPage from 'pages/account/InviteLandingPage';
 import Login from 'pages/account/Login';
 import RequestPasswordReset from 'pages/account/RequestPasswordReset';
 import ResetPassword from 'pages/account/ResetPassword';
+import SetPassword from 'pages/account/SetPassword';
 import SignUp from 'pages/account/SignUp';
 import Activities from 'pages/activity-scheduling/ActivitiesSchedule';
-//import ActivityLogs from 'pages/Activity-Logs/Activities';
+import AdminDashboard from 'pages/admin-dashboard/AdminDashboard';
+import ManageUsers from 'pages/admin-dashboard/ManageUsers';
 //import Cases from 'pages/Cases-Services/Cases';
 import Demographics from 'pages/demographics/demographics';
 import GeneralInfo from 'pages/general-info/GeneralInfo';
-//import Home from 'pages/home/Home';
+// import Home from 'pages/home/Home';
+import ManageRecords from 'pages/manage-records/ManageRecords';
 //import HowInfo from 'pages/HOW-info/HowInfo';
 import NotFound from 'pages/not-found/NotFound';
 import ParticipantDatabase from 'pages/participant_database/ParticipantDatabase';
@@ -38,12 +43,15 @@ export default function App() {
         <Routes>
           <Route path='/' element={<NavLayout />}>
             {/* Make ParticipantDatabase the home page */}
-            <Route index element={<ParticipantDatabase />} />
+            <Route index element={<UserDashboard />} />
 
             {/* Public routes */}
             <Route element={<PublicOnlyRoute />}>
               <Route path='login' element={<Login />} />
-              <Route path='signup' element={<SignUp />} />
+              <Route path='signup' element={<InviteLandingPage />} />
+              <Route path='set-password' element={<SetPassword />} />
+              <Route path='incorrect-info' element={<IncorrectInfo />} />
+              <Route path='test' element={<SignUp />} />
               <Route
                 path='forgot-password'
                 element={<RequestPasswordReset />}
@@ -76,14 +84,17 @@ export default function App() {
             />
             <Route path='auth/reset-password' element={<ResetPassword />} />
 
-            {/* Admin routes */}
-            <Route
-              path='/admin/participant-schedule'
-              element={<ParticipantSchedule />}
-            />
-
-            {/* User dashboard */}
-            <Route path='/dashboard' element={<UserDashboard />} />
+            {/* Admin dashboard and user dashboard */}
+            <Route path='admin-dashboard' element={<UserDashboard />} />
+            <Route path='admin' element={<AdminDashboard />}>
+              <Route index element={<ManageUsers />} />
+              <Route path='manage-users' element={<ManageUsers />} />
+              <Route path='manage-records' element={<ManageRecords />} />
+              <Route
+                path='participant-schedule'
+                element={<ParticipantSchedule />}
+              />
+            </Route>
 
             {/* Catch-all route for 404 */}
             <Route path='*' element={<NotFound />} />

@@ -57,9 +57,13 @@ export function useDashboardData() {
       const todayDateStr = getTodayDateString();
       const today = new Date();
       const todayDay = today.toLocaleString('default', { weekday: 'long' });
-      // filter schedules for the current day and session type
+      const todayMonth = today.toLocaleString('default', { month: 'long' });
+      const todayYear = today.getFullYear();
+      // filter schedules for the current day, session type, and current month/year
       const filteredSchedules = schedules.filter(
         (s) =>
+          s.month === todayMonth &&
+          String(s.year) === String(todayYear) &&
           s.schedule &&
           s.schedule[todayDay] &&
           s.schedule[todayDay].active === true &&

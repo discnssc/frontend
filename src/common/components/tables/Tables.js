@@ -1,12 +1,14 @@
 import styled from 'styled-components';
 
 export const TableContainer = styled.div`
-  width: 800px;
-  margin: 48px 0 0 0;
+  width: 100%;
+  margin: 0px;
   background: transparent;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  border-radius: 10px;
+  overflow: hidden;
 `;
 
 export const Table = styled.div`
@@ -46,19 +48,32 @@ export const TableRowLabel = styled.div`
   font-size: 16px;
   text-align: left;
   vertical-align: middle;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--lighter-grey);
   width: auto;
   background-color: white;
 `;
 
+export const TableHeaderCell = styled.div`
+  display: table-cell;
+  padding: 20px 30px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  text-align: left;
+  vertical-align: middle;
+  border: 1px solid var(--lighter-grey);
+  width: %auto;
+  background-color: var(--primary-blue);
+`;
+
 export const TableCell = styled.div`
   display: table-cell;
-  padding: 25px 30px;
+  padding: 20px 30px;
   font-size: 16px;
   text-align: left;
   vertical-align: middle;
-  border: 1px solid #e0e0e0;
-  width: auto;
+  border: 1px solid var(--lighter-grey);
+  width: %auto;
   background-color: white;
 
   input[type='checkbox'] {
@@ -76,5 +91,27 @@ export const TableCell = styled.div`
     font-size: 16px;
     width: 100%;
     padding: 0;
+  }
+
+  select {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    width: 100%;
+    padding: 0;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
+  }
+
+  select:focus {
+    outline: none;
   }
 `;

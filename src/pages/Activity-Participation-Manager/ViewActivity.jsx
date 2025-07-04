@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
+
+import HomeButton from 'common/components/HomeButton';
 
 const ActivityTitle = styled.h1`
   font-size: 30px;
@@ -236,6 +238,7 @@ const ViewActivity = () => {
   };
   return (
     <ActivityPage>
+      <HomeButton />
       <ActivityTitle>{activity.name}</ActivityTitle>
       <ActivityInfo>
         <p>
@@ -266,7 +269,9 @@ const ViewActivity = () => {
             return (
               <TableRow key={participant.id}>
                 <TableCell>
-                  {participant.participant_general_info?.first_name || 'N/A'}
+                  <Link to={`/participant/generalinfo/${participant.id}`}>
+                    {participant.participant_general_info?.first_name || 'N/A'}
+                  </Link>
                 </TableCell>
                 <TableCell>
                   {participant.participant_general_info?.last_name || 'N/A'}
