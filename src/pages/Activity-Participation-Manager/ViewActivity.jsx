@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import HomeButton from 'common/components/HomeButton';
+import BackButton from 'common/components/BackButton';
 
 const ActivityTitle = styled.h1`
   font-size: 30px;
@@ -238,7 +238,7 @@ const ViewActivity = () => {
   };
   return (
     <ActivityPage>
-      <HomeButton />
+      <BackButton />
       <ActivityTitle>{activity.name}</ActivityTitle>
       <ActivityInfo>
         <p>
