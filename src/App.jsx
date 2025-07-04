@@ -83,7 +83,7 @@ export default function App() {
             />
 
             {/* User dashboard */}
-            <Route path='/admin-dashboard' element={<UserDashboard />} />
+            <Route path='/dashboard' element={<UserDashboard />} />
 
             {/* Catch-all route for 404 */}
             <Route path='*' element={<NotFound />} />
