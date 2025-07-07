@@ -2,17 +2,19 @@ import styled from 'styled-components';
 
 import { Button } from 'common/components/Button';
 
-export const InputContainer = styled.div``;
+export const InputContainer = styled.div`
+  flex: 1;
+`;
 
 export const InputName = styled.h3`
   margin: 0;
   text-align: left;
   font-weight: normal;
-  font-size: 1rem;
-  margin-bottom: 4px;
+  font-size: 16px;
+  margin-bottom: 10px;
 `;
 export const InputTitle = styled.span`
-  margin-right: 2px;
+  margin-right: 0px;
 `;
 export const RedSpan = styled.span`
   color: red;
@@ -22,10 +24,10 @@ export const StyledInput = styled.input`
   all: unset;
   background-color: white;
   text-align: left;
-  font-size: 1rem;
-  padding: 10px 15px;
+  font-size: 16px;
+  padding: 20px 30px;
   border-radius: 10px;
-  width: 500px;
+  width: auto;
 `;
 
 export const PasswordContainer = styled.div`
@@ -44,11 +46,11 @@ export const IconContainer = styled.div`
 export const StyledButton = styled(Button.Primary)`
   all: unset;
   text-align: center;
-  font-size: 1rem;
+  font-size: 16px;
   border-radius: 10px;
   font-weight: bold;
-  width: 500px;
+  width: auto;
   color: white;
   background-color: var(--primary-blue);
-  padding: 10px 15px;
+  padding: 20px 30px;
 `;
