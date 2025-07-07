@@ -13,9 +13,11 @@ export const InputName = styled.h3`
   font-size: 16px;
   margin-bottom: 10px;
 `;
+
 export const InputTitle = styled.span`
   margin-right: 0px;
 `;
+
 export const RedSpan = styled.span`
   color: red;
 `;
@@ -53,4 +55,5 @@ export const StyledButton = styled(Button.Primary)`
   color: white;
   background-color: var(--primary-blue);
   padding: 20px 30px;
+  margin-top: 29px;
 `;
