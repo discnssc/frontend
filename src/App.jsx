@@ -35,6 +35,7 @@ import ParticipantSchedule from 'pages/scheduling/ParticipantSchedule';
 import UserDashboard from 'pages/user-dashboard/UserDashboard';
 
 import './App.css';
+import Calendar from './pages/Activity-Calendar/Calendar.jsx';
 
 export default function App() {
   return (
@@ -83,6 +84,9 @@ export default function App() {
               element={<ParticipantDatabase />}
             />
             <Route path='auth/reset-password' element={<ResetPassword />} />
+
+            {/* Calendar route */}
+            <Route path='calendar' element={<Calendar />} />
 
             {/* Admin routes */}
             <Route

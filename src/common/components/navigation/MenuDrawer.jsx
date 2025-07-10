@@ -67,6 +67,11 @@ const icons = {
       🗄️
     </span>
   ),
+  Calendar: (
+    <span role='img' aria-label='calendar'>
+      📅
+    </span>
+  ),
   'My Account': (
     <span role='img' aria-label='account'>
       👤
@@ -87,6 +92,7 @@ const icons = {
 const menuTabs = [
   { label: 'Dashboard', to: '/admin-dashboard' },
   { label: 'Database', to: '/participant-database' },
+  { label: 'Calendar', to: '/calendar' },
   { label: 'My Account', to: '/account' },
   { label: 'Admin Dashboard', to: '/admin' },
   { label: 'Billing', to: '/billing' },
