@@ -4,8 +4,8 @@ import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Header from 'common/components/Header';
-import HomeButton from 'common/components/HomeButton';
 import ParticipantNavbar from 'common/components/ParticipantNavBar';
+import MenuDrawer from 'common/components/navigation/MenuDrawer';
 import {
   Table,
   TableCell,
@@ -255,8 +255,8 @@ export default function GeneralInfo() {
 
   return (
     <InfoPage>
+      <MenuDrawer />
       <Header participant={participantInfo} />
-      <HomeButton />
       <ParticipantNavbar />
       <TablesContainer>
         <TableContainer>

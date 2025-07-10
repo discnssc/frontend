@@ -8,10 +8,10 @@ import {
 } from 'utils/excelExport.js';
 
 import Header from 'common/components/Header';
-import HomeButton from 'common/components/HomeButton';
 import ParticipantNavbar from 'common/components/ParticipantNavBar';
 import ActivitiesTable from 'common/components/activities/ActivitiesTable';
 import MonthYearDropdown from 'common/components/activities/MonthYearDropdown';
+import MenuDrawer from 'common/components/navigation/MenuDrawer';
 
 const InfoPage = styled.div`
   flex-direction: row;
@@ -196,8 +196,8 @@ export default function Activities() {
 
   return (
     <InfoPage>
+      <MenuDrawer />
       <Header participant={participant} />
-      <HomeButton />
       <ParticipantNavbar />
       <ActivitiesContainer>
         <TableContainer>

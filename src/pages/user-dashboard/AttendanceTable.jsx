@@ -225,6 +225,7 @@ function AttendanceTable({
                   <Button.Primary
                     onClick={() => handleSave(row)}
                     disabled={!rowEdits[row.id]}
+                    style={{ color: 'white' }}
                   >
                     Save
                   </Button.Primary>
@@ -236,7 +237,7 @@ function AttendanceTable({
       </table>
       {onAddUnscheduled && (
         <div style={{ marginTop: 12, textAlign: 'right' }}>
-          <Button.Primary onClick={onAddUnscheduled}>
+          <Button.Primary onClick={onAddUnscheduled} style={{ color: 'white' }}>
             <span role='img' aria-label='add'>
               ➕
             </span>{' '}

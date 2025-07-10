@@ -9,9 +9,7 @@ import SubmitButton from 'common/components/form/SubmitButton';
 import { BackArrowContainer, StyledCenterAlignPage } from './Invite';
 
 export default function SetPassword() {
-  const [isLoading, setIsLoading] = useState(false);
-
-  setIsLoading(false);
+  const [isLoading] = useState(false);
 
   return (
     <StyledCenterAlignPage>

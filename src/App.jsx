@@ -44,7 +44,7 @@ export default function App() {
         <Routes>
           <Route path='/' element={<NavLayout />}>
             {/* Make ParticipantDatabase the home page */}
-            <Route index element={<ParticipantDatabase />} />
+            <Route index element={<UserDashboard />} />
 
             {/* Public routes */}
             <Route element={<PublicOnlyRoute />}>
@@ -85,6 +85,7 @@ export default function App() {
             />
             <Route path='auth/reset-password' element={<ResetPassword />} />
 
+<<<<<<< HEAD
             {/* Calendar route */}
             <Route path='calendar' element={<Calendar />} />
 
@@ -99,9 +100,18 @@ export default function App() {
 
             {/* User dashboard */}
             <Route path='/admin-dashboard' element={<UserDashboard />} />
+=======
+            {/* Admin dashboard and user dashboard */}
+            <Route path='admin-dashboard' element={<UserDashboard />} />
+>>>>>>> 12fb7d30cd72cce06d1ed3b4532e6a330cc7e3d2
             <Route path='admin' element={<AdminDashboard />}>
               <Route index element={<ManageUsers />} />
               <Route path='manage-users' element={<ManageUsers />} />
+              <Route path='manage-records' element={<ManageRecords />} />
+              <Route
+                path='participant-schedule'
+                element={<ParticipantSchedule />}
+              />
             </Route>
 
             {/* Catch-all route for 404 */}

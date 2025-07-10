@@ -31,7 +31,7 @@ const Title = styled.h1`
   font-size: 2.2rem;
   font-weight: bold;
   margin-bottom: 16px;
-  margin-top: 24px;
+  margin-top: -21px;
 `;
 
 const FilterRow = styled.div`

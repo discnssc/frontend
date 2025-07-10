@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
+import AdminNavBar from 'common/components/navigation/AdminNavBar';
 import MenuDrawer from 'common/components/navigation/MenuDrawer';
 import {
   Table,
@@ -9,7 +10,7 @@ import {
   TableRow,
 } from 'common/components/tables/Tables';
 
-import { InlayContainer } from './styles';
+import { InlayContainer, PageContainer } from './styles';
 
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
@@ -53,54 +54,78 @@ export default function ManageUsers() {
   }, []);
 
   return (
-    <InlayContainer>
+    <PageContainer>
       <MenuDrawer />
-      <div className='text-subheading'>Registered Users</div>
-
-      <TableContainer>
-        <Table>
-          <TableRow>
-            <TableHeaderCell>First Name</TableHeaderCell>
-            <TableHeaderCell>Last Name</TableHeaderCell>
-            <TableHeaderCell>Role</TableHeaderCell>
-            <TableHeaderCell>Email</TableHeaderCell>
-          </TableRow>
-
-          {users.map((user, index) => (
-            <TableRow key={{ index }}>
-              <TableCell>{user.firstname}</TableCell>
-              <TableCell>{user.lastname}</TableCell>
-              <TableCell>Admin</TableCell>
-              <TableCell>{user.email}</TableCell>
+      <InlayContainer>
+        <div
+          className='text-title'
+          style={{
+            marginBottom: -14,
+            marginTop: 24,
+            fontSize: '2.2rem',
+            fontWeight: 'bold',
+          }}
+        >
+          Admin Dashboard
+        </div>
+        <AdminNavBar />
+        <div className='text-subheading' style={{ marginBottom: 24 }}>
+          Registered Users
+        </div>
+        <TableContainer>
+          <Table>
+            <TableRow>
+              <TableHeaderCell>First Name</TableHeaderCell>
+              <TableHeaderCell>Last Name</TableHeaderCell>
+              <TableHeaderCell>Role</TableHeaderCell>
+              <TableHeaderCell>Email</TableHeaderCell>
             </TableRow>
-          ))}
-        </Table>
-      </TableContainer>
-      <div className='text-subheading'>Invite New User</div>
-      <div className='text-subheading'>Pending Invites</div>
-
-      <TableContainer>
-        <Table>
-          <TableRow>
-            <TableHeaderCell>First Name</TableHeaderCell>
-            <TableHeaderCell>Last Name</TableHeaderCell>
-            <TableHeaderCell>Role</TableHeaderCell>
-            <TableHeaderCell>Email</TableHeaderCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>John</TableCell>
-            <TableCell>Doe</TableCell>
-            <TableCell>Admin</TableCell>
-            <TableCell>john@example.com</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>John</TableCell>
-            <TableCell>Doe</TableCell>
-            <TableCell>Admin</TableCell>
-            <TableCell>john@example.com</TableCell>
-          </TableRow>
-        </Table>
-      </TableContainer>
-    </InlayContainer>
+            {users.map((user, index) => (
+              <TableRow key={index}>
+                <TableCell>{user.firstname}</TableCell>
+                <TableCell>{user.lastname}</TableCell>
+                <TableCell>Admin</TableCell>
+                <TableCell>{user.email}</TableCell>
+              </TableRow>
+            ))}
+          </Table>
+        </TableContainer>
+        <div
+          className='text-subheading'
+          style={{ marginTop: 40, marginBottom: 16 }}
+        >
+          Invite New User
+        </div>
+        {/* Add invite form here if needed */}
+        <div
+          className='text-subheading'
+          style={{ marginTop: 40, marginBottom: 16 }}
+        >
+          Pending Invites
+        </div>
+        <TableContainer>
+          <Table>
+            <TableRow>
+              <TableHeaderCell>First Name</TableHeaderCell>
+              <TableHeaderCell>Last Name</TableHeaderCell>
+              <TableHeaderCell>Role</TableHeaderCell>
+              <TableHeaderCell>Email</TableHeaderCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>John</TableCell>
+              <TableCell>Doe</TableCell>
+              <TableCell>Admin</TableCell>
+              <TableCell>john@example.com</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>John</TableCell>
+              <TableCell>Doe</TableCell>
+              <TableCell>Admin</TableCell>
+              <TableCell>john@example.com</TableCell>
+            </TableRow>
+          </Table>
+        </TableContainer>
+      </InlayContainer>
+    </PageContainer>
   );
 }
