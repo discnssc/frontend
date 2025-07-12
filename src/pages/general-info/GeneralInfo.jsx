@@ -35,11 +35,6 @@ const TablesContainer = styled.div`
   margin-right: auto;
 `;
 
-const Loading = styled.div`
-  font-size: 18px;
-  color: #999;
-`;
-
 const CareSearchInput = styled.div`
   margin-bottom: 1rem;
 `;
@@ -141,9 +136,6 @@ export default function GeneralInfo() {
     }
     return 'No care partners available';
   };
-
-  if (loading) return <Loading>Loading...</Loading>;
-  if (error) return <Loading>Error: {error}</Loading>;
 
   const handleChange = async (e, field, table, setState) => {
     const updatedValue = e.target.value;
@@ -256,7 +248,7 @@ export default function GeneralInfo() {
   return (
     <InfoPage>
       <MenuDrawer />
-      <Header participant={participantInfo} />
+      <Header participant={participantInfo} error={error} />
       <ParticipantNavbar />
       <TablesContainer>
         <TableContainer>
