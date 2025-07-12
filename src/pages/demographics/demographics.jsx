@@ -37,11 +37,6 @@ const TableWrapper = styled.div`
   margin-top: 30px;
 `;
 
-const Loading = styled.div`
-  font-size: 18px;
-  color: #999;
-`;
-
 const Button = styled.button`
   background-color: #005696;
   color: #ececec;
@@ -63,12 +58,10 @@ export default function Demographics() {
   const { id } = useParams();
   const [demographicInfo, setDemographicInfo] = useState(null);
   const [participantInfo, setParticipantInfo] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
       setError(null);
 
       try {
@@ -116,17 +109,11 @@ export default function Demographics() {
       } catch (err) {
         console.error('Error in fetchData:', err);
         setError(err.message);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchData();
   }, [id]);
-
-  if (loading) return <Loading>Loading...</Loading>;
-  if (error) return <Loading>Error: {error}</Loading>;
-  if (!demographicInfo) return <Loading>No demographic data available</Loading>;
 
   // List of known boolean fields
   const booleanFields = [
@@ -200,7 +187,7 @@ export default function Demographics() {
   return (
     <InfoPage>
       <MenuDrawer />
-      <Header participant={participantInfo} />
+      <Header participant={participantInfo} error={error} />
       <ParticipantNavbar />
       <TableWrapper>
         <TableContainer>
