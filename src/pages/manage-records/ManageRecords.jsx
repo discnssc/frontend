@@ -55,42 +55,46 @@ const RightControls = styled.div`
 `;
 
 const SearchInput = styled.input`
-  padding: 14px 18px;
-  border-radius: 24px;
+  padding: 15px 18px;
+  border-radius: 8px;
   border: 1px solid #d9d9d9;
-  font-size: 1rem;
+  font-size: 15px;
   background: #fff;
-  min-width: 260px;
+  min-width: 140px;
   outline: none;
 `;
 
 const CreateButton = styled(Button.Primary)`
-  height: 48px;
-  font-size: 1.1rem;
+  height: 49px;
+  font-size: 15px;
+  font-weight: normal;
   border-radius: 8px;
   margin-left: 8px;
   color: #fff;
+  padding: 15px;
 `;
 
 const FilterButton = styled.button`
-  padding: 14px 18px;
-  border-radius: 24px;
+  padding: 15px;
+  border-radius: 8px;
   border: 1px solid #d9d9d9;
   background: #fff;
-  font-size: 1rem;
-  min-width: 180px;
+  font-size: 15px;
+  min-width: 120px;
+  height: 49px;
   cursor: pointer;
   position: relative;
   z-index: 10;
 `;
 
 const SortButton = styled.button`
-  padding: 14px 18px;
-  border-radius: 24px;
+  padding: 15px;
+  border-radius: 8px;
   border: 1px solid #d9d9d9;
   background: #fff;
-  font-size: 1rem;
-  min-width: 180px;
+  font-size: 15px;
+  min-width: 120px;
+  height: 49px;
   cursor: pointer;
   position: relative;
   z-index: 10;
