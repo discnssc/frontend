@@ -67,11 +67,9 @@ const SearchInput = styled.input`
 const CreateButton = styled(Button.Primary)`
   height: 49px;
   font-size: 15px;
-  font-weight: normal;
   border-radius: 8px;
   margin-left: 8px;
   color: #fff;
-  padding: 15px;
 `;
 
 const FilterButton = styled.button`
