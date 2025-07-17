@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import styled from 'styled-components';
 import { exportAttendanceReport } from 'utils/excelExport';
@@ -119,8 +119,10 @@ const DateRangeLabel = styled.span`
 const PrintButton = styled(Button.Primary)`
   margin-left: auto;
   display: block;
-  height: 48px;
-  font-size: 1.1rem;
+  height: 49px;
+  font-size: 15px;
+  padding: 15px;
+  font-weight: normal;
   border-radius: 8px;
 `;
 
@@ -236,6 +238,42 @@ const SaveButton = styled(Button.Primary)`
   width: 100%;
 `;
 
+const SortButton = styled.button`
+  padding: 15px 18px;
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  font-size: 15px;
+  min-width: 120px;
+  height: 49px;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 49px;
+  left: 0;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  min-width: 180px;
+  width: 180px;
+  z-index: 20;
+  padding: 8px 0;
+`;
+
+const DropdownItem = styled.div`
+  padding: 16px 24px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  background: ${({ active }) => (active ? '#f5f5f5' : 'transparent')};
+  &:hover {
+    background: #f5f5f5;
+  }
+`;
+
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const TIMES = ['AM', 'PM', 'Full'];
 const TOILETING = ['Remind', 'Assist', 'R/A', 'None'];
@@ -348,8 +386,15 @@ export default function ParticipantSchedule() {
   const [startYear, setStartYear] = useState(currentYear);
   const [endYear, setEndYear] = useState(currentYear);
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState('None');
+  // Removed filter state
+  const [filter, setFilter] = useState('Filter By: None');
+  const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
+  const filterButtonRef = useRef(null);
   const [sort, setSort] = useState('Sort By: Date');
+  // Removed filterDropdownOpen state
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+  // Removed filterButtonRef
+  const sortButtonRef = useRef(null);
 
   // Data state
   const [participants, setParticipants] = useState([]);
@@ -368,12 +413,30 @@ export default function ParticipantSchedule() {
 
   // Update sort when tab changes
   useEffect(() => {
-    setSort(activeTab === 'Schedule' ? 'Sort By: Last Name' : 'Sort By: Date');
+    setSort(
+      activeTab === 'Schedule'
+        ? 'Sort By: Last Name'
+        : activeTab === 'Attendance'
+          ? 'Sort By: Date'
+          : 'Sort By: Code'
+    );
   }, [activeTab]);
 
   // Sort functions
   const sortSchedule = (data) => {
     switch (sort) {
+      case 'Sort By: Code': {
+        // Check if any row has a 'Code' property (not null/undefined/empty)
+        const hasAnyCode = data.some(
+          (row) => row.Code && row.Code.trim() !== ''
+        );
+        if (!hasAnyCode) {
+          return data;
+        }
+        return [...data].sort((a, b) =>
+          (a.Code || '').localeCompare(b.Code || '')
+        );
+      }
       case 'Sort By: Last Name':
         return [...data].sort((a, b) => a.lastName.localeCompare(b.lastName));
       case 'Sort By: First Name':
@@ -600,6 +663,28 @@ export default function ParticipantSchedule() {
       .finally(() => setLoading(false));
   };
 
+  // Close dropdowns on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        sortButtonRef.current &&
+        !sortButtonRef.current.contains(event.target)
+      ) {
+        setSortDropdownOpen(false);
+      }
+      if (
+        filterButtonRef.current &&
+        !filterButtonRef.current.contains(event.target)
+      ) {
+        setFilterDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <Container>
       <MenuDrawer />
@@ -772,27 +857,63 @@ export default function ParticipantSchedule() {
             />
           </SearchContainer>
           <FilterContainer>
-            <Select value={filter} onChange={(e) => setFilter(e.target.value)}>
-              <option>Filter By: None</option>
-            </Select>
-            <Select value={sort} onChange={(e) => setSort(e.target.value)}>
-              {activeTab === 'Schedule' ? (
-                <>
-                  <option value='Sort By: Last Name'>Sort By: Last Name</option>
-                  <option value='Sort By: First Name'>
-                    Sort By: First Name
-                  </option>
-                </>
-              ) : (
-                <>
-                  <option value='Sort By: Date'>Sort By: Date</option>
-                  <option value='Sort By: Last Name'>Sort By: Last Name</option>
-                  <option value='Sort By: First Name'>
-                    Sort By: First Name
-                  </option>
-                </>
+            {/* Filter Button */}
+            <div
+              style={{ position: 'relative', marginRight: 8 }}
+              ref={filterButtonRef}
+            >
+              <SortButton
+                onClick={() => setFilterDropdownOpen((open) => !open)}
+              >
+                {filter}
+              </SortButton>
+              {filterDropdownOpen && (
+                <DropdownMenu>
+                  {['Filter By: None', 'Filter By: Code'].map((option) => (
+                    <DropdownItem
+                      key={option}
+                      active={filter === option}
+                      onClick={() => {
+                        setFilter(option);
+                        setFilterDropdownOpen(false);
+                      }}
+                    >
+                      {option}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
               )}
-            </Select>
+            </div>
+            {/* Sort Button */}
+            <div style={{ position: 'relative' }} ref={sortButtonRef}>
+              <SortButton onClick={() => setSortDropdownOpen((open) => !open)}>
+                {sort}
+              </SortButton>
+              {sortDropdownOpen && (
+                <DropdownMenu>
+                  {(activeTab === 'Schedule'
+                    ? ['Sort By: Last Name', 'Sort By: First Name']
+                    : [
+                        'Sort By: Date',
+                        'Sort By: Last Name',
+                        'Sort By: First Name',
+                        'Sort By: Code',
+                      ]
+                  ).map((option) => (
+                    <DropdownItem
+                      key={option}
+                      active={sort === option}
+                      onClick={() => {
+                        setSort(option);
+                        setSortDropdownOpen(false);
+                      }}
+                    >
+                      {option}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              )}
+            </div>
           </FilterContainer>
         </FilterRow>
         {/* Attendance Table */}

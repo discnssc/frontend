@@ -237,12 +237,26 @@ function AttendanceTable({
       </table>
       {onAddUnscheduled && (
         <div style={{ marginTop: 12, textAlign: 'right' }}>
-          <Button.Primary onClick={onAddUnscheduled} style={{ color: 'white' }}>
-            <span role='img' aria-label='add'>
-              ➕
-            </span>{' '}
-            Add Unscheduled Participant
-          </Button.Primary>
+          <button
+            onClick={onAddUnscheduled}
+            style={{
+              background: '#005696',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 8,
+              fontSize: 15,
+              padding: '15px 20px 14px 20px',
+              fontWeight: 'normal',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              height: 49,
+              boxSizing: 'border-box',
+            }}
+          >
+            <span style={{ color: '#fff', fontWeight: 'normal' }}>Add Unscheduled Participant</span>
+          </button>
         </div>
       )}
     </div>

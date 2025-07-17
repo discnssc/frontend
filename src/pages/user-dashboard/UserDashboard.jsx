@@ -73,9 +73,9 @@ function UserDashboard() {
               color: 'white',
               border: 'none',
               borderRadius: 8,
-              padding: '10px 22px',
-              fontWeight: 600,
-              fontSize: '1rem',
+              padding: 15,
+              fontWeight: 'normal',
+              fontSize: 15,
               cursor: 'pointer',
             }}
             onClick={handleExport}

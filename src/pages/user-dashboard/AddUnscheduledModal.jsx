@@ -83,12 +83,13 @@ const AddUnscheduledModal = React.memo(function AddUnscheduledModal({
         <button
           style={{
             marginTop: 18,
-            padding: '8px 18px',
+            padding: 15,
             borderRadius: 6,
             border: 'none',
             background: '#005699',
             color: 'white',
-            fontWeight: 600,
+            fontWeight: 'normal',
+            fontSize: 15,
             cursor: 'pointer',
           }}
           onClick={() => setShowModal(false)}

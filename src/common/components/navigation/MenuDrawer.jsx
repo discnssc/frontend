@@ -95,15 +95,10 @@ const icons = {
 const menuTabs = [
   { label: 'Dashboard', to: '/admin-dashboard' },
   { label: 'Database', to: '/participant-database' },
-<<<<<<< HEAD
   { label: 'Calendar', to: '/calendar' },
   { label: 'My Account', to: '/account' },
   { label: 'Admin Dashboard', to: '/admin' },
-=======
-  { label: 'Admin Dashboard', to: '/admin/manage-users' },
->>>>>>> 12fb7d30cd72cce06d1ed3b4532e6a330cc7e3d2
   { label: 'Billing', to: '/billing' },
-  { label: 'My Account', to: '/account' },
 ];
 
 export default function MenuDrawer() {

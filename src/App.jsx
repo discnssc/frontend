@@ -85,7 +85,6 @@ export default function App() {
             />
             <Route path='auth/reset-password' element={<ResetPassword />} />
 
-<<<<<<< HEAD
             {/* Calendar route */}
             <Route path='calendar' element={<Calendar />} />
 
@@ -94,16 +93,8 @@ export default function App() {
               path='/admin/participant-schedule'
               element={<ParticipantSchedule />}
             />
-
-            {/* Manage records */}
             <Route path='/admin/manage-records' element={<ManageRecords />} />
-
-            {/* User dashboard */}
             <Route path='/admin-dashboard' element={<UserDashboard />} />
-=======
-            {/* Admin dashboard and user dashboard */}
-            <Route path='admin-dashboard' element={<UserDashboard />} />
->>>>>>> 12fb7d30cd72cce06d1ed3b4532e6a330cc7e3d2
             <Route path='admin' element={<AdminDashboard />}>
               <Route index element={<ManageUsers />} />
               <Route path='manage-users' element={<ManageUsers />} />

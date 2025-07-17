@@ -103,6 +103,10 @@ const InputBox = styled.input`
   &:focus {
     outline: 1px solid #218bda;
   }
+  &[name='minutes'],
+  &[name='units'] {
+    width: 70px;
+  }
 `;
 const Headline = styled.h2`
   font-size: 24px;
@@ -123,7 +127,8 @@ const Button = styled.button`
   background-color: #005696;
   color: #ececec;
   border: none;
-  padding: 10px 20px;
+  font-size: 15px;
+  padding: 15px;
   margin-right: 10px;
   border-radius: 5px;
   cursor: pointer;

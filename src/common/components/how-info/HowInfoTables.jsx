@@ -33,12 +33,15 @@ const TableCell = styled.td`
 `;
 
 const EditButton = styled.button`
-  background: #218bda;
-  color: #fff;
+  background: none;
+  color: #005696;
   border: none;
   border-radius: 4px;
   padding: 4px 12px;
   cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
 `;
 
 const AddButton = styled.button`
@@ -46,10 +49,14 @@ const AddButton = styled.button`
   color: #fff;
   border: none;
   border-radius: 4px;
-  padding: 8px 20px;
-  font-weight: 600;
+  font-size: 15px;
+  padding: 15px;
+  font-weight: normal;
   cursor: pointer;
   margin-left: 1rem;
+  vertical-align: bottom;
+  display: inline-block;
+  margin-top: 6px;
   &:hover {
     background-color: #218bda;
   }
@@ -90,6 +97,9 @@ const Select = styled.select`
   border-radius: 4px;
   border: 1px solid #ccc;
   min-width: 140px;
+  font-size: 15px;
+  vertical-align: bottom;
+  display: inline-block;
 `;
 
 const Input = styled.input`
@@ -336,7 +346,7 @@ function TableRow({ row, columns, tableType, participantId, onDataUpdate }) {
             <CancelButton onClick={cancelEdit}>Cancel</CancelButton>
           </ButtonRow>
         ) : (
-          <EditButton onClick={startEdit}>Edit</EditButton>
+          <EditButton onClick={startEdit} aria-label="Edit">✏️</EditButton>
         )}
       </TableCell>
       {columns.map((column) => (
