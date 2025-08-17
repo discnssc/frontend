@@ -7,6 +7,11 @@ const ButtonBase = styled.button`
   border: solid 1px var(--text);
   color: var(--text);
   cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const ButtonPrimary = styled(ButtonBase)`

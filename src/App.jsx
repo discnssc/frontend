@@ -32,7 +32,7 @@ import ManageRecords from 'pages/manage-records/ManageRecords';
 import NotFound from 'pages/not-found/NotFound';
 import ParticipantDatabase from 'pages/participant_database/ParticipantDatabase';
 import ParticipantSchedule from 'pages/scheduling/ParticipantSchedule';
-import UserDashboard from 'pages/user-dashboard/UserDashboard';
+import UserDashboard from 'pages/user-dashboard/AttendanceDashboard';
 
 import './App.css';
 
