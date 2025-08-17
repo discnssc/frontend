@@ -9,9 +9,9 @@ import {
 
 import Header from 'common/components/Header';
 import ParticipantNavbar from 'common/components/ParticipantNavBar';
-import ActivitiesTable from 'common/components/activities/ActivitiesTable';
 import MonthYearDropdown from 'common/components/activities/MonthYearDropdown';
 import MenuDrawer from 'common/components/navigation/MenuDrawer';
+import TableWithVerticalLabels from 'common/components/tables/TableWithVerticalLabels';
 
 const InfoPage = styled.div`
   flex-direction: row;
@@ -39,14 +39,10 @@ const TableContainer = styled.div`
   align-items: flex-start;
 `;
 
-const Loading = styled.div`
-  font-size: 18px;
-  color: #999;
-`;
-
 const Button = styled.button`
   background-color: #005696;
   color: #ececec;
+  font-weight: bold;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
@@ -62,11 +58,34 @@ const buildUrl = (endpoint) =>
   `${process.env.REACT_APP_BACKEND_URL.replace(/\/$/, '')}${endpoint}`;
 
 export default function Activities() {
+  const columns = [
+    {
+      key: 'name',
+      label: 'Activity',
+      render: (activity) => (
+        <a
+          href={`/activity/${activity.schedule?.id}`}
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
+          {activity.schedule?.name || 'No name'}
+        </a>
+      ),
+    },
+    {
+      key: 'declined',
+      label: 'Declined?',
+      render: (activity) => (activity.declined ? 'Yes' : 'No'),
+    },
+    { key: 'rating', label: 'Rating' },
+    { key: 'date', label: 'Date' },
+  ];
   const { id } = useParams();
   const [participant, setParticipant] = useState(null);
   const [participantName, setParticipantName] = useState('Minnie May');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [headerError, setHeaderError] = useState(null);
+  const [monthlyActivitiesError, setMonthlyActivitiesError] = useState(null);
+  const [aggregateActivitiesError, setAggregateActivitiesError] =
+    useState(null);
 
   const [monthlyReportActivities, setmonthlyReportActivities] = useState([]);
   const [aggregateReportActivities, setAggregateReportActivities] = useState(
@@ -150,18 +169,20 @@ export default function Activities() {
         console.log('Fetched aggregate report activities:', aggregateData);
       } catch (err) {
         console.error('Error fetching activity logs:', err.message);
+        setMonthlyActivitiesError('Error fetching monthly activity logs');
+        setAggregateActivitiesError('Error fetching aggregate activity logs');
       }
     };
+    setAggregateActivitiesError(null);
+    setMonthlyActivitiesError(null);
     fetchActivityLogs();
   }, [startMonth, startYear, endMonth, endYear, month, year, id]);
+  // Fetch participant data for header and reports
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
+    const fetchHeaderData = async () => {
+      setHeaderError(null);
       try {
         const token = localStorage.getItem('authToken');
-
-        // Fetch participant data from backend
         const response = await fetch(buildUrl(`/participants/${id}`), {
           method: 'GET',
           headers: {
@@ -175,29 +196,22 @@ export default function Activities() {
           throw new Error('Failed to fetch participant data');
         }
         const participantData = await response.json();
-
-        // Extract data from the response
         setParticipant(participantData);
         setParticipantName(
           `${participantData.participant_general_info.first_name} ${participantData.participant_general_info.last_name}`
         );
         console.log('Participant data:', participantData);
       } catch (err) {
-        setError(err.message);
+        setHeaderError(err.message);
         console.error('Error fetching data:', err);
-      } finally {
-        setLoading(false);
       }
     };
-    fetchData();
+    fetchHeaderData();
   }, [id]);
-  if (loading) return <Loading>Loading...</Loading>;
-  if (error) return <Loading>Error: {error}</Loading>;
-
   return (
     <InfoPage>
       <MenuDrawer />
-      <Header participant={participant} />
+      <Header participant={participant} error={headerError} />
       <ParticipantNavbar />
       <ActivitiesContainer>
         <TableContainer>
@@ -209,7 +223,11 @@ export default function Activities() {
             onMonthChange={setMonth}
             onYearChange={setYear}
           />
-          <ActivitiesTable activities={monthlyReportActivities} />
+          <TableWithVerticalLabels
+            data={monthlyReportActivities}
+            columns={columns}
+            error={monthlyActivitiesError}
+          />
           <Button onClick={handleExportMonthlyReport}>
             Export Monthly Report
           </Button>
@@ -231,7 +249,11 @@ export default function Activities() {
             onMonthChange={setEndMonth}
             onYearChange={setEndYear}
           />
-          <ActivitiesTable activities={aggregateReportActivities} />
+          <TableWithVerticalLabels
+            data={aggregateReportActivities}
+            columns={columns}
+            error={aggregateActivitiesError}
+          />
           <Button onClick={handleExportAggregateReport}>
             Export Aggregate Report
           </Button>
