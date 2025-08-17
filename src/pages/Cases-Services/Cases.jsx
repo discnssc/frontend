@@ -6,143 +6,90 @@ import styled from 'styled-components';
 import Header from 'common/components/Header';
 import ParticipantNavbar from 'common/components/ParticipantNavBar';
 import EditServiceModal from 'common/components/form/EditingServicesModal';
+import EditIcon from 'common/components/icons/EditIcon';
 import MenuDrawer from 'common/components/navigation/MenuDrawer';
+import TableWithVerticalLabels from 'common/components/tables/TableWithVerticalLabels';
 
 const InfoPage = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 2rem;
-`;
-const Loading = styled.div`
-  font-size: 18px;
-  color: #999;
+  padding: 3rem;
+  font-size: 15px;
 `;
 
 const TableContainer = styled.div`
-  font-size: 15px;
   vertical-align: top;
   float: left;
   margin-top: 40px;
   align-items: flex-start;
 `;
 
-const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-  vertical-align: top;
-  margin-right: 2rem;
-  overflow: hidden;
-`;
-
-const TableRow = styled.tr`
-  width: 100%;
-  font-size: 15px;
-`;
-
-const LableTableCell = styled.td`
-  padding: 15px;
-  text-align: left;
-  vertical-align: center;
-  background: #005696;
-  color: #ffffff;
-  justify-content: center;
-  flex-shrink: 0;
-  font-weight: bold;
-  &:not(:last-child) {
-    border-right: 0.5px solid #ececec;
-  }
-  &:first-child {
-    border-top-left-radius: 10px;
-    width: 5%;
-  }
-  &:nth-child(2) {
-    width: 5%;
-  }
-  &:nth-child(3) {
-    width: 16%;
-  }
-  &:nth-child(4) {
-    width: 5%;
-  }
-  &:nth-child(5) {
-    width: 5%;
-  }
-  &:nth-child(6) {
-    width: 16%;
-  }
-  &:nth-child(7) {
-    width: 16%;
-  }
-  &:nth-child(8) {
-    width: 16%;
-  }
-  &:last-child {
-    border-top-right-radius: 10px;
-    width: 16%;
-  }
-`;
-const ScrollableTableWrapper = styled.div`
-  max-height: 400px;
-  overflow-y: auto;
-`;
-const TableCell = styled.td`
-  padding: 15px;
-  text-align: left;
-  vertical-align: center;
-  background-color: #ffffff;
-  border: 0.5px solid #ececec;
-  justify-content: center;
-  flex-shrink: 0;
-`;
-
-const InputBox = styled.input`
-  padding: 5px;
-  border: 1px solid #ececec;
-  margin-top: 0.5rem;
-  &:focus {
-    outline: 1px solid #218bda;
-  }
-`;
 const Headline = styled.h2`
-  font-size: 24px;
+  font-size: 20px;
   margin-top: 50px;
-  color: #005696;
+  margin-bottom: 0px;
+  color: black;
   text-align: left;
 `;
-const FormRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 1rem;
-  label {
-    margin: 0.5rem;
-    font-weight: bold;
-  }
-`;
-const Button = styled.button`
-  background-color: #005696;
-  color: #ececec;
-  border: none;
-  padding: 10px 20px;
-  margin-right: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 20px;
-  &:hover {
-    background-color: #218bda;
-  }
-`;
+
 const AddServiceForm = styled.form`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-end;
+  align-content: center;
 `;
+
+const InputBox = styled.input`
+  box-sizing: border-box;
+  padding: 15px;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  margin-top: 0.5rem;
+  height: 49px;
+  &:focus {
+    outline: 1px solid #218bda;
+  }
+`;
+
+const TextAreaBox = styled.textarea`
+  box-sizing: border-box;
+  rows: 1;
+  padding: 15px;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  resize: horizontal;
+  margin-top: 0.5rem;
+  height: 49px;
+  width: 33rem;
+  &:focus {
+    outline: 1px solid #218bda;
+  }
+`;
+
+const Button = styled.button`
+  height: 49px;
+  box-sizing: border-box;
+  background-color: #005696;
+  color: #ececec;
+  border: none;
+  padding: 10px 30px;
+  margin-top: 1.5rem;
+  margin-right: 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  &:hover {
+    background-color: #218bda;
+  }
+`;
+
 const LableInputBox = styled.label`
   display: flex;
   flex-direction: column;
-  margin-right: 1rem;
+  margin-right: 2rem;
+  margin-top: 1.5rem;
 `;
 
 const buildUrl = (endpoint) =>
@@ -153,12 +100,21 @@ const formatDate = (dateStr) => {
   return `${month}/${day}/${year}`;
 };
 
+const getTodayDateStr = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export default function Cases() {
   const { id } = useParams();
   const [services, setServices] = useState([]);
   const [participant, setParticipant] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [headerError, setHeaderError] = useState(null);
+  const [servicesError, setServicesError] = useState(null);
+  const [updateError, setUpdateError] = useState(null);
   const [editingService, setEditingService] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [newService, setNewService] = useState({
@@ -166,11 +122,59 @@ export default function Cases() {
     service_type: '',
     minutes: '',
     units: '',
-    posting_date: '',
-    service_date: '',
+    posting_date: getTodayDateStr(),
+    service_date: getTodayDateStr(),
     update_by: '',
-    update_date: '',
+    update_date: getTodayDateStr(),
+    notes: '',
   });
+  const columns = [
+    {
+      key: 'edit',
+      label: 'Edit',
+      render: (service) => (
+        <button
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 0,
+          }}
+          onClick={() => {
+            setEditingService(service);
+            setUpdateError(null);
+            setShowEditModal(true);
+          }}
+          aria-label='Edit service'
+          type='button'
+        >
+          <EditIcon />
+        </button>
+      ),
+    },
+    { key: 'code', label: 'Service' },
+    { key: 'service_type', label: 'Service Type' },
+    { key: 'minutes', label: 'Minutes' },
+    { key: 'units', label: 'Units' },
+    {
+      key: 'posting_date',
+      label: 'Posting Date',
+      render: (service) => formatDate(service.posting_date) || '',
+    },
+    {
+      key: 'service_date',
+      label: 'Service Date',
+      render: (service) => formatDate(service.service_date) || '',
+    },
+    { key: 'update_by', label: 'Update By' },
+    {
+      key: 'update_date',
+      label: 'Update Date',
+      render: (service) => formatDate(service.update_date) || '',
+    },
+    { key: 'notes', label: 'Notes' },
+  ];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewService((prev) => ({
@@ -203,7 +207,7 @@ export default function Cases() {
       window.location.reload();
     } catch (err) {
       console.error('Error updating service:', err);
-      setError('Failed to update service');
+      setUpdateError(`${err.message}. Please check your values and try again.`);
     }
   };
   const deleteService = async (service) => {
@@ -232,49 +236,72 @@ export default function Cases() {
       );
     } catch (err) {
       console.error('Error deleting service:', err);
-      setError('Failed to delete service');
+      setUpdateError('Failed to delete service');
     }
   };
+
+  // Fetch participant data and services on component mount
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
+    const token = localStorage.getItem('authToken');
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: 'include',
+    };
+    const fetchParticipant = async () => {
+      setHeaderError(null);
       try {
-        const token = localStorage.getItem('authToken');
-        const response = await fetch(buildUrl(`/participants/${id}`), {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          credentials: 'include',
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch participant data');
+        const HeaderResponse = await fetch(
+          buildUrl(`/participants/${id}`),
+          requestOptions
+        );
+        if (!HeaderResponse.ok) {
+          const errorData = await HeaderResponse.json();
+          throw new Error(
+            errorData.error || 'Failed to fetch participant data'
+          );
         }
-
-        const participantData = await response.json();
-
-        // Extract data from the response
+        const participantData = await HeaderResponse.json();
         setParticipant(participantData);
-        setServices(participantData.participant_services || []);
         console.log('Participant data:', participantData);
       } catch (err) {
-        setError(err.message);
-        console.error('Error fetching data:', err);
-      } finally {
-        setLoading(false);
+        setHeaderError('Error fetching participant data');
+        console.error('Error fetching participant:', err);
       }
     };
-    fetchData();
+
+    const fetchServices = async () => {
+      setServicesError(null);
+      try {
+        const ServicesResponse = await fetch(
+          buildUrl(`/participants/services/${id}`),
+          requestOptions
+        );
+        if (!ServicesResponse.ok) {
+          const errorData = await ServicesResponse.json();
+          throw new Error(
+            errorData.error || 'Failed to fetch participant services'
+          );
+        }
+        const servicesData = await ServicesResponse.json();
+        setServices(servicesData || []);
+      } catch (err) {
+        setServicesError('Error fetching participant services');
+        console.error('Error fetching services:', err);
+      }
+    };
+    setUpdateError(null);
+    setEditingService(null);
+    fetchParticipant();
+    fetchServices();
   }, [id]);
-  if (loading) return <Loading>Loading...</Loading>;
-  if (error) return <Loading>Error: {error}</Loading>;
   return (
     <InfoPage>
       <MenuDrawer />
-      <Header participant={participant} />
+      <Header participant={participant} error={headerError} />
       <ParticipantNavbar />
       {showEditModal && (
         <EditServiceModal
@@ -285,70 +312,21 @@ export default function Cases() {
             deleteService(editingService);
             setShowEditModal(false);
           }}
+          updateError={updateError}
         />
       )}
       <TableContainer>
-        <ScrollableTableWrapper>
-          <Table>
-            <TableRow>
-              <LableTableCell>Edit</LableTableCell>
-              <LableTableCell>Service</LableTableCell>
-              <LableTableCell>Service Type</LableTableCell>
-              <LableTableCell>Minutes</LableTableCell>
-              <LableTableCell>Units</LableTableCell>
-              <LableTableCell>Posting Date</LableTableCell>
-              <LableTableCell>Service Date</LableTableCell>
-              <LableTableCell>Update By</LableTableCell>
-              <LableTableCell>Update Date</LableTableCell>
-            </TableRow>
-            <tbody>
-              {services &&
-                services.map((service) => (
-                  <TableRow key={service.entry_id}>
-                    <TableCell>
-                      <button
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          padding: 0,
-                        }}
-                        onClick={() => {
-                          setEditingService(service);
-                          setShowEditModal(true);
-                        }}
-                        aria-label='Edit service'
-                        type='button'
-                      >
-                        <span role='img' aria-label='edit'>
-                          ✏️
-                        </span>
-                      </button>
-                    </TableCell>
-                    <TableCell>{service.code || ''}</TableCell>
-                    <TableCell>{service.service_type || ''}</TableCell>
-                    <TableCell>{service.minutes || ''}</TableCell>
-                    <TableCell>{service.units || ''}</TableCell>
-                    <TableCell>
-                      {formatDate(service.posting_date) || ''}
-                    </TableCell>
-                    <TableCell>
-                      {formatDate(service.service_date) || ''}
-                    </TableCell>
-                    <TableCell>{service.update_by || ''}</TableCell>
-                    <TableCell>
-                      {formatDate(service.update_date) || ''}
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </tbody>
-          </Table>
-        </ScrollableTableWrapper>
+        <TableWithVerticalLabels
+          data={services}
+          columns={columns}
+          error={servicesError}
+          fullWidth
+        />
       </TableContainer>
       <Headline>Add New Service</Headline>
       <AddServiceForm onSubmit={handleSubmit}>
         <LableInputBox>
-          Service
+          Service:
           <InputBox
             type='text'
             name='code'
@@ -357,7 +335,7 @@ export default function Cases() {
           />
         </LableInputBox>
         <LableInputBox>
-          Service Type
+          Service Type:
           <InputBox
             type='text'
             name='service_type'
@@ -366,7 +344,7 @@ export default function Cases() {
           />
         </LableInputBox>
         <LableInputBox>
-          Minutes
+          Minutes:
           <InputBox
             type='number'
             name='minutes'
@@ -375,7 +353,7 @@ export default function Cases() {
           />
         </LableInputBox>
         <LableInputBox>
-          Units
+          Units:
           <InputBox
             type='number'
             name='units'
@@ -384,7 +362,7 @@ export default function Cases() {
           />
         </LableInputBox>
         <LableInputBox>
-          Posting Date
+          Posting Date:
           <InputBox
             type='date'
             name='posting_date'
@@ -393,7 +371,7 @@ export default function Cases() {
           />
         </LableInputBox>
         <LableInputBox>
-          Service Date
+          Service Date:
           <InputBox
             type='date'
             name='service_date'
@@ -402,7 +380,7 @@ export default function Cases() {
           />
         </LableInputBox>
         <LableInputBox>
-          Update By
+          Update By:
           <InputBox
             type='text'
             name='update_by'
@@ -411,7 +389,7 @@ export default function Cases() {
           />
         </LableInputBox>
         <LableInputBox>
-          Update Date
+          Update Date:
           <InputBox
             type='date'
             name='update_date'
@@ -419,12 +397,18 @@ export default function Cases() {
             onChange={handleChange}
           />
         </LableInputBox>
-        <FormRow>
-          <Button type='submit'>Add</Button>
-          <Button type='button' onClick={() => setNewService({})}>
-            Reset
-          </Button>
-        </FormRow>
+        <LableInputBox>
+          Notes:
+          <TextAreaBox
+            name='notes'
+            value={newService.notes || ''}
+            onChange={handleChange}
+          />
+        </LableInputBox>
+        <Button type='submit'>Add</Button>
+        <Button type='button' onClick={() => setNewService({})}>
+          Reset
+        </Button>
       </AddServiceForm>
     </InfoPage>
   );
