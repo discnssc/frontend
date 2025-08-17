@@ -25,11 +25,6 @@ const Section = styled.div`
   margin-bottom: 2rem;
 `;
 
-const Loading = styled.div`
-  font-size: 18px;
-  color: #999;
-`;
-
 // Helper function to build API URLs
 const buildUrl = (endpoint) =>
   `${process.env.REACT_APP_BACKEND_URL.replace(/\/$/, '')}${endpoint}`;
@@ -127,11 +122,9 @@ export default function HowInfo() {
   const [howHospitalizations, setHowHospitalizations] = useState([]);
   const [howFalls, setHowFalls] = useState([]);
   const [howToileting, setHowToileting] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const fetchHowInfo = async () => {
-    setLoading(true);
     setError(null);
     try {
       // Fetch participant data
@@ -158,8 +151,6 @@ export default function HowInfo() {
     } catch (err) {
       console.error('Error fetching HOW info:', err.message);
       setError(err.message);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -167,13 +158,10 @@ export default function HowInfo() {
     fetchHowInfo();
   }, [id]);
 
-  if (loading) return <Loading>Loading...</Loading>;
-  if (error) return <Loading>Error: {error}</Loading>;
-
   return (
     <InfoPage>
       <MenuDrawer />
-      <Header participant={participantInfo} />
+      <Header participant={participantInfo} error={error} />
       <ParticipantNavbar />
 
       <Section>
