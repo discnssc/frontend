@@ -36,9 +36,22 @@ const Button = styled.button`
   }
 `;
 const InputBox = styled.input`
-  padding: 5px;
+  padding: 10px;
   margin-left: 0.8rem;
   border: 1px solid #ececec;
+  border-radius: 5px;
+  &:focus {
+    outline: 1px solid #218bda;
+  }
+`;
+
+const TextAreaBox = styled.textarea`
+  padding: 10px;
+  margin-left: 0.3rem;
+  margin-top: 0.5rem;
+  border: 1px solid #ececec;
+  border-radius: 5px;
+  resize: horizontal;
   &:focus {
     outline: 1px solid #218bda;
   }
@@ -48,7 +61,17 @@ const FormRow = styled.div`
   flex-direction: row;
   margin-bottom: 1rem;
   label {
-    margin: 0.5rem;
+    margin: 0.3rem;
+    font-weight: bold;
+  }
+`;
+
+const NotesRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  label {
+    margin: 0.3rem;
     font-weight: bold;
   }
 `;
@@ -58,6 +81,7 @@ export default function EditServiceModal({
   onClose,
   onSave,
   onDelete,
+  updateError,
 }) {
   const [serviceData, setServiceData] = useState({ ...service });
 
@@ -162,6 +186,14 @@ export default function EditServiceModal({
               />
             </label>
           </FormRow>
+          <NotesRow>
+            <label>Notes</label>
+            <TextAreaBox
+              name='notes'
+              value={serviceData.notes || ''}
+              onChange={handleChange}
+            />
+          </NotesRow>
           <FormRow>
             <Button type='submit'>Update</Button>
             <Button type='button' onClick={onDelete}>
@@ -172,6 +204,9 @@ export default function EditServiceModal({
             </Button>
           </FormRow>
         </form>
+        {updateError && (
+          <div style={{ color: 'red', marginTop: '10px' }}>{updateError}</div>
+        )}
       </ModalContainer>
     </ModalOverlay>
   );

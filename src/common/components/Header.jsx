@@ -60,27 +60,38 @@ const SmallText = styled.h1`
   margin: 5px 0;
 `;
 
-export default function Header({ participant }) {
+export default function Header({ participant, error }) {
   console.log('Participant Header:', participant);
   return (
     <HeaderContainer>
       <Left>
         <FlexRow>
-          {participant?.participant_general_info?.first_name || 'User'}{' '}
-          {participant?.participant_general_info?.last_name || 'User'}{' '}
-          <TypeBadge type={participant.participant_general_info.type}>
-            {participant.participant_general_info.type}
+          {participant?.participant_general_info?.first_name &&
+          participant?.participant_general_info?.last_name ? (
+            <>
+              {participant.participant_general_info.first_name}{' '}
+              {participant.participant_general_info.last_name}{' '}
+            </>
+          ) : error ? (
+            'Error finding participant '
+          ) : (
+            'Loading Participant '
+          )}
+          <TypeBadge
+            type={participant?.participant_general_info?.type || 'Participant'}
+          >
+            {participant?.participant_general_info?.type || 'Participant'}
           </TypeBadge>
         </FlexRow>
         <div
           style={{
             display: 'inline-block',
             backgroundColor:
-              participant.status?.toLowerCase() === "'inactive'"
+              participant?.status?.toLowerCase() === "'inactive'"
                 ? '#f8d7da'
                 : '#d4edda',
             color:
-              participant.status?.toLowerCase() === "'inactive'"
+              participant?.status?.toLowerCase() === "'inactive'"
                 ? '#721c24'
                 : '#155724',
             padding: '5px 15px',
@@ -91,13 +102,16 @@ export default function Header({ participant }) {
             width: '75px',
           }}
         >
-          {participant.status}
+          {participant?.status}
         </div>
         <SmallTextBold>
           Participant ID:<SmallText>{participant?.id || 'N/A'}</SmallText>
         </SmallTextBold>
         <SmallTextBold>
-          HOW ID:<SmallText>123456</SmallText>
+          HOW ID:
+          <SmallText>
+            {participant?.participant_general_info?.how_id || 'N/A'}
+          </SmallText>
         </SmallTextBold>
       </Left>
       <Right>
@@ -129,11 +143,13 @@ Header.propTypes = {
       first_name: PropTypes.string,
       last_name: PropTypes.string,
       type: PropTypes.string, // e.g., 'Participant', 'Care partner'
+      how_id: PropTypes.string,
     }),
     status: PropTypes.string,
     participant_created_at: PropTypes.string,
     participant_updated_at: PropTypes.string,
   }),
+  error: PropTypes.string,
 };
 
 Header.defaultProps = {
