@@ -85,7 +85,7 @@ export default function App() {
             <Route path='auth/reset-password' element={<ResetPassword />} />
 
             {/* Admin dashboard and user dashboard */}
-            <Route path='admin-dashboard' element={<UserDashboard />} />
+            <Route path='dashboard' element={<UserDashboard />} />
             <Route path='admin' element={<AdminDashboard />}>
               <Route index element={<ManageUsers />} />
               <Route path='manage-users' element={<ManageUsers />} />
